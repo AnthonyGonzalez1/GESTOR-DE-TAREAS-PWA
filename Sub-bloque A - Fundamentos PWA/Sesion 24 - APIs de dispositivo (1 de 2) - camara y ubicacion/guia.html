@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 24 · APIs de dispositivo (1/2): cámara, micrófono y ubicación · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .compare-wrap{overflow-x:auto;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:1em 1.2em; margin:1em 0; font-size:.92em;}
+  .warn-box b{color:#9a6b00;}
+  .recursos-box{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:6px; padding:1.1em 1.4em; margin:1.4em 0 0;}
+  .recursos-box h3{font-family:var(--serif); font-size:1.05em; margin:0 0 .5em; color:var(--gold-deep);}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.4em;}
+  .recursos-list a{font-weight:700; color:var(--ink);}
+  .rb-desc{display:block; font-size:.88em; color:var(--gray); margin-top:.2em; font-weight:400;}
+  .term-box{background:#1c1c1e; color:#cfcac0; border-radius:10px; padding:.9em 1.1em; font-size:.82em; font-family:"Cascadia Code",Consolas,monospace; line-height:1.55; margin:1em 0; overflow-x:auto;}
+  .term-box .prompt{color:#6ad06a;}
+  .win-box{border:2px solid #2e7d32; background:#f1f9f1; border-radius:10px; padding:1em 1.2em; margin:1.2em 0; font-size:.92em;}
+  .win-box b{color:#1b5e20;}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} }
+  .db-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.8em; margin:1.2em 0;}
+  .db-card{border:1px solid var(--line); border-radius:10px; padding:.85em 1em;}
+  .db-card .op-name{display:inline-block; font-size:.8em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .6em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .db-card p{margin:0; font-size:.84em; color:#444; line-height:1.4;}
+  @media (max-width:700px){ .db-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 10 de 30</div>
+    <h1>APIs de dispositivo (1/2): cámara, micrófono y ubicación</h1>
+    <div class="lead">Hasta hoy el Gestor de Tareas vivía dentro del navegador. Hoy sale al mundo físico: abre la cámara, mide el micrófono y pregunta dónde está el usuario — y, sobre todo, aprende a hacerlo sin invadirlo: permisos pedidos en contexto, errores que se explican, y una app que sigue funcionando cuando le dicen que no.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Explicar</b> el modelo de permisos del navegador (contexto seguro, gesto del usuario y los tres estados <code>granted</code>/<code>denied</code>/<code>prompt</code>) y por qué cada API de dispositivo lo respeta.</span></li>
+      <li><span class="chk">✓</span><span><b>Abrir</b> la cámara y el micrófono con <code>getUserMedia</code>, capturar una foto con <code>&lt;canvas&gt;</code>, y liberar el hardware cuando ya no se necesita.</span></li>
+      <li><span class="chk">✓</span><span><b>Obtener</b> la ubicación con Geolocation, distinguir <code>getCurrentPosition</code> de <code>watchPosition</code>, e interpretar la precisión que devuelve.</span></li>
+      <li><span class="chk">✓</span><span><b>Diseñar</b> los errores y la negativa del usuario como parte normal del flujo: mensajes claros y una app que sigue funcionando sin el permiso.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion23.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 23.</b> El Gestor de Tareas con IndexedDB y nota cifrada (Sesión 22), el <code>sw.js</code> generado por Workbox, el indicador de conexión y el botón de instalación (Sesión 23). Hoy le agregamos un módulo nuevo, <code>dispositivo.js</code>, y una fila de adjuntos por tarea.</span></li>
+      </ul>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Dónde estamos</h2>
+    <div class="body-text"><p>El Gestor de Tareas ya es instalable (Sesión 16), tiene un Service Worker que lo hace funcionar sin conexión (Sesiones 17-21), guarda sus datos en IndexedDB con una nota cifrada (Sesión 22), y su <code>sw.js</code> lo genera Workbox (Sesión 23). Todo eso ocurre <i>dentro</i> del navegador. Hoy empieza el último tramo del Sub-bloque A: tres sesiones (24, 25 y 26) donde la app se conecta con el dispositivo — cámara, micrófono, ubicación, sensores de movimiento y notificaciones. Es lo que más distingue a una PWA de una página web común, y también lo que más cuidado exige, porque cada una de esas APIs toca algo personal del usuario.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>El modelo de permisos: tres condiciones antes de tocar el hardware</h2>
+    <div class="body-text"><p>Todas las APIs de dispositivo siguen el mismo modelo, y entenderlo una vez te sirve para las tres sesiones de este tramo. Para que el navegador te entregue la cámara, el micrófono o la ubicación, tienen que cumplirse tres cosas:</p></div>
+    <div class="db-grid">
+      <div class="db-card"><span class="op-name">1 · Contexto seguro</span><p>La página debe servirse por <b>HTTPS</b>, desde <b>localhost</b>, o ser un archivo <code>file://</code>. En una página HTTP normal, <code>navigator.mediaDevices</code> ni siquiera existe (vale <code>undefined</code>) y <code>getUserMedia</code> falla con <code>TypeError</code>. Geolocation también exige contexto seguro.</p></div>
+      <div class="db-card"><span class="op-name">2 · Permiso del usuario</span><p>La primera vez, el navegador muestra un aviso y el usuario decide. El permiso se concede por origen, y su duración depende del navegador: puede ser de sesión, de un tiempo, o permanente.</p></div>
+      <div class="db-card"><span class="op-name">3 · Momento adecuado</span><p>Pídelo <b>dentro del clic</b> en el que el usuario lo quiere, nunca al cargar la página. Un aviso de cámara sin que nadie pulsara "foto" se rechaza por reflejo — y un permiso denegado es difícil de recuperar.</p></div>
+      <div class="db-card"><span class="op-name">Estados del permiso</span><p>Para cada permiso hay tres estados: <code>granted</code> (concedido), <code>denied</code> (bloqueado) y <code>prompt</code> (todavía no se ha preguntado). Se consultan con la Permissions API.</p></div>
+    </div>
+
+    <h3 class="sub-title">Consultar el estado sin molestar al usuario</h3>
+    <div class="body-text"><p><code>navigator.permissions.query</code> te dice el estado <i>sin</i> mostrar ningún aviso. Sirve para adaptar la interfaz antes de que el usuario pulse nada (por ejemplo, explicar cómo desbloquear la cámara si ya está en <code>denied</code>). No todos los navegadores soportan todos los nombres, así que se envuelve en <code>try/catch</code>:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>dispositivo.js</div>
+      <pre><code>export async function estadoPermiso(nombre) {
+  try {
+    const r = await navigator.permissions.query({ name: nombre });
+    return r.state;            // "granted" | "denied" | "prompt"
+  } catch {
+    return "desconocido";      // el navegador no soporta ese nombre
+  }
+}</code></pre>
+    </div>
+    <div class="warn-box"><b>Medido, no supuesto.</b> Probé <code>estadoPermiso</code> en Chromium con Playwright: con los permisos de cámara y ubicación concedidos devolvió <code>granted</code> para ambos; con un nombre inventado devolvió <code>desconocido</code> (el <code>catch</code> funcionó). Un detalle de la prueba: sin conceder nada, Chromium en modo automatizado respondió <code>denied</code> y no <code>prompt</code> — en un navegador normal, el primer encuentro con la página sí debería dar <code>prompt</code>; compruébalo en tu propio Chrome (DevTools → Application, o el candado de la barra de direcciones).</div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>Cámara con getUserMedia</h2>
+    <div class="body-text"><p><code>navigator.mediaDevices.getUserMedia(constraints)</code> devuelve una promesa que se resuelve con un <code>MediaStream</code>: un flujo con una o más <i>pistas</i> (<code>MediaStreamTrack</code>), una por cada cámara o micrófono. Ese flujo se conecta a un <code>&lt;video&gt;</code> con <code>srcObject</code> y se ve en vivo. Las <b>constraints</b> son las condiciones que le pides al hardware:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>dispositivo.js</div>
+      <pre><code>export function abrirCamara(facingMode = "environment") {
+  return navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: { ideal: facingMode },   // "user" = frontal, "environment" = trasera
+      width:  { ideal: 1280 },
+      height: { ideal: 720 },
+    },
+    audio: false,
+  });
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><b><code>ideal</code> contra <code>exact</code>.</b> Con <code>ideal</code> le dices "prefiero esto": si no existe, el navegador usa lo más parecido. Con <code>exact</code> (o <code>min</code>/<code>max</code>) es obligatorio: si no se puede cumplir, la promesa se rechaza con <code>OverconstrainedError</code>. En una app para estudiantes, casi siempre quieres <code>ideal</code> — un portátil no tiene cámara trasera, y no por eso la función debe fallar.</p></div>
+
+    <h3 class="sub-title">Mostrarla y, sobre todo, soltarla</h3>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js</div>
+      <pre><code>// El permiso se pide AQUÍ, dentro del clic del usuario — no al cargar la página.
+streamActual = await abrirCamara("environment");
+videoEl.srcObject = streamActual;      // el &lt;video&gt; tiene autoplay y playsinline
+dlgCamara.showModal();
+
+// Al cerrar: detener CADA pista. Si no, el LED queda encendido y
+// ninguna otra aplicación puede usar la cámara.
+export function detenerCamara(stream) {
+  stream?.getTracks().forEach((pista) => pista.stop());
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>El atributo <code>playsinline</code> del <code>&lt;video&gt;</code> evita que iOS lo abra a pantalla completa. Y no olvides el caso fácil de olvidar: si el usuario cierra el diálogo con la tecla Esc, el flujo también debe detenerse — por eso el checkpoint escucha el evento <code>close</code> del <code>&lt;dialog&gt;</code>.</p></div>
+
+    <h3 class="sub-title">Los errores no son excepciones raras: son parte del flujo</h3>
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em;">
+      <tr><th>Error (<code>err.name</code>)</th><th>Qué significa</th><th>Qué le dices al usuario</th></tr>
+      <tr><td><code>NotAllowedError</code></td><td>El usuario negó el permiso, o una política del navegador lo bloquea</td><td>Cómo desbloquearlo desde el candado de la barra de direcciones</td></tr>
+      <tr><td><code>NotFoundError</code></td><td>No hay ningún dispositivo que cumpla lo pedido</td><td>"Este dispositivo no tiene cámara"</td></tr>
+      <tr><td><code>NotReadableError</code></td><td>Hay permiso, pero el hardware o el sistema no la deja leer (p. ej. otra app la tiene abierta)</td><td>"La cámara está siendo usada por otra aplicación"</td></tr>
+      <tr><td><code>OverconstrainedError</code></td><td>Un <code>exact</code>/<code>min</code>/<code>max</code> no se puede cumplir</td><td>Reintentar con restricciones más flexibles</td></tr>
+      <tr><td><code>TypeError</code></td><td>Contexto no seguro (<code>mediaDevices</code> es <code>undefined</code>), o constraints vacías</td><td>"Solo funciona en HTTPS o en localhost"</td></tr>
+    </table>
+    </div>
+    <div class="code-block" style="margin-top:.8em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>dispositivo.js</div>
+      <pre><code>export function describirErrorCamara(err) {
+  switch (err?.name) {
+    case "NotAllowedError":
+      return "Bloqueaste el permiso de cámara. Habilítalo desde el candado de la barra de direcciones.";
+    case "NotFoundError":
+      return "Este dispositivo no tiene cámara disponible.";
+    case "NotReadableError":
+      return "La cámara está siendo usada por otra aplicación.";
+    case "OverconstrainedError":
+      return "La cámara no soporta la configuración pedida.";
+    case "TypeError":
+      return "La cámara solo funciona en HTTPS o en localhost.";
+    default:
+      return `No se pudo abrir la cámara (${err?.name ?? "error desconocido"}).`;
+  }
+}</code></pre>
+    </div>
+    <div class="fig-caption">Dos de estos mensajes se verificaron de verdad: el de <code>NotAllowedError</code> (permiso denegado, en la sección 8) y el de <code>TypeError</code>, borrando <code>navigator.mediaDevices</code> antes de cargar la página — que es justo lo que ve una página servida por HTTP.</div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Del video a la foto: &lt;canvas&gt; y Blob</h2>
+    <div class="body-text"><p>Un <code>&lt;video&gt;</code> no se puede "guardar" tal cual. Para tomar una foto se dibuja el fotograma actual en un <code>&lt;canvas&gt;</code> y se exporta a un <code>Blob</code> — un objeto binario que IndexedDB sabe guardar directamente (la Sesión 22 guardaba texto cifrado; hoy guardamos una imagen). Se reduce a un máximo de 640 px de ancho: una foto de teléfono puede pesar varios megabytes, y llenar IndexedDB de eso no tiene sentido para una miniatura.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>dispositivo.js</div>
+      <pre><code>export function capturarFoto(video, anchoMax = 640) {
+  const escala = Math.min(1, anchoMax / video.videoWidth);
+  const canvas = document.createElement("canvas");
+  canvas.width  = Math.round(video.videoWidth  * escala);
+  canvas.height = Math.round(video.videoHeight * escala);
+  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.8));
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Para mostrar un <code>Blob</code> en pantalla se usa <code>URL.createObjectURL(blob)</code>, que devuelve una URL temporal (<code>blob:http://...</code>). Esa URL <b>ocupa memoria hasta que se libera</b> con <code>URL.revokeObjectURL()</code> — por eso el checkpoint la libera cada vez que repinta la lista. Es el tipo de fuga que no se nota en una prueba corta y sí en una sesión de media hora.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>El micrófono: el mismo patrón, con otro hardware</h2>
+    <div class="body-text"><p>El micrófono usa exactamente el mismo <code>getUserMedia</code>: solo cambia <code>audio: true</code> en vez de <code>video</code>. Mismo permiso, mismos errores, misma obligación de detener las pistas. Para <i>ver</i> que el micrófono funciona sin grabar nada, se conecta el flujo a un <code>AnalyserNode</code> de Web Audio, que entrega el volumen en cada instante:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>dispositivo.js</div>
+      <pre><code>export function abrirMicrofono() {
+  return navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: true, noiseSuppression: true },
+    video: false,
+  });
+}
+
+export function crearMedidorDeNivel(stream) {
+  const ctx = new AudioContext();
+  ctx.resume();                       // llámalo dentro de un clic (política de autoplay)
+  const analizador = ctx.createAnalyser();
+  analizador.fftSize = 512;
+  ctx.createMediaStreamSource(stream).connect(analizador);
+  const datos = new Uint8Array(analizador.fftSize);
+  return {
+    leer() {                          // 0 = silencio, 1 = máximo
+      analizador.getByteTimeDomainData(datos);
+      let pico = 0;
+      for (const v of datos) pico = Math.max(pico, Math.abs(v - 128));
+      return pico / 128;
+    },
+    cerrar() { stream.getTracks().forEach((p) => p.stop()); ctx.close(); },
+  };
+}</code></pre>
+    </div>
+    <div class="win-box"><b>Resultado real, con un micrófono falso de Chromium:</b> durante 3 segundos, 30 lecturas del medidor dieron valores entre 0,00 y 0,05 (el dispositivo falso emite pitidos suaves), y al llamar <code>cerrar()</code> las pistas pasaron de 1 viva a 0 vivas — el micrófono se liberó. Con tu voz real los valores serán mucho mayores; en la Actividad 3 los mides tú.</div>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Ubicación con Geolocation</h2>
+    <div class="body-text"><p><code>navigator.geolocation</code> tiene dos formas de preguntar: <code>getCurrentPosition()</code> pide la posición <b>una vez</b>; <code>watchPosition()</code> avisa <b>cada vez que cambia</b> y devuelve un identificador que se cancela con <code>clearWatch()</code>. Las dos aceptan tres opciones:</p></div>
+    <div class="db-grid">
+      <div class="db-card"><span class="op-name">enableHighAccuracy</span><p>Por defecto <code>false</code>. En <code>true</code> pide GPS: más preciso, más lento y con más batería. Con <code>false</code> el navegador puede usar Wi-Fi o red móvil.</p></div>
+      <div class="db-card"><span class="op-name">timeout</span><p>Cuántos milisegundos esperar. Por defecto es infinito — siempre ponle un límite, o el usuario se queda esperando sin explicación.</p></div>
+      <div class="db-card"><span class="op-name">maximumAge</span><p>Cuántos milisegundos de antigüedad aceptas en una posición ya conocida. Por defecto <code>0</code> (siempre una lectura nueva). Para una tarea, una posición de hace un minuto sirve.</p></div>
+      <div class="db-card"><span class="op-name">coords.accuracy</span><p>La incertidumbre, en <b>metros</b>: "estoy aquí, con un margen de ±N m". Guárdala junto a la latitud y la longitud — sin ella, el dato engaña.</p></div>
+    </div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>dispositivo.js</div>
+      <pre><code>export function obtenerUbicacion({ altaPrecision = false, timeoutMs = 10000 } = {}) {
+  return new Promise((resolve, reject) => {
+    if (!("geolocation" in navigator)) {
+      reject({ code: 0, message: "Geolocation no disponible" });
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        precision: Math.round(pos.coords.accuracy),
+        momento: new Date(pos.timestamp).toISOString(),
+      }),
+      reject,
+      { enableHighAccuracy: altaPrecision, timeout: timeoutMs, maximumAge: 60000 }
+    );
+  });
+}
+
+export function describirErrorUbicacion(err) {
+  switch (err?.code) {
+    case 1: return "Denegaste el permiso de ubicación. La tarea sigue funcionando sin ella.";
+    case 2: return "No se pudo determinar la posición (sin señal GPS o de red).";
+    case 3: return "La ubicación tardó demasiado en responder. Intenta de nuevo.";
+    default: return "La ubicación no está disponible en este navegador.";
+  }
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Los tres códigos de error son: <code>1</code> <i>PERMISSION_DENIED</i> (el usuario dijo no), <code>2</code> <i>POSITION_UNAVAILABLE</i> (no se pudo calcular: sin señal) y <code>3</code> <i>TIMEOUT</i> (se acabó el <code>timeout</code>). A diferencia de <code>getUserMedia</code>, Geolocation no usa nombres sino números — el <code>switch</code> sobre <code>err.code</code> es el equivalente.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Privacidad: pedir lo mínimo, en el momento justo</h2>
+    <div class="body-text"><p>Una foto y una ubicación son datos personales. Que el navegador pregunte no te exime de diseñar con cuidado; estas reglas son las que distinguen una app respetuosa de una que el usuario desinstala:</p></div>
+    <ul class="clean">
+      <li><b>Pide cuando el usuario lo quiere.</b> El botón "📍 Ubicación" pide la posición; nada la pide al abrir la app.</li>
+      <li><b>Que negar no rompa nada.</b> Si el usuario dice no, la tarea se guarda igual, con un mensaje claro. Un permiso denegado casi nunca se recupera, así que la app debe sobrevivir sin él.</li>
+      <li><b>Guarda lo mínimo y dónde corresponde.</b> En este proyecto la foto y la ubicación se quedan en el dispositivo (IndexedDB) y no viajan a ningún servidor; si algún día lo hicieran, el usuario debe saberlo antes.</li>
+      <li><b>Libera el hardware.</b> Una cámara abierta que nadie usa es un problema de privacidad (LED encendido) y de batería.</li>
+      <li><b>Mira el marco legal.</b> En Colombia, el tratamiento de datos personales está regulado por la Ley 1581 de 2012 (habeas data); si una app real guarda ubicación o fotos de personas, hay obligaciones de autorización y finalidad. Esto es una orientación para investigar, no asesoría legal.</li>
+    </ul>
+
+    <h2 class="section-title"><span class="num-badge">8</span>Caso real: tareas con foto y ubicación</h2>
+    <div class="body-text"><p>El Gestor de Tareas ahora permite adjuntar a cada tarea una foto y una ubicación. Cuatro decisiones de diseño que vale la pena mirar con calma:</p></div>
+    <ul class="clean">
+      <li><b>No hizo falta migrar la base de datos.</b> Los campos nuevos (<code>foto</code>, <code>ubicacion</code>) no llevan índice, así que el esquema de IndexedDB (<code>VERSION_DB = 1</code>) no cambia — a diferencia de la migración que vimos en la Sesión 22. IndexedDB guarda objetos con la forma que tengan; el esquema solo cuenta para stores e índices.</li>
+      <li><b>Un único <code>&lt;dialog&gt;</code> de cámara</b> compartido por todas las tareas, en vez de un video por tarea: una sola cámara abierta a la vez.</li>
+      <li><b>El permiso se pide dentro del clic</b> del botón de cada tarea.</li>
+      <li><b>Las miniaturas liberan su URL</b> con <code>revokeObjectURL</code> en cada repintado.</li>
+    </ul>
+    <div class="body-text" style="margin-top:1em;"><p>Esto no es lo que "debería" pasar — es lo que pasó al correr el checkpoint de hoy en Chromium con una cámara falsa, ubicación simulada en Tunja (5.5353, −73.3678, precisión 20 m) y los permisos en cada estado. La salida es literal:</p></div>
+    <div class="term-box"><span class="prompt">$</span> node test_s24.js<br>
+dialogo abierto: true | video 1280x720<br>
+dialogo cerrado: true | miniaturas: 1 | stream detenido: true<br>
+ubicacion: 5.5353, -73.3678 (±20 m)<br>
+tras recargar: [{"titulo":"Aprender el Bloque 3: PWA","foto":"image/jpeg 5910B","ubic":5.5353}]<br>
+miniaturas tras recargar: 1<br>
+camara denegada -&gt; Bloqueaste el permiso de cámara. Habilítalo desde el candado de la barra de direcciones.<br>
+ubicacion denegada -&gt; Denegaste el permiso de ubicación. La tarea sigue funcionando sin ella.<br>
+pageerrors: []</div>
+    <div class="win-box"><b>Qué demuestra esa salida:</b> (1) la cámara abre a 1280×720 y, al capturar, el diálogo se cierra y el flujo se detiene; (2) la foto se guarda como <code>image/jpeg</code> en IndexedDB y sigue ahí después de recargar, igual que la ubicación; (3) con el permiso denegado la app no se rompe — muestra el mensaje y sigue. Con una cámara real la foto pesará bastante más que los 5,9 kB de esta prueba: el dispositivo falso de Chromium produce una imagen sintética simple, así que mide el tamaño en tu teléfono (DevTools → Application → IndexedDB).</div>
+    <div class="warn-box"><b>Lo que esta prueba NO cubre:</b> una cámara ni un GPS reales. Chromium simula ambos; el comportamiento con hardware real (lentitud del GPS en interiores, la cámara trasera de un teléfono) solo lo puedes comprobar tú, en un dispositivo. De eso trata la sección siguiente.</div>
+
+    <h2 class="section-title"><span class="num-badge">9</span>Probar en un teléfono real</h2>
+    <div class="body-text"><p>En tu computador, <code>http://localhost</code> es contexto seguro, así que todo funciona. En un teléfono, <code>http://192.168.x.x:8080</code> <b>no</b> lo es, y la cámara no se abrirá. Tres caminos para llegar a HTTPS (no los probé desde este entorno, pues requieren un teléfono físico — verifícalos tú):</p></div>
+    <ul class="clean">
+      <li><b>Publicar en GitHub Pages.</b> Ya tienes un repositorio por equipo; Pages sirve por HTTPS. Es lo más simple y se parece más a producción.</li>
+      <li><b>Reenviar el puerto por USB (Android + Chrome).</b> Con la depuración USB activada, <code>chrome://inspect</code> permite reenviar un puerto del computador al teléfono; así el teléfono ve <code>localhost:8080</code> y eso sí es contexto seguro.</li>
+      <li><b>Un túnel HTTPS temporal</b> (herramientas como ngrok o cloudflared exponen tu servidor local con una URL <code>https://</code>). Útil para una demo; la URL cambia y es pública mientras esté activa, así que no dejes datos reales.</li>
+    </ul>
+
+    <h2 class="section-title"><span class="num-badge">10</span>Actividades</h2>
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">1</div><h4>Los tres estados del permiso, a mano</h4></div>
+      <div class="meta-row">INDIVIDUAL · 15 MIN</div>
+      <p>Con el checkpoint corriendo en <code>localhost</code>: (a) pulsa "📷 Foto" y acepta; (b) en el candado de la barra de direcciones, pasa la cámara a <b>Bloquear</b> y vuelve a pulsar "📷 Foto"; (c) desde la consola, ejecuta <code>navigator.permissions.query({name:"camera"})</code> en cada estado. Anota qué mensaje vio el usuario y qué estado devolvió la consola.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> tabla de tres filas (estado, mensaje en pantalla, valor de <code>state</code>), revisada en plenaria.</p>
+    </div>
+    <div class="activity-card" style="margin-top:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Adjunta foto y ubicación en TU Gestor</h4></div>
+      <div class="meta-row">INDIVIDUAL · 30 MIN</div>
+      <p>Integra <code>dispositivo.js</code> en tu propio Gestor (o parte del checkpoint de Recursos). Debe cumplir: permiso pedido solo dentro del clic; <code>detenerCamara</code> llamada también al cerrar con Esc; miniaturas con <code>revokeObjectURL</code>; y mensajes distintos para <code>NotAllowedError</code> y <code>NotFoundError</code>. Recuerda regenerar el <code>sw.js</code> con Workbox (<code>dispositivo.js</code> es un archivo nuevo del precaché) o el navegador servirá la versión vieja.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> captura de una tarea con foto y coordenadas, y captura del mensaje que ve el usuario cuando deniega el permiso.</p>
+    </div>
+    <div class="activity-card" style="margin-top:1em;">
+      <div class="a-head"><div class="a-num">3</div><h4>Mide: precisión y volumen en un dispositivo real</h4></div>
+      <div class="meta-row">PAREJAS · FUERA DE CLASE · 25 MIN</div>
+      <p>Con tu proyecto servido por HTTPS (sección 9) en un teléfono: (a) pide la ubicación con <code>altaPrecision: false</code> y luego con <code>true</code>, dentro y fuera de un edificio, y registra la <code>precision</code> y el tiempo que tardó cada caso; (b) con <code>crearMedidorDeNivel</code>, lee el volumen en silencio y hablando.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> una tabla con tus mediciones (no las de este material) y una conclusión de dos frases: ¿cuándo vale la pena el GPS?</p>
+    </div>
+    <div class="activity-card" style="margin-top:1em;">
+      <div class="a-head"><div class="a-num">4</div><h4>Pide permiso con respeto</h4></div>
+      <div class="meta-row">INDIVIDUAL · FUERA DE CLASE · 20 MIN</div>
+      <p>Antes de llamar a <code>getUserMedia</code>, muestra una explicación breve ("Usaremos tu cámara solo para adjuntar una foto; no sale de tu dispositivo") con dos botones. Si el estado ya es <code>denied</code> (usa <code>estadoPermiso</code>), no vuelvas a intentar: muestra cómo desbloquearlo.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> el código del flujo y un párrafo breve justificando por qué un permiso denegado casi nunca se recupera.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>Las APIs de dispositivo exigen contexto seguro (HTTPS o localhost), permiso del usuario y un momento adecuado; los estados posibles son <code>granted</code>, <code>denied</code> y <code>prompt</code>, y se consultan sin avisos con la Permissions API.</li>
+      <li><code>getUserMedia</code> sirve cámara y micrófono; <code>ideal</code> flexibiliza, <code>exact</code> obliga; siempre se detienen las pistas al terminar.</li>
+      <li>Una foto es un fotograma dibujado en <code>&lt;canvas&gt;</code> y exportado a <code>Blob</code>; las URLs de objeto se liberan con <code>revokeObjectURL</code>.</li>
+      <li>Geolocation tiene <code>getCurrentPosition</code> (una vez) y <code>watchPosition</code> (cada cambio); la precisión viene en metros y debe guardarse con las coordenadas.</li>
+      <li>Los errores y la negativa del usuario son flujo normal: mensajes claros y una app que sigue funcionando.</li>
+      <li>Verificado en Chromium con cámara y ubicación simuladas: abrir, capturar, guardar, recargar y los dos permisos denegados. El hardware real queda por probar en un teléfono.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 25: APIs de dispositivo (2/2) — sensores de movimiento.</b> DeviceOrientation y DeviceMotion: leer la orientación e inclinación del dispositivo, el permiso especial de iOS, y usar una sacudida para deshacer una eliminación en el Gestor de Tareas.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> MDN Web Docs, "MediaDevices: getUserMedia() method," developer.mozilla.org.</div>
+      <div><b>[2]</b> MDN Web Docs, "Geolocation API," developer.mozilla.org.</div>
+      <div><b>[3]</b> MDN Web Docs, "Permissions API," developer.mozilla.org.</div>
+      <div><b>[4]</b> MDN Web Docs, "Secure Contexts," developer.mozilla.org.</div>
+      <div><b>[5]</b> Congreso de la República de Colombia, Ley Estatutaria 1581 de 2012 (protección de datos personales).</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 10 de 30</span>
+  </div>
+</div>
+</body>
+</html>
