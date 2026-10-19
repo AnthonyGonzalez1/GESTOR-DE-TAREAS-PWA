@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 20 · Las 5 estrategias de caché (1/2) · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .strategy-badge-deck{display:inline-block; font-size:.6em; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:.2em .6em; border-radius:20px; border:1px solid var(--gold); background:var(--gold-tint); color:var(--gold-deep); margin-bottom:.4em;}
+  .step-box em{display:block; font-style:normal; font-size:.85em; color:#888; margin-top:.1em;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-scale" viewBox="0 0 24 24"><path d="M12 3v18M6 7h12M6 7l-3 6a3 3 0 0 0 6 0l-3-6Zm12 0l-3 6a3 3 0 0 0 6 0l-3-6Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 6 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>Las 5 estrategias<br>de caché (1/2)</h1>
+          <div class="lead">Sesión 6 de 30 — Cache Only, Network Only y Cache First: las tres estrategias más simples, implementadas dentro del evento fetch.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>06 de 30 · Fundamentos PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <rect x="90" y="120" width="90" height="90" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="220" y="120" width="90" height="90" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M180 165 h40" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+              <defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#1A1A1A"/></marker></defs>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap y bienvenida">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SESIÓN 06</div>
+            <h2>De operaciones sueltas a estrategias</h2>
+            <p>Ya sabemos usar la interfaz Cache completa. Hoy la combinamos dentro de fetch para tomar las primeras tres decisiones con nombre.</p>
+            <div class="tb-preview"><span>Recap Sesión 19</span><span>¿Por qué elegir?</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="16" fill="#1A1A1A"/>
+              <text x="40" y="274" text-anchor="middle" font-size="9" font-weight="700" fill="#FFCC29">S19</text>
+              <circle cx="200" cy="165" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">S20</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="360" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#1A1A1A">S21</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap de la Sesión 19">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Lo que ya tenemos</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>Cache Storage API</b><span style="font-size:.78em;color:#555;">open(), put(), match(), delete(), keys() — la interfaz completa, de la Sesión 19.</span></div>
+            <div class="mini-card fragment"><b>Versionado</b><span style="font-size:.78em;color:#555;">activate limpia versiones viejas del caché con keys() + delete().</span></div>
+            <div class="mini-card fragment"><b>Hoy</b><span style="font-size:.78em;color:#555;">Combinamos esas piezas dentro de fetch: nacen las estrategias con nombre — las tres primeras.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="¿Por qué elegir una estrategia?">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">¿Por qué elegir una estrategia?</h2>
+          <hr class="rule">
+          <div class="grid-2">
+            <div class="card fragment"><svg class="icon"><use href="#ic-scale"/></svg><h3>No hay una estrategia universal</h3><p>Un ícono que nunca cambia necesita algo distinto a la lista de tareas que el usuario edita a cada rato.</p></div>
+            <div class="card fragment"><svg class="icon"><use href="#ic-refresh"/></svg><h3>Elegir mal cuesta caro</h3><p>Datos obsoletos donde se necesitaba información fresca — o depender de la red donde se podía responder al instante.</p></div>
+          </div>
+          <div class="callout" style="margin-top:1.2em;">La pregunta que guía esta sesión y la siguiente: si el caché y la red tienen versiones distintas, ¿cuál gana — y qué tan grave es que gane la que no debía?</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="extremos" data-section-label="Los extremos" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>Cache Only y Network Only</h2>
+            <p>Las dos estrategias más simples: usan una sola fuente, nunca combinan.</p>
+            <div class="tb-preview"><span>Cache Only</span><span>Network Only</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="60" y="90" width="130" height="150" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="210" y="90" width="130" height="150" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <text x="125" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">Caché</text>
+              <text x="275" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">Red</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="extremos" data-section-label="Los extremos" data-slide-label="Cache Only">
+          <div class="kicker">Los extremos · 1.1</div>
+          <span class="strategy-badge-deck">Estrategia 1</span>
+          <h2 class="slide-title">Cache Only</h2>
+          <hr class="rule">
+          <div class="steps-flow" style="flex-wrap:wrap;">
+            <div class="step-box fragment"><div class="n">1</div><b>Página pide</b><span>al Service Worker</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">2</div><b>SW consulta</b><span>el caché, nunca la red</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">3</div><b>Caché responde</b><em>o falla si no está</em></div>
+          </div>
+          <div class="code-block compact" style="margin-top:1em;">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+            <pre><code><span class="tok-com">// Cache Only: nunca toca la red</span>
+<span class="tok-kw">function</span> <span class="tok-fn">cacheOnly</span>(peticion) {
+  <span class="tok-kw">return</span> caches.<span class="tok-fn">match</span>(peticion);
+}</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Ideal para recursos inmutables: fuentes, íconos, o librerías versionadas con hash — solo funciona si el recurso ya fue precacheado.</div>
+        </section>
+
+        <section class="slide" data-section="extremos" data-section-label="Los extremos" data-slide-label="Network Only">
+          <div class="kicker">Los extremos · 1.2</div>
+          <span class="strategy-badge-deck">Estrategia 2</span>
+          <h2 class="slide-title">Network Only</h2>
+          <hr class="rule">
+          <div class="steps-flow" style="flex-wrap:wrap;">
+            <div class="step-box fragment"><div class="n">1</div><b>Página pide</b><span>al Service Worker</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">2</div><b>SW pide</b><span>directo a la red, nunca al caché</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">3</div><b>Red responde</b><em>o falla si no hay conexión</em></div>
+          </div>
+          <div class="code-block compact" style="margin-top:1em;">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+            <pre><code><span class="tok-com">// Network Only: nunca toca el caché</span>
+<span class="tok-kw">function</span> <span class="tok-fn">networkOnly</span>(peticion) {
+  <span class="tok-kw">return</span> <span class="tok-fn">fetch</span>(peticion);
+}</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Ideal para datos que deben ser siempre frescos: pagos, saldos — sin conexión, simplemente falla.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cachefirst" data-section-label="Cache First" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>Cache First</h2>
+            <p>Busca primero en el caché; si no está, pide a la red y guarda la respuesta.</p>
+            <div class="tb-preview"><span>Caché → Red</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="140" cy="160" r="70" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <circle cx="280" cy="160" r="46" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="140" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A1A">1º Caché</text>
+              <text x="280" y="166" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">2º Red</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cachefirst" data-section-label="Cache First" data-slide-label="Cache First">
+          <div class="kicker">Cache First · 2.1</div>
+          <h2 class="slide-title">Caché primero, red de respaldo</h2>
+          <hr class="rule">
+          <div class="steps-flow" style="flex-wrap:wrap;">
+            <div class="step-box fragment"><div class="n">1</div><b>Página pide</b><span>al Service Worker</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">2</div><b>SW consulta</b><span>el caché primero</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">3</div><b>¿Existe?</b><span>sí: responde de inmediato</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">4-5</div><b>Si no:</b><span>pide a la red y guarda en caché</span></div>
+          </div>
+          <div class="code-block compact" style="margin-top:.9em;">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+            <pre><code><span class="tok-kw">function</span> <span class="tok-fn">cacheFirst</span>(peticion) {
+  <span class="tok-kw">return</span> caches.<span class="tok-fn">match</span>(peticion).<span class="tok-fn">then</span>(enCache <span class="tok-punct">=&gt;</span> {
+    <span class="tok-kw">if</span> (enCache) <span class="tok-kw">return</span> enCache;
+    <span class="tok-kw">return</span> <span class="tok-fn">fetch</span>(peticion).<span class="tok-fn">then</span>(respuesta <span class="tok-punct">=&gt;</span> {
+      <span class="tok-kw">const</span> clon <span class="tok-punct">=</span> respuesta.<span class="tok-fn">clone</span>();
+      caches.<span class="tok-fn">open</span>(CACHE_ACTUAL).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">put</span>(peticion, clon));
+      <span class="tok-kw">return</span> respuesta;
+    });
+  });
+}</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em;"><b>Por qué se clona la respuesta:</b> el cuerpo de una <code>Response</code> solo se puede leer una vez — aquí se necesita tanto para la página como para el caché.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">ACTIVIDADES</div>
+            <h2>Pongamos en práctica lo aprendido</h2>
+            <p>Individual, luego en parejas, y una tarea sobre el Gestor de tareas.</p>
+            <div class="tb-preview"><span>Elige</span><span>Implementa</span><span>Aplica</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="70" y="80" width="100" height="160" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="190" y="80" width="100" height="160" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="310" y="80" width="20" height="160" rx="6" fill="#FFF6DC" stroke="#EEB32D" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Las 3 actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Tres actividades</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="activity-card fragment"><div class="a-head"><div class="a-num">1</div><h4>Elige la estrategia</h4></div><div class="meta-row">INDIVIDUAL · 10 MIN</div><p>Para 3 recursos distintos, elige entre Cache Only, Network Only y Cache First, y justifica en una frase.</p></div>
+            <div class="activity-card fragment"><div class="a-head"><div class="a-num">2</div><h4>Implementa y verifica</h4></div><div class="meta-row">PAREJAS · 15 MIN</div><p>Implementen las tres funciones en un sw.js de prueba, y verifiquen en DevTools (Network + modo offline).</p></div>
+            <div class="activity-card fragment"><div class="a-head"><div class="a-num">3</div><h4>Aplica Cache First a tu Gestor de tareas</h4></div><div class="meta-row">TAREA · FUERA DE CLASE · 15 MIN</div><p>Reemplaza el manejador de fetch por cacheFirst() sobre el checkpoint de la Sesión 19.</p></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">CIERRE</div>
+            <h2>Tres estrategias, el mismo patrón</h2>
+            <p>Combinar match() y fetch() dentro de fetch, con criterio.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span><span>Referencias</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="90" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-dasharray="6 6"/>
+              <circle cx="200" cy="160" r="40" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la sesión</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment"><b>Cache Only</b> y <b>Network Only</b> usan una sola fuente, sin combinar caché y red.</li>
+            <li class="fragment"><b>Cache First</b> consulta el caché primero, y si falta el recurso, lo pide a la red y lo guarda con put() para la próxima vez.</li>
+            <li class="fragment">No hay una estrategia universal: la elección depende de si el recurso es inmutable, siempre-fresco, o estático con cambios ocasionales.</li>
+            <li class="fragment">DevTools (Network + modo offline) permite verificar, sin adivinar, de dónde vino realmente cada respuesta.</li>
+            <li class="fragment">Network First y Stale-While-Revalidate, y cómo combinar las 5 por ruta, llegan en la Sesión 21.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 21: Las 5 estrategias de caché (2/2).</b> Network First y Stale-While-Revalidate — y cómo combinar las 5 estrategias en un mismo Service Worker, enrutando por el tipo de recurso.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> Google, "Workbox Strategies," web.dev / Google Developers.</div>
+            <div><b>[2]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+            <div><b>[3]</b> MDN web docs, "Using the Cache API," MDN Web Docs.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 23</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>

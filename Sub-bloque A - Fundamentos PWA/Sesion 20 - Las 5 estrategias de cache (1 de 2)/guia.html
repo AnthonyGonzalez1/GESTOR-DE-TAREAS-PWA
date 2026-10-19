@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 20 · Las 5 estrategias de caché (1/2) · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .strategy-head{display:flex; align-items:center; gap:.7em; margin:0 0 .5em;}
+  .strategy-badge{flex:0 0 auto; font-size:.72em; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:.25em .7em; border-radius:20px; border:1px solid var(--gold); background:var(--gold-tint); color:var(--gold-deep);}
+  .strategy-flow{margin:1em 0 .3em;}
+  .step-box em{display:block; font-style:normal; font-size:.72em; color:#888; margin-top:.15em;}
+  .compare-wrap{overflow-x:auto;}
+  .recursos-box{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:6px; padding:1.1em 1.4em; margin:1.4em 0 0;}
+  .recursos-box h3{font-family:var(--serif); font-size:1.05em; margin:0 0 .5em; color:var(--gold-deep);}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.4em;}
+  .recursos-list a{font-weight:700; color:var(--ink);}
+  .rb-desc{display:block; font-size:.88em; color:var(--gray); margin-top:.2em; font-weight:400;}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+      <a href="Guion_Clase_Sesion_20.docx">Guion de la clase (Word) →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 6 de 30</div>
+    <h1>Las 5 estrategias de caché (1/2)</h1>
+    <div class="lead">Cache Only, Network Only y Cache First: las tres estrategias más simples, implementadas dentro del evento <code style="color:#fff;background:rgba(255,255,255,.15);">fetch</code>. Network First, Stale-While-Revalidate y cómo combinarlas todas llegan en la Sesión 21.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Explicar</b> el problema que resuelve cada una de las 5 estrategias de caché, y por qué no hay una única estrategia correcta para toda la aplicación.</span></li>
+      <li><span class="chk">✓</span><span><b>Implementar</b> Cache Only, Network Only y Cache First dentro del evento fetch.</span></li>
+      <li><span class="chk">✓</span><span><b>Reconocer</b> qué tipo de recurso conviene a cada una de las tres: inmutable, dinámico, o estático versionado.</span></li>
+      <li><span class="chk">✓</span><span><b>Verificar</b> en DevTools (pestaña Network, modo offline) el comportamiento real de cada estrategia.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion19.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 19.</b> El <code>sw.js</code> ya tiene el caché versionado (<code>gestor-tareas-v2</code>) y <code>activate</code> limpia versiones viejas, pero el manejador de <code>fetch</code> sigue siendo el mismo <code>match()</code> con respaldo a la red desde la Sesión 18 — hoy le pones nombre a esa lógica, y la mejoras.</span></li>
+      </ul>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida y recap</h2>
+    <div class="body-text"><p>En la Sesión 19 abrimos la Cache Storage API y aprendimos sus operaciones sueltas: <code>open()</code>, <code>put()</code>, <code>match()</code>, <code>delete()</code>, <code>keys()</code>, y versionamos el nombre del caché limpiando lo viejo en <code>activate</code>. Pero seguimos usando esas piezas por separado, sin una lógica clara dentro del evento <code>fetch</code> que decida de dónde responder. Hoy empezamos a combinarlas dentro de <code>fetch</code> para que el Service Worker decida, automáticamente y en cada petición, si responde desde el caché, desde la red, o desde una combinación de ambos. A esas combinaciones con nombre las llamamos <b>estrategias de caché</b> — hoy vemos las tres primeras; las otras dos, en la Sesión 21.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>¿Por qué elegir una estrategia?</h2>
+    <div class="body-text"><p>La gestión de caché en un Service Worker requiere estrategias que combinan la interfaz Cache y el evento fetch. Estas estrategias definen cómo y cuándo almacenar o actualizar recursos, optimizando el rendimiento, la disponibilidad sin conexión y la experiencia del usuario en una PWA [1]. No existe una única estrategia correcta para toda la aplicación: un ícono SVG que nunca cambia necesita una estrategia distinta a la lista de tareas que el usuario edita a cada rato. Elegir mal la estrategia produce dos problemas típicos: mostrar datos obsoletos donde se necesitaba información fresca, o depender de la red donde se podía responder al instante desde el caché.</p></div>
+    <div class="callout" style="margin-top:1em;"><b>La pregunta que guía esta sesión y la siguiente:</b> para este recurso, si el caché y la red tienen versiones distintas, ¿cuál gana — y qué tan grave es que gane la que no debía?</div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>Cache Only y Network Only: los extremos</h2>
+    <div class="body-text"><p>Empezamos por las dos estrategias más simples — porque cada una usa una sola fuente, nunca ambas.</p></div>
+
+    <div class="strategy-head" style="margin-top:1.4em;"><span class="strategy-badge">Estrategia 1</span><h3 class="sub-title" style="margin:0;">Cache Only</h3></div>
+    <div class="body-text"><p>Esta estrategia atiende todas las solicitudes desde la caché sin consultar la red. Para funcionar, los recursos deben haberse almacenado previamente, generalmente durante la instalación del service worker. El contenido solo se actualiza si el service worker se reemplaza, por lo que es ideal para recursos inmutables, como imágenes, fuentes o bibliotecas JavaScript [1].</p></div>
+    <div class="steps-flow strategy-flow">
+      <div class="step-box"><span class="n">1</span><b>Página pide</b><span>al Service Worker</span></div>
+      <div class="step-arrow">→</div>
+      <div class="step-box"><span class="n">2</span><b>SW consulta</b><span>el caché, nunca la red</span></div>
+      <div class="step-arrow">→</div>
+      <div class="step-box"><span class="n">3</span><b>Caché responde</b><em>o falla si no está</em></div>
+    </div>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+      <pre><code><span class="tok-com">// Cache Only: nunca toca la red</span>
+<span class="tok-kw">function</span> <span class="tok-fn">cacheOnly</span>(peticion) {
+  <span class="tok-kw">return</span> caches.<span class="tok-fn">match</span>(peticion);
+}</code></pre>
+    </div>
+
+    <div class="strategy-head" style="margin-top:1.8em;"><span class="strategy-badge">Estrategia 2</span><h3 class="sub-title" style="margin:0;">Network Only</h3></div>
+    <div class="body-text"><p>En esta estrategia, todas las solicitudes se envían directamente a la red, asegurando que el contenido siempre esté actualizado. Sin embargo, si no hay conexión, los recursos no estarán disponibles. Es ideal para datos que cambian constantemente, como información de una API o contenido dinámico [1].</p></div>
+    <div class="steps-flow strategy-flow">
+      <div class="step-box"><span class="n">1</span><b>Página pide</b><span>al Service Worker</span></div>
+      <div class="step-arrow">→</div>
+      <div class="step-box"><span class="n">2</span><b>SW pide</b><span>directo a la red, nunca al caché</span></div>
+      <div class="step-arrow">→</div>
+      <div class="step-box"><span class="n">3</span><b>Red responde</b><em>o falla si no hay conexión</em></div>
+    </div>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+      <pre><code><span class="tok-com">// Network Only: nunca toca el caché</span>
+<span class="tok-kw">function</span> <span class="tok-fn">networkOnly</span>(peticion) {
+  <span class="tok-kw">return</span> <span class="tok-fn">fetch</span>(peticion);
+}</code></pre>
+    </div>
+    <p class="fig-caption">Diagramas de flujo adaptados de Google, Workbox Strategies. Fuente: [1].</p>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Cache First</h2>
+    <div class="body-text"><p>Esta estrategia busca primero el recurso en la caché y, si no está disponible, lo solicita a la red. La respuesta obtenida se almacena en la caché para futuras solicitudes. Es ideal para elementos estáticos que requieren una carga rápida, pero que pueden necesitar actualizaciones ocasionales, como archivos CSS, JavaScript o imágenes versionadas con hash [1].</p></div>
+    <div class="steps-flow strategy-flow">
+      <div class="step-box"><span class="n">1</span><b>Página pide</b><span>al Service Worker</span></div>
+      <div class="step-arrow">→</div>
+      <div class="step-box"><span class="n">2</span><b>SW consulta</b><span>el caché primero</span></div>
+      <div class="step-arrow">→</div>
+      <div class="step-box"><span class="n">3</span><b>¿Existe?</b><span>sí: responde de inmediato</span></div>
+      <div class="step-arrow">→</div>
+      <div class="step-box"><span class="n">4-5</span><b>Si no:</b><span>pide a la red y guarda la respuesta en caché</span></div>
+    </div>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+      <pre><code><span class="tok-kw">function</span> <span class="tok-fn">cacheFirst</span>(peticion) {
+  <span class="tok-kw">return</span> caches.<span class="tok-fn">match</span>(peticion).<span class="tok-fn">then</span>(enCache <span class="tok-punct">=&gt;</span> {
+    <span class="tok-kw">if</span> (enCache) <span class="tok-kw">return</span> enCache;
+    <span class="tok-kw">return</span> <span class="tok-fn">fetch</span>(peticion).<span class="tok-fn">then</span>(respuesta <span class="tok-punct">=&gt;</span> {
+      <span class="tok-kw">const</span> clon <span class="tok-punct">=</span> respuesta.<span class="tok-fn">clone</span>();
+      caches.<span class="tok-fn">open</span>(CACHE_ACTUAL).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">put</span>(peticion, clon));
+      <span class="tok-kw">return</span> respuesta;
+    });
+  });
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><b>Por qué se clona la respuesta:</b> el cuerpo de una <code>Response</code> solo se puede leer una vez. Como necesitamos entregarla a la página <i>y</i> guardarla en el caché, <code>clone()</code> crea una segunda copia independiente antes de que se consuma.</p></div>
+    <div class="body-text" style="margin-top:.8em;"><p><b>Para verificarlo:</b> DevTools → pestaña Network, con el filtro "Service Worker" activado, muestra de qué estrategia vino cada respuesta. Activando el modo offline (Application → Service Workers → Offline) tras la primera carga, Cache Only y Cache First siguen respondiendo; Network Only falla — exactamente como predice cada estrategia.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Elige la estrategia</h4></div>
+      <div class="meta-row">INDIVIDUAL · 10 MIN</div>
+      <p>Para cada uno de estos tres recursos, elige entre Cache Only, Network Only y Cache First, y justifica en una frase: (a) el logo de la app en SVG, que nunca cambia, (b) el saldo de una cuenta consultado en tiempo real, (c) el archivo <code>estilos.css</code> con hash en el nombre, que solo cambia cuando se publica una nueva versión.</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Implementa y verifica</h4></div>
+      <div class="meta-row">PAREJAS · 15 MIN</div>
+      <p>En parejas, implementen <code>cacheOnly()</code>, <code>networkOnly()</code> y <code>cacheFirst()</code> en un <code>sw.js</code> de prueba, y verifiquen en DevTools (Network + modo offline) que cada una se comporta como se describe en la guía.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> una captura de cada estrategia funcionando, revisada en plenaria.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">3</div><h4>Aplica Cache First a tu Gestor de tareas</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 15 MIN</div>
+      <p>Sobre el checkpoint de la Sesión 19 (o tu propio avance), reemplaza el manejador de <code>fetch</code> por <code>cacheFirst()</code>, de modo que cada recurso que falte en el caché quede guardado ahí la primera vez que se pide. Enrutar distintas estrategias según el tipo de recurso —para que no todo use Cache First— es el trabajo de la Sesión 21.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> proyecto corriendo localmente con <code>cacheFirst()</code> como manejador de fetch, y una captura de Cache Storage mostrando el caché creciendo a medida que se piden recursos nuevos.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li><b>Cache Only</b> y <b>Network Only</b> usan una sola fuente, sin combinar caché y red.</li>
+      <li><b>Cache First</b> consulta el caché primero, y si falta el recurso, lo pide a la red y lo guarda con <code>put()</code> para la próxima vez.</li>
+      <li>No hay una estrategia universal: la elección depende de si el recurso es inmutable, siempre-fresco, o estático con cambios ocasionales.</li>
+      <li>DevTools (Network + modo offline) permite verificar, sin adivinar, de dónde vino realmente cada respuesta.</li>
+      <li>Network First y Stale-While-Revalidate, las otras dos estrategias, y cómo combinar las 5 por ruta, llegan en la Sesión 21.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 21: Las 5 estrategias de caché (2/2).</b> Network First y Stale-While-Revalidate — y cómo combinar las 5 estrategias en un mismo Service Worker, enrutando por el tipo de recurso.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> Google, "Workbox Strategies," web.dev / Google Developers.</div>
+      <div><b>[2]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+      <div><b>[3]</b> MDN web docs, "Using the Cache API," MDN Web Docs.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 6 de 30</span>
+  </div>
+</div>
+</body>
+</html>
