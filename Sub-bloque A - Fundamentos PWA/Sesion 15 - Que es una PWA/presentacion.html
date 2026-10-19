@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 15 · ¿Qué es una PWA? · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .compare-table{width:100%; border-collapse:collapse; font-size:.72em;}
+  .compare-table th,.compare-table td{border:1px solid #ddd; padding:.5em .6em; text-align:left;}
+  .compare-table th{background:#1A1A1A; color:#fff;}
+  .compare-table td:first-child{font-weight:700; background:#FFF6DC;}
+  .compare-table tr:nth-child(even) td:not(:first-child){background:#FFFDF5;}
+  .feat-grid8{display:grid; grid-template-columns:repeat(4,1fr); gap:.7em; margin-top:.8em;}
+  .feat-card{border:1px solid var(--line); border-radius:10px; padding:.7em .6em; text-align:center;}
+  .feat-card .fn{width:1.9em; height:1.9em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; margin:0 auto .4em; font-weight:800; font-size:.78em;}
+  .feat-card b{display:block; font-size:.78em; margin-bottom:.2em;}
+  .feat-card span{font-size:.66em; color:#555; line-height:1.3;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="ic-window" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.5"/><circle cx="6.5" cy="6.5" r=".9" fill="currentColor"/><circle cx="9.2" cy="6.5" r=".9" fill="currentColor"/></symbol>
+<symbol id="ic-signal" viewBox="0 0 24 24"><rect x="4" y="14" width="3" height="6" fill="currentColor"/><rect x="10.5" y="10" width="3" height="10" fill="currentColor"/><rect x="17" y="5" width="3" height="15" fill="currentColor"/></symbol>
+<symbol id="ic-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="10" y1="19" x2="14" y2="19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="ic-download" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="5" y1="20" x2="19" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-bell" viewBox="0 0 24 24"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 14 6 10Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="ic-flag" viewBox="0 0 24 24"><path d="M6 3v18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M6 4h12l-3 4 3 4H6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="ic-rocket" viewBox="0 0 24 24"><path d="M12 2c3 2 4.5 5.5 4.5 9 0 2-.7 3.7-1.5 5l-3-1-3 1c-.8-1.3-1.5-3-1.5-5C7.5 7.5 9 4 12 2Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="1.6" fill="currentColor"/><path d="M9 16l-2 4 3-1.3M15 16l2 4-3-1.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><line x1="9" y1="4" x2="9" y2="18" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="6" x2="15" y2="20" stroke="currentColor" stroke-width="1.5"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 1 de 20</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>¿Qué es<br>una PWA?</h1>
+          <div class="lead">Sesión 1 de 20 — qué son las Progressive Web Apps, en qué se diferencian de una app nativa o híbrida, y el mapa completo de todo el bloque.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>01 de 20 · Inicio del bloque</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <rect x="130" y="70" width="140" height="200" rx="20" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="145" y="95" width="110" height="130" rx="6" fill="#FFCC29" opacity=".35"/>
+              <circle cx="200" cy="240" r="10" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M175 140 h50 M175 160 h50 M175 180 h30" stroke="#373435" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="300" cy="120" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M289 120 l7 8 l14 -16" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Bienvenida al Bloque 3">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">INICIA EL BLOQUE 3</div>
+            <h2>Bienvenidos al Bloque PWA</h2>
+            <p>Con TypeScript cerramos un Gestor de tareas completamente tipado. Ahora aprendemos las técnicas que convierten cualquier app web en una aplicación instalable que funciona sin conexión.</p>
+            <div class="tb-preview"><span>Panorama de las 20 sesiones</span><span>Agenda de hoy</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="18" fill="#1A1A1A"/>
+              <text x="40" y="275" text-anchor="middle" font-size="11" font-weight="700" fill="#FFCC29">TS</text>
+              <circle cx="200" cy="165" r="20" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A1A">PWA</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M353 60 l5 5 l9 -10" stroke="#1A1A1A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="El mapa del bloque">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">El mapa del Bloque 3</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>Sesiones 15-21</b><span style="font-size:.78em;color:#555;">Fundamentos PWA: manifest, Service Workers, caché, IndexedDB, seguridad, Workbox — ejemplos cortos.</span></div>
+            <div class="mini-card fragment"><b>Sesiones 22-33</b><span style="font-size:.78em;color:#555;">22-30: proyecto nuevo desde cero — visor de objetos 3D con AR. 31-33: mini-demos con frameworks (React/Angular).</span></div>
+            <div class="mini-card fragment"><b>Sesión 34</b><span style="font-size:.78em;color:#555;">Cierre de TODO el curso: auditoría, despliegue, repaso de los 3 bloques.</span></div>
+          </div>
+          <div class="body-text" style="margin-top:1.4em;"><p>20 sesiones de 2 horas, 10 semanas. Hoy arrancamos por la pregunta más básica: ¿qué es, exactamente, una PWA?</p></div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Agenda (120 min)">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Agenda de la sesión</h2>
+          <hr class="rule">
+          <table class="uptc">
+            <tr><th>Momento</th><th>Duración</th></tr>
+            <tr><td>Bienvenida al Bloque 3 y panorama de las 20 sesiones</td><td class="num">8 min</td></tr>
+            <tr><td>¿Qué es una Progressive Web App? (explicación + demo)</td><td class="num">10 min</td></tr>
+            <tr><td>PWA vs. App Nativa vs. App Híbrida (explicación + demo)</td><td class="num">15 min</td></tr>
+            <tr><td>Las 8 características de una PWA (explicación + demo)</td><td class="num">20 min</td></tr>
+            <tr><td>Las 4 funcionalidades clave (explicación + demo)</td><td class="num">15 min</td></tr>
+            <tr><td>Caso real: inspeccionando una PWA en DevTools (demo)</td><td class="num">15 min</td></tr>
+            <tr><td>Actividad 1 · Clasifica la app (individual)</td><td class="num">10 min</td></tr>
+            <tr><td>Actividad 2 · Detective de características (parejas)</td><td class="num">15 min</td></tr>
+            <tr><td>Cierre, resumen y próximos pasos</td><td class="num">12 min</td></tr>
+          </table>
+          <div class="body-text" style="margin-top:1em;"><p><b>Total: 120 minutos de clase.</b> La Actividad 3 es tarea fuera de clase, no consume tiempo de la sesión.</p></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="quees" data-section-label="¿Qué es una PWA?" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>¿Qué es una Progressive Web App?</h2>
+            <p>Ni un lenguaje nuevo ni un framework obligatorio: un conjunto de técnicas sobre una web normal.</p>
+            <div class="tb-preview"><span>Definición</span><span>Lo mejor de dos mundos</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="170" r="130" fill="#FFF6DC"/>
+              <circle cx="200" cy="170" r="95" fill="none" stroke="#EEB32D" stroke-width="4"/>
+              <circle cx="200" cy="170" r="60" fill="none" stroke="#FFCC29" stroke-width="6"/>
+              <circle cx="200" cy="170" r="12" fill="#1A1A1A"/>
+              <line x1="200" y1="170" x2="200" y2="40" stroke="#373435" stroke-width="5"/>
+              <path d="M200 40 L200 78 L255 59 Z" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="quees" data-section-label="¿Qué es una PWA?" data-slide-label="Definición">
+          <div class="kicker">¿Qué es una PWA? · 1.1</div>
+          <h2 class="slide-title">Web app + técnicas = experiencia nativa</h2>
+          <hr class="rule">
+          <div class="two-col-content">
+            <div class="body-text">
+              <p>Una PWA es una aplicación construida con HTML, CSS y JavaScript — como todo lo que ya construimos — mejorada con técnicas que la hacen instalable, capaz de funcionar sin conexión, y capaz de reenganchar al usuario con notificaciones.</p>
+              <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> el Gestor de tareas de las Sesiones 1-14 ya es una web app normal, pero no instalable ni disponible sin conexión. Aquí aprendes esas técnicas con ejemplos cortos, y luego las aplicas desde cero en un proyecto nuevo.</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:1em;">
+              <div class="card fragment">
+                <svg class="icon"><use href="#ic-window"/></svg>
+                <h3>Lo mejor de una web</h3>
+                <p>Alcance, un solo código, actualizaciones instantáneas, sin tienda de aplicaciones.</p>
+              </div>
+              <div class="card fragment">
+                <svg class="icon"><use href="#ic-phone"/></svg>
+                <h3>Lo mejor de una app</h3>
+                <p>Ícono en el dispositivo, funcionamiento offline, sensación de app real.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="comparacion" data-section-label="PWA vs. Nativa vs. Híbrida" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>PWA vs. App Nativa vs. App Híbrida</h2>
+            <p>Tres formas de construir aplicaciones móviles, con compromisos distintos entre rendimiento, costo y alcance.</p>
+            <div class="tb-preview"><span>App Nativa</span><span>App Híbrida</span><span>PWA</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="60" y="90" width="80" height="150" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="160" y="90" width="80" height="150" rx="10" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3.5"/>
+              <rect x="260" y="90" width="80" height="150" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <text x="100" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A1A">Nativa</text>
+              <text x="200" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">Híbrida</text>
+              <text x="300" y="170" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A1A">PWA</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="comparacion" data-section-label="PWA vs. Nativa vs. Híbrida" data-slide-label="Tres formas de construir apps">
+          <div class="kicker">Comparación · 2.1</div>
+          <h2 class="slide-title">Tres formas de construir apps móviles</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>App Nativa</b><span style="font-size:.72em;color:#555;">Kotlin/Swift, distribuida en tienda. Máximo rendimiento, máximo costo — una app por plataforma.</span></div>
+            <div class="mini-card fragment"><b>App Híbrida</b><span style="font-size:.72em;color:#555;">Web dentro de un WebView nativo, distribuida en tienda. Un código, rendimiento intermedio.</span></div>
+            <div class="mini-card fragment"><b>PWA</b><span style="font-size:.72em;color:#555;">Web accedida desde el navegador, instalable sin tienda. Un código, desarrollo rápido y barato.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="comparacion" data-section-label="PWA vs. Nativa vs. Híbrida" data-slide-label="Tabla comparativa">
+          <div class="kicker">Comparación · 2.2</div>
+          <h2 class="slide-title">Características, lado a lado</h2>
+          <hr class="rule">
+          <table class="compare-table">
+            <tr><th>Características</th><th>PWA</th><th>App Híbrida</th><th>App Nativa</th></tr>
+            <tr><td>Acceso</td><td>Navegador</td><td>Tienda de apps</td><td>Tienda de apps</td></tr>
+            <tr><td>Funcionamiento interno</td><td>Código web en el navegador</td><td>Código web en contenedor nativo</td><td>Código específico de la plataforma</td></tr>
+            <tr><td>Acceso al dispositivo</td><td>Limitado</td><td>Intermedio</td><td>Completo</td></tr>
+            <tr><td>Rendimiento</td><td>Bueno, más batería</td><td>Bueno, menos eficiente</td><td>Excelente</td></tr>
+            <tr><td>Desarrollo</td><td>Barato y rápido</td><td>Rentable y rápido</td><td>Caro y lento</td></tr>
+            <tr><td>Alcance</td><td>Alto en buscadores</td><td>Alto en tiendas</td><td>Alto en tiendas</td></tr>
+          </table>
+          <div class="body-text" style="margin-top:.8em;"><p style="font-size:.85em;color:#666;">Fuente: adaptado de Amazon AWS, "Comparación entre aplicaciones web, nativas e híbridas."</p></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="caracteristicas" data-section-label="8 características" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>Las 8 características de una PWA</h2>
+            <p>El criterio para reconocer una PWA, sin importar con qué tecnología esté construida por dentro.</p>
+            <div class="tb-preview"><span>Las 8 tarjetas</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="130" fill="#FFF6DC"/>
+              <circle cx="200" cy="80" r="14" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="270" cy="110" r="14" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="290" cy="180" r="14" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="255" cy="245" r="14" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="145" cy="245" r="14" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="110" cy="180" r="14" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="130" cy="110" r="14" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="200" cy="160" r="30" fill="#1A1A1A"/>
+              <text x="200" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#FFCC29">PWA</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caracteristicas" data-section-label="8 características" data-slide-label="Las 8 características">
+          <div class="kicker">Características · 3.1</div>
+          <h2 class="slide-title">Las 8 características de una PWA</h2>
+          <hr class="rule">
+          <div class="feat-grid8">
+            <div class="feat-card fragment"><div class="fn">1</div><b>Discoverable</b><span>Se encuentra en buscadores.</span></div>
+            <div class="feat-card fragment"><div class="fn">2</div><b>Responsive</b><span>Se adapta a cualquier pantalla.</span></div>
+            <div class="feat-card fragment"><div class="fn">3</div><b>Independent connectivity</b><span>Funciona sin conexión.</span></div>
+            <div class="feat-card fragment"><div class="fn">4</div><b>App-like</b><span>Se comporta como app nativa.</span></div>
+            <div class="feat-card fragment"><div class="fn">5</div><b>Installable</b><span>Se instala sin tienda.</span></div>
+            <div class="feat-card fragment"><div class="fn">6</div><b>Secure</b><span>Se sirve por HTTPS.</span></div>
+            <div class="feat-card fragment"><div class="fn">7</div><b>Upgradable</b><span>Se actualiza sola.</span></div>
+            <div class="feat-card fragment"><div class="fn">8</div><b>Re-engageable</b><span>Envía notificaciones push.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caracteristicas" data-section-label="8 características" data-slide-label="APIs detrás de las 8">
+          <div class="kicker">Características · 3.2</div>
+          <h2 class="slide-title">Ninguna depende de un framework</h2>
+          <hr class="rule">
+          <div class="body-text"><p>Las 8 características se logran con APIs estándar del navegador — las mismas para cualquier proyecto, sin importar el framework:</p></div>
+          <div class="grid-4" style="margin-top:1em;">
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-download"/></svg><b>Web App Manifest</b><span style="font-size:.7em;color:#555;">Instalabilidad, App-like</span></div>
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-refresh"/></svg><b>Service Worker</b><span style="font-size:.7em;color:#555;">Independent connectivity, Upgradable</span></div>
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-shield"/></svg><b>HTTPS</b><span style="font-size:.7em;color:#555;">Secure</span></div>
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-bell"/></svg><b>Notifications API</b><span style="font-size:.7em;color:#555;">Re-engageable</span></div>
+          </div>
+          <div class="callout" style="margin-top:1.2em;">Vamos a ver cada una de estas cuatro piezas en detalle en las próximas 6 sesiones.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="funcionalidades" data-section-label="4 funcionalidades" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Las 4 funcionalidades clave</h2>
+            <p>El "cómo" detrás del "qué": cuatro capacidades concretas que sostienen las 8 características.</p>
+            <div class="tb-preview"><span>Cacheo</span><span>Segundo plano</span><span>Push</span><span>Offline</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="90" y="90" width="220" height="140" rx="12" fill="#1A1A1A"/>
+              <circle cx="150" cy="160" r="24" fill="#FFCC29"/>
+              <circle cx="250" cy="160" r="24" fill="#EEB32D"/>
+              <path d="M150 136 v48 M126 160 h48" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M250 136 v48 M226 160 h48" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="funcionalidades" data-section-label="4 funcionalidades" data-slide-label="Las 4 funcionalidades">
+          <div class="kicker">Funcionalidades · 4.1</div>
+          <h2 class="slide-title">Las 4 funcionalidades clave</h2>
+          <hr class="rule">
+          <div class="grid-4">
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-download"/></svg><b>Cacheo de recursos</b><span style="font-size:.7em;color:#555;">UI y elementos esenciales guardados en el dispositivo.</span></div>
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-refresh"/></svg><b>Segundo plano</b><span style="font-size:.7em;color:#555;">Sincroniza y notifica sin la app abierta.</span></div>
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-bell"/></svg><b>Notificaciones push</b><span style="font-size:.7em;color:#555;">Alertas del servidor en tiempo real.</span></div>
+            <div class="mini-card fragment"><svg class="icon"><use href="#ic-signal"/></svg><b>Experiencia offline</b><span style="font-size:.7em;color:#555;">Funciona sin conexión, sincroniza al volver.</span></div>
+          </div>
+          <div class="callout" style="margin-top:1.2em;"><b>La pieza central:</b> casi todas dependen de una misma tecnología — el Service Worker, un script que el navegador ejecuta por separado de la página. Lo conocemos a fondo en la Sesión 17.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="caso" data-section-label="Caso real" data-slide-label="Caso real">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>Caso real: inspeccionando una PWA</h2>
+            <p>La forma más rápida de reconocer estas ideas es verlas funcionando, en las DevTools del navegador.</p>
+            <div class="tb-preview"><span>DevTools → Application</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="170" cy="150" r="70" fill="none" stroke="#EEB32D" stroke-width="6"/>
+              <line x1="220" y1="200" x2="290" y2="270" stroke="#373435" stroke-width="8" stroke-linecap="round"/>
+              <circle cx="170" cy="150" r="40" fill="#FFF6DC"/>
+              <path d="M150 150 h40 M170 130 v40" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="DevTools → Application">
+          <div class="kicker">Caso real · 5.1</div>
+          <h2 class="slide-title">DevTools · pestaña Application</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>DevTools</div>
+            <pre><code><span class="tok-com">// 1. Abrir cualquier PWA conocida en Chrome</span>
+<span class="tok-com">// 2. F12 → pestaña "Application"</span>
+<span class="tok-com">// 3. En el panel izquierdo:</span>
+<span class="tok-com">//    "Manifest"         → nombre, íconos, colores</span>
+<span class="tok-com">//    "Service Workers"  → script registrado, estado</span>
+<span class="tok-com">//    "Cache Storage"    → recursos guardados offline</span></code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Todavía no escribimos nada de esto — apenas lo reconocemos. En la Sesión 16 creamos nuestro propio manifest.json; en la Sesión 17, nuestro propio Service Worker.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Actividades para la clase</h2>
+            <p>Tres actividades: una individual, una grupal, y una tarea de investigación.</p>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="200" cy="215" rx="130" ry="32" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <circle cx="200" cy="108" r="26" fill="#373435"/>
+              <rect x="168" y="132" width="64" height="58" rx="22" fill="#FFCC29"/>
+              <circle cx="92" cy="150" r="23" fill="#373435"/>
+              <rect x="63" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <circle cx="308" cy="150" r="23" fill="#373435"/>
+              <rect x="279" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <rect x="182" y="200" width="36" height="26" rx="3" fill="#fff" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Las 3 actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Pongamos en práctica lo aprendido</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">1</div><h4>Clasifica la app</h4></div>
+              <div class="meta-row">INDIVIDUAL · 10 MIN</div>
+              <p>Tres apps de tu teléfono: ¿nativa, híbrida o PWA? Justifica con la tabla comparativa.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">2</div><h4>Detective de características</h4></div>
+              <div class="meta-row">PAREJAS · 15 MIN</div>
+              <p>Inspeccionar una PWA real en DevTools y encontrar evidencia de 4 de las 8 características.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">3</div><h4>Investiga una PWA</h4></div>
+              <div class="meta-row">TAREA · FUERA DE CLASE</div>
+              <p>Un párrafo sobre una PWA de tu interés: qué problema resuelve y qué características tiene.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>Cierre de la sesión</h2>
+            <p>Lo esencial de hoy, y hacia dónde vamos en la Sesión 16.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="120" y="50" width="160" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="160" y="34" width="80" height="32" rx="8" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="150" cy="112" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 112 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="112" x2="250" y2="112" stroke="#373435" stroke-width="4"/>
+              <circle cx="150" cy="152" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 152 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="152" x2="250" y2="152" stroke="#373435" stroke-width="4"/>
+              <line x1="305" y1="90" x2="305" y2="250" stroke="#373435" stroke-width="5"/>
+              <path d="M305 90 L305 122 L347 105 Z" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la lección</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment">Una <b>PWA</b> es una web app mejorada con técnicas que la hacen instalable, offline y re-enganchable.</li>
+            <li class="fragment">Frente a app <b>nativa</b> e <b>híbrida</b>, la PWA prioriza alcance, velocidad de desarrollo y un solo código.</li>
+            <li class="fragment">Las <b>8 características</b> son el criterio para reconocer una PWA — ninguna depende de un framework.</li>
+            <li class="fragment">Las <b>4 funcionalidades</b> son el "cómo", y casi todas dependen del Service Worker.</li>
+            <li class="fragment">Estas técnicas se aplican encima de cualquier web app, sesión a sesión, hasta convertirla en una PWA completa.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 16: El Manifiesto de aplicación.</b> El archivo JSON que le dice al navegador y al sistema operativo cómo debe verse y comportarse tu PWA una vez instalada — nombre, íconos, colores, modo de visualización. Lo creamos y lo verificamos en DevTools.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> M. Vidal, "PWA: Qué son y cómo funcionan las Progressive Web Apps," IEBS, 2022.</div>
+            <div><b>[2]</b> R. Cárdenas, "¿Qué necesito? ¿Web Apps, App Nativa o App Híbrida?," GSoft, 2019.</div>
+            <div><b>[3]</b> S. López, "Qué es PWA: características, ventajas y desventajas," digital55.</div>
+            <div><b>[4]</b> Amazon AWS, "Comparación entre aplicaciones web, nativas e híbridas," AWS.</div>
+            <div><b>[5]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 22</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>

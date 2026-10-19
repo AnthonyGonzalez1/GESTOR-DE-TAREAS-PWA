@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 15 · ¿Qué es una PWA? · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .feature-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:.8em; margin:1.2em 0;}
+  .feature-card{border:1px solid var(--line); border-radius:10px; padding:.9em .8em; text-align:center;}
+  .feature-card .fc-badge{width:2.2em; height:2.2em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; margin:0 auto .5em; font-weight:800; font-size:.85em;}
+  .feature-card b{display:block; font-size:.85em; margin-bottom:.25em;}
+  .feature-card span{font-size:.72em; color:#555; line-height:1.35;}
+  @media (max-width:760px){ .feature-grid{grid-template-columns:repeat(2,1fr);} }
+  .func-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.7em;}
+  .func-list li{border:1px solid var(--line); border-radius:10px; padding:.8em 1em; font-size:.92em; line-height:1.5;}
+  .func-list li b{color:var(--gold-deep);}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} .feature-grid{grid-template-columns:1fr 1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+      <a href="Guion_Clase_Sesion_15.docx">Guion de la clase (Word) →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 1 de 20</div>
+    <h1>¿Qué es una PWA?</h1>
+    <div class="lead">Qué son las Progressive Web Apps, en qué se diferencian de una app nativa o híbrida, sus 8 características y sus 4 funcionalidades clave — el mapa completo de todo lo que vamos a construir en este bloque.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Definir</b> qué es una Progressive Web App y explicar en qué se diferencia de una app nativa y de una app híbrida.</span></li>
+      <li><span class="chk">✓</span><span><b>Identificar</b> las 8 características de una PWA (Discoverable, Responsive, Independent connectivity, App-like, Installable, Secure, Upgradable, Re-engageable) en una aplicación real.</span></li>
+      <li><span class="chk">✓</span><span><b>Explicar</b> las 4 funcionalidades clave de una PWA (cacheo, ejecución en segundo plano, notificaciones push, experiencia offline) y qué tecnología hace posible cada una.</span></li>
+      <li><span class="chk">✓</span><span><b>Inspeccionar</b> una PWA real en las DevTools del navegador y reconocer su manifest y su Service Worker ya funcionando.</span></li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Agenda de la sesión · 120 minutos en clase</h3>
+    <table class="uptc">
+      <tr><th>Momento</th><th>Duración</th></tr>
+      <tr><td>Bienvenida al Bloque 3 y panorama de las 20 sesiones</td><td class="num">8 min</td></tr>
+      <tr><td>¿Qué es una Progressive Web App? (explicación + demo)</td><td class="num">10 min</td></tr>
+      <tr><td>PWA vs. App Nativa vs. App Híbrida (explicación + demo)</td><td class="num">15 min</td></tr>
+      <tr><td>Las 8 características de una PWA (explicación + demo)</td><td class="num">20 min</td></tr>
+      <tr><td>Las 4 funcionalidades clave de una PWA (explicación + demo)</td><td class="num">15 min</td></tr>
+      <tr><td>Caso real: inspeccionando una PWA en DevTools (demo)</td><td class="num">15 min</td></tr>
+      <tr><td>Actividad 1 · Clasifica la app (individual)</td><td class="num">10 min</td></tr>
+      <tr><td>Actividad 2 · Detective de características (parejas)</td><td class="num">15 min</td></tr>
+      <tr><td>Cierre, resumen y próximos pasos</td><td class="num">12 min</td></tr>
+    </table>
+    <p class="small-note" style="margin-top:.6em;">La Actividad 3 es tarea individual fuera de clase: no está contada en los 120 minutos.</p>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida al Bloque 3</h2>
+    <div class="body-text"><p>Con el Bloque 2 cerramos TypeScript completamente tipado: interfaces, uniones, funciones, genéricos y promesas, compilando limpio bajo modo estricto — todo eso lo practicaste construyendo el Gestor de tareas. El Bloque 3 tiene un objetivo distinto: aprender el conjunto de técnicas que convierten cualquier aplicación web en una <b>aplicación instalable, que funcione incluso sin conexión</b> — una Progressive Web App (PWA) — para después aplicarlas, desde cero, en un proyecto nuevo.</p></div>
+    <div class="callout" style="margin-top:1em;"><b>El mapa del bloque:</b> las próximas 7 sesiones (esta incluida) cubren los fundamentos de las PWA con ejemplos cortos y enfocados — manifest, Service Workers, caché, IndexedDB, seguridad, Workbox. Después, 9 sesiones construyen desde cero un proyecto nuevo — un visor de objetos 3D educativos con realidad aumentada — aplicando ahí todo lo aprendido, y 3 sesiones más muestran cómo frameworks como React o Angular facilitan esas mismas técnicas. Cerramos con una sesión de integración final para todo el curso.</div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>¿Qué es una Progressive Web App?</h2>
+    <div class="body-text"><p>Una <b>Progressive Web App (PWA)</b> es una aplicación construida con tecnologías web tradicionales — HTML, CSS y JavaScript — que se ha mejorado para ofrecer una experiencia similar a la de una aplicación nativa en un teléfono o una tableta. No es un lenguaje nuevo ni un framework obligatorio: es un <b>conjunto de técnicas</b> que, aplicadas sobre una web normal, la hacen instalable, capaz de funcionar sin conexión, y capaz de reenganchar al usuario con notificaciones — combinando lo mejor de una app web (alcance, un solo código, actualizaciones instantáneas) con lo mejor de una app nativa (ícono en el dispositivo, funcionamiento offline, sensación de app real) [1].</p></div>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> el Gestor de tareas que construiste en las Sesiones 1 a 14 ya es una web app normal — funcional, pero no instalable ni disponible sin conexión. En este bloque vas a aprender, con ejemplos cortos, las técnicas que le faltan para ser una PWA, y luego las vas a aplicar de verdad, desde cero, en un proyecto nuevo.</div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>PWA vs. App Nativa vs. App Híbrida</h2>
+    <div class="body-text"><p>Para entender qué resuelve una PWA, conviene compararla con las otras dos formas de construir aplicaciones móviles.</p></div>
+    <p><b>App Nativa:</b> se construye con el lenguaje propio de cada plataforma (Kotlin/Java para Android, Swift para iOS) y se distribuye por una tienda de aplicaciones. Aprovecha al máximo el hardware del dispositivo y ofrece el mejor rendimiento posible — pero para llegar a Android <i>y</i> iOS hay que construir y mantener dos aplicaciones separadas, lo que incrementa el costo y el tiempo de desarrollo [2].</p>
+    <p><b>App Híbrida:</b> se construye con tecnologías web, pero se empaqueta dentro de un contenedor nativo (un <i>WebView</i>) y se distribuye también por tienda de aplicaciones. Permite reutilizar un solo código base para varias plataformas y acceder a funciones del dispositivo mediante plugins, aunque su rendimiento y experiencia de usuario no llegan al nivel de una app nativa [3].</p>
+    <p><b>PWA:</b> se construye con tecnologías web y se accede desde el navegador — sin pasar por ninguna tienda de aplicaciones. Un solo código sirve para cualquier dispositivo con un navegador moderno, el desarrollo es más rápido y económico, y aun así puede instalarse en la pantalla de inicio. Su límite está en el acceso a funcionalidades muy avanzadas del hardware, donde una app nativa sigue teniendo ventaja.</p>
+    <div style="overflow-x:auto;">
+    <table class="uptc" style="margin-top:1em;">
+      <tr><th>Características</th><th>PWA</th><th>App Híbrida</th><th>App Nativa</th></tr>
+      <tr><td><b>Acceso</b></td><td>Navegador</td><td>Tienda de aplicaciones</td><td>Tienda de aplicaciones</td></tr>
+      <tr><td><b>Funcionamiento interno</b></td><td>Código web ejecutado en el navegador</td><td>Código web dentro de un contenedor nativo</td><td>Código específico de la plataforma</td></tr>
+      <tr><td><b>Acceso al dispositivo</b></td><td>Limitado</td><td>Intermedio</td><td>Completo</td></tr>
+      <tr><td><b>Experiencia de usuario</b></td><td>Consistente en navegadores modernos</td><td>Buena</td><td>Óptima y específica de la plataforma</td></tr>
+      <tr><td><b>Rendimiento</b></td><td>Bueno, puede consumir más batería</td><td>Bueno, menos eficiente que nativa</td><td>Excelente</td></tr>
+      <tr><td><b>Desarrollo</b></td><td>Barato y rápido</td><td>Rentable y rápido</td><td>Caro y lento</td></tr>
+      <tr><td><b>Alcance</b></td><td>Alto en motores de búsqueda</td><td>Alto en tiendas de aplicaciones</td><td>Alto en tiendas de aplicaciones</td></tr>
+    </table>
+    </div>
+    <p class="fig-caption">Comparación entre PWA, App Híbrida y App Nativa. Fuente: adaptado de Amazon AWS, "Comparación entre aplicaciones web, nativas e híbridas" [4].</p>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Las 8 características de una PWA</h2>
+    <div class="body-text"><p>Una PWA es <b>adaptativa</b>: siempre ofrece la mejor experiencia posible según la pantalla y el navegador del dispositivo, aunque no todos los navegadores soportan el mismo conjunto de funcionalidades [5]. Ocho características resumen lo que distingue a una PWA de una web común:</p></div>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="fc-badge">1</div><b>Discoverable</b><span>Se puede encontrar en los motores de búsqueda, como cualquier página web.</span></div>
+      <div class="feature-card"><div class="fc-badge">2</div><b>Responsive</b><span>Se adapta correctamente a cualquier tamaño de pantalla.</span></div>
+      <div class="feature-card"><div class="fc-badge">3</div><b>Independent connectivity</b><span>Funciona sin conexión o con conectividad limitada, gracias al Service Worker.</span></div>
+      <div class="feature-card"><div class="fc-badge">4</div><b>App-like</b><span>Se ve y se comporta como una aplicación nativa, no como una página web tradicional.</span></div>
+      <div class="feature-card"><div class="fc-badge">5</div><b>Installable</b><span>Se instala directamente desde el navegador, sin pasar por una tienda de aplicaciones.</span></div>
+      <div class="feature-card"><div class="fc-badge">6</div><b>Secure</b><span>Se sirve siempre por HTTPS, protegiendo la integridad de sus datos.</span></div>
+      <div class="feature-card"><div class="fc-badge">7</div><b>Upgradable</b><span>Se actualiza sola, sin interrumpir la experiencia del usuario.</span></div>
+      <div class="feature-card"><div class="fc-badge">8</div><b>Re-engageable</b><span>Puede enviar notificaciones push para mantener al usuario interesado.</span></div>
+    </div>
+    <p class="fig-caption">Las 8 características de una PWA. Fuente: elaboración propia, a partir de [5].</p>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> ninguna de estas 8 características depende de un framework — todas se logran con APIs estándar del navegador (Web App Manifest, Service Worker, HTTPS, Notifications API), que iremos viendo una por una en las próximas sesiones.</div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Las 4 funcionalidades clave</h2>
+    <div class="body-text"><p>Estas 8 características se apoyan en 4 funcionalidades concretas — el "cómo" detrás del "qué":</p></div>
+    <ul class="func-list">
+      <li><b>Cacheo de recursos:</b> la interfaz de usuario y otros elementos esenciales se almacenan en el dispositivo, permitiendo una carga rápida y una navegación fluida incluso con mala conexión. (Sesiones 18-19.)</li>
+      <li><b>Ejecución en segundo plano:</b> el Service Worker puede sincronizar datos y gestionar notificaciones sin que el usuario tenga la aplicación abierta. (Sesión 17 y Sesión 20.)</li>
+      <li><b>Notificaciones push:</b> la aplicación recibe alertas del servidor en tiempo real, manteniendo al usuario informado incluso cuando no la está usando. (Sesión 20.)</li>
+      <li><b>Experiencia offline:</b> la aplicación funciona sin conexión y sincroniza los datos automáticamente cuando la conectividad se restablece. (Sesiones 18-20.)</li>
+    </ul>
+    <p class="body-text" style="margin-top:1em;">Todas estas funcionalidades comparten una misma pieza central, que vamos a conocer a fondo en la Sesión 17: el <b>Service Worker</b> — un script que el navegador ejecuta por separado de la página, y que actúa como intermediario entre la aplicación y la red.</p>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Caso real: inspeccionando una PWA</h2>
+    <div class="body-text"><p>La forma más rápida de reconocer estas ideas es verlas funcionando. Aplicaciones como Twitter (X) Lite o Starbucks son PWA conocidas: se abren desde el navegador, se pueden instalar en la pantalla de inicio, y siguen mostrando algo (aunque sea un mensaje de "sin conexión" bien diseñado) incluso sin internet.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>DevTools · pestaña Application</div>
+      <pre><code><span class="tok-com">// 1. Abrir cualquier PWA conocida en Chrome</span>
+<span class="tok-com">// 2. F12 → pestaña "Application"</span>
+<span class="tok-com">// 3. En el panel izquierdo:</span>
+<span class="tok-com">//    "Manifest"         → nombre, íconos, colores, display mode</span>
+<span class="tok-com">//    "Service Workers"  → el script registrado, su estado (activated)</span>
+<span class="tok-com">//    "Cache Storage"    → los recursos ya guardados para offline</span></code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Todavía no vamos a escribir nada de esto — apenas vamos a reconocerlo. En la Sesión 16 vamos a crear nuestro propio manifest.json, y en la Sesión 17 nuestro propio Service Worker.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Clasifica la app</h4></div>
+      <div class="meta-row">INDIVIDUAL · 10 MIN</div>
+      <p>Piensa en tres aplicaciones que uses habitualmente en tu teléfono. Para cada una, decide si es (o podría ser) una app nativa, híbrida o PWA, y justifica tu respuesta con al menos una fila de la tabla comparativa de la guía (acceso, rendimiento, desarrollo, etc.). Si no estás seguro, es una buena señal para investigarlo — muchas apps conocidas usan más de una estrategia a la vez.</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Detective de características</h4></div>
+      <div class="meta-row">PAREJAS · 15 MIN</div>
+      <p>En parejas, abran una PWA real en Chrome (por ejemplo, una tienda en línea conocida o una red social con versión "Lite"). Usando la pestaña Application de DevTools, identifiquen evidencia concreta de al menos 4 de las 8 características (por ejemplo: ¿tiene manifest? ¿tiene Service Worker activo? ¿qué pasa si desactivan la red en la pestaña Network y recargan?). Anoten qué característica encontraron y con qué evidencia.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> la lista de características encontradas con su evidencia, en pareja, revisada en plenaria al terminar los 15 minutos.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">3</div><h4>Investiga una PWA de tu interés</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 20 MIN</div>
+      <p>Elige una PWA distinta a la usada en clase (puede ser de tu país o sector de interés). Escribe un párrafo corto explicando: qué problema resuelve, cuáles de las 8 características pudiste comprobar, y una razón concreta por la que eligieron construirla como PWA en vez de app nativa.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> el párrafo, subido a la plataforma del curso antes de la próxima sesión.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>Una <b>PWA</b> es una web app mejorada con técnicas que la hacen instalable, offline y re-enganchable — sin dejar de ser, en el fondo, HTML, CSS y JavaScript.</li>
+      <li>Frente a una <b>app nativa</b> (mejor rendimiento, más cara) y una <b>app híbrida</b> (intermedia), la PWA prioriza alcance, velocidad de desarrollo y un solo código para todos los dispositivos.</li>
+      <li>Las <b>8 características</b> (Discoverable, Responsive, Independent connectivity, App-like, Installable, Secure, Upgradable, Re-engageable) son el criterio para reconocer una PWA.</li>
+      <li>Las <b>4 funcionalidades</b> (cacheo, segundo plano, notificaciones push, offline) son el "cómo" — y casi todas dependen de una misma pieza: el Service Worker.</li>
+      <li>Estas técnicas no son exclusivas de un proyecto — se aplican encima de cualquier web app, sesión a sesión, hasta convertirla en una PWA completa.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 16: El Manifiesto de aplicación.</b> El archivo JSON que le dice al navegador y al sistema operativo cómo debe verse y comportarse tu PWA una vez instalada — nombre, íconos, colores, modo de visualización.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> M. Vidal, "PWA: Qué son y cómo funcionan las Progressive Web Apps," IEBS, 2022.</div>
+      <div><b>[2]</b> R. Cárdenas, "¿Qué necesito? ¿Web Apps, App Nativa o App Híbrida?," GSoft, 2019.</div>
+      <div><b>[3]</b> S. López, "Qué es PWA: características, ventajas y desventajas," digital55.</div>
+      <div><b>[4]</b> Amazon AWS, "Comparación entre aplicaciones web, aplicaciones nativas y aplicaciones híbridas," AWS.</div>
+      <div><b>[5]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+      <div><b>[6]</b> Google, "Progressive Web Apps," web.dev, 2023. developer web.dev/learn/pwa/progressive-web-apps</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 1 de 20</span>
+  </div>
+</div>
+</body>
+</html>
