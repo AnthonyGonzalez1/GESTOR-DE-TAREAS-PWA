@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 17 · Service Workers (1/2) · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .recursos-box{border:1px solid var(--gold); border-radius:12px; background:var(--gold-tint); padding:1.1em 1.3em; margin:1.4em 0;}
+  .recursos-box h3{margin:0 0 .3em; font-family:var(--serif); font-size:1.05em; color:var(--ink);}
+  .recursos-box p.rb-lead{margin:0 0 .8em; font-size:.88em; color:#444;}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.5em;}
+  .recursos-list li{display:flex; align-items:center; gap:.7em; font-size:.88em;}
+  .recursos-list a{font-weight:700; color:var(--ink); background:#fff; border:1px solid var(--gold); border-radius:999px; padding:.35em .9em; text-decoration:none; flex:0 0 auto;}
+  .recursos-list a:hover{background:var(--gold);}
+  .recursos-list span.rb-desc{color:#555;}
+  .life-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:.8em; margin:1.2em 0;}
+  .life-card{border:1px solid var(--line); border-radius:10px; padding:1em 1em; position:relative;}
+  .life-card .lc-n{width:1.9em; height:1.9em; border-radius:50%; background:var(--ink); color:var(--gold); display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:.95em; margin-bottom:.5em;}
+  .life-card .lc-event{display:inline-block; font-size:.68em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .55em; border-radius:999px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .life-card b{display:block; font-size:.92em; margin-bottom:.3em;}
+  .life-card p{margin:0; font-size:.8em; color:#444; line-height:1.4;}
+  @media (max-width:760px){ .life-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} .life-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+      <a href="Guion_Clase_Sesion_17.docx">Guion de la clase (Word) →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 3 de 30</div>
+    <h1>Service Workers (1/2): registro y ciclo de vida</h1>
+    <div class="lead">El script que el navegador ejecuta por separado de la página: sus requisitos, cómo se registra, su ciclo de vida completo — registro, instalación, espera, activación, fetch y actualización — y sus limitaciones. Interceptar peticiones de verdad y cachear rutas llega en la Sesión 18.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Explicar</b> qué es un Service Worker y los tres requisitos que el navegador exige para instalarlo.</span></li>
+      <li><span class="chk">✓</span><span><b>Registrar</b> un Service Worker desde el Gestor de tareas con <code>navigator.serviceWorker.register()</code>.</span></li>
+      <li><span class="chk">✓</span><span><b>Describir</b> el ciclo de vida completo de un Service Worker: registro, instalación, espera, activación, fetch y actualización.</span></li>
+      <li><span class="chk">✓</span><span><b>Escribir</b> un <code>sw.js</code> básico con los manejadores <code>install</code>, <code>activate</code> y <code>fetch</code> (sin lógica de caché todavía — eso es la Sesión 18).</span></li>
+      <li><span class="chk">✓</span><span><b>Reconocer</b> las limitaciones de los Service Workers, y verificar en DevTools que el Gestor de tareas cumple ya los 5 criterios de instalabilidad.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <p class="rb-lead">Descarga esto antes de empezar — es tu Gestor de tareas exactamente como quedó al cierre de la Sesión 16, para que no pierdas tiempo reconstruyendo el manifest.json.</p>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion16.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 16.</b> El Gestor de tareas con su manifest.json e íconos ya listos, sin Service Worker todavía: es donde vas a registrar el de hoy.</span></li>
+      </ul>
+    </div>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Agenda de la sesión · 120 minutos en clase</h3>
+    <table class="uptc">
+      <tr><th>Momento</th><th>Duración</th></tr>
+      <tr><td>Bienvenida y recap de la Sesión 16</td><td class="num">8 min</td></tr>
+      <tr><td>¿Qué es un Service Worker? y sus requisitos (explicación)</td><td class="num">10 min</td></tr>
+      <tr><td>Registrar el Service Worker (explicación + demo)</td><td class="num">12 min</td></tr>
+      <tr><td>El ciclo de vida completo (explicación + diagrama)</td><td class="num">26 min</td></tr>
+      <tr><td>Limitaciones de los Service Workers (explicación)</td><td class="num">10 min</td></tr>
+      <tr><td>Caso real: el sw.js del Gestor de tareas (demo en vivo)</td><td class="num">24 min</td></tr>
+      <tr><td>Actividad 1 · Traza el ciclo de vida (individual)</td><td class="num">15 min</td></tr>
+      <tr><td>Actividad 2 · Detective del Service Worker (parejas) y cierre</td><td class="num">15 min</td></tr>
+    </table>
+    <p class="small-note" style="margin-top:.6em;">La Actividad 3 es tarea individual fuera de clase: no está contada en los 120 minutos.</p>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida y recap</h2>
+    <div class="body-text"><p>En la Sesión 16 construimos el manifest.json del Gestor de tareas y verificamos, en DevTools, que cumplía 4 de los 5 criterios de instalabilidad. El quinto criterio pendiente era siempre el mismo: un Service Worker registrado, con al menos un manejador del evento <code>fetch</code>. Hoy construimos exactamente esa pieza.</p></div>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> al terminar la sesión de hoy, la pestaña "Installability" de DevTools debería mostrar los 5 criterios en verde por primera vez — el Gestor de tareas será, técnicamente, instalable.</div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>¿Qué es un Service Worker?</h2>
+    <div class="body-text"><p>Un <b>Service Worker</b> es un bloque de código que una aplicación web instala en el navegador bajo ciertas condiciones, y que se ejecuta en función de eventos específicos — no de la interacción directa del usuario con la página. Permite añadir funcionalidades avanzadas, similares a las de una aplicación móvil, como el funcionamiento offline [1].</p></div>
+    <div class="body-text"><p>Para que el navegador acepte instalar un Service Worker, exige tres requisitos [1]:</p></div>
+    <ul class="clean">
+      <li><b>Soporte del navegador:</b> el navegador debe soportar la API de Service Workers (todos los navegadores modernos la soportan).</li>
+      <li><b>Conexión segura:</b> la aplicación debe cargarse por HTTPS, o desde <code>localhost</code> durante el desarrollo.</li>
+      <li><b>Mismo origen:</b> el script del Service Worker debe obtenerse desde el mismo servidor que la aplicación web — no se puede registrar un Service Worker de otro dominio.</li>
+    </ul>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> el Service Worker se ejecuta en un hilo separado de la página, sin acceso directo al DOM. Es, en esencia, un proxy programable entre la aplicación y la red.</div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>Registrar el Service Worker</h2>
+    <div class="body-text"><p>Todo empieza con una llamada desde el JavaScript de la página — normalmente en <code>index.html</code> o en el script principal — que le pide al navegador que registre el archivo del Service Worker:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js</div>
+      <pre><code><span class="tok-kw">if</span> (<span class="tok-str">'serviceWorker'</span> <span class="tok-kw">in</span> navigator) {
+  navigator.serviceWorker
+    .<span class="tok-fn">register</span>(<span class="tok-str">'/sw.js'</span>)
+    .<span class="tok-fn">then</span>(reg <span class="tok-punct">=&gt;</span> <span class="tok-fn">console</span>.<span class="tok-fn">log</span>(<span class="tok-str">'SW registrado:'</span>, reg.scope))
+    .<span class="tok-fn">catch</span>(err <span class="tok-punct">=&gt;</span> <span class="tok-fn">console</span>.<span class="tok-fn">error</span>(<span class="tok-str">'Error al registrar SW:'</span>, err));
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>La comprobación <code>if ('serviceWorker' in navigator)</code> es una buena práctica: evita errores en navegadores muy antiguos que no soportan la API. A partir de esta llamada, el navegador toma el control y arranca el ciclo de vida completo.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>El ciclo de vida completo</h2>
+    <div class="body-text"><p>El ciclo de vida de un Service Worker está diseñado para mejorar la experiencia del usuario, permitiendo el funcionamiento offline, actualizaciones eficientes y el control de las solicitudes de red [2]. Tiene seis fases:</p></div>
+    <div class="life-grid">
+      <div class="life-card"><div class="lc-n">1</div><span class="lc-event">"install" event</span><b>Registro e instalación</b><p>navigator.serviceWorker.register() registra el archivo. Durante el evento install, el Service Worker almacena en caché los recursos esenciales para funcionar offline. Si falla, no se activa.</p></div>
+      <div class="life-card"><div class="lc-n">2</div><span class="lc-event">waiting</span><b>Espera</b><p>Permanece inactivo hasta que el Service Worker anterior deja de controlar las sesiones activas. Asegura que nunca haya más de un Service Worker activo al mismo tiempo.</p></div>
+      <div class="life-card"><div class="lc-n">3</div><span class="lc-event">"active" event</span><b>Activación</b><p>Una vez activado, el Service Worker asume el control de la aplicación, gestionando cachés y migrando datos si es necesario.</p></div>
+      <div class="life-card"><div class="lc-n">4</div><span class="lc-event">"fetch" event</span><b>Interceptación de solicitudes</b><p>Se dispara con cada petición de red de la aplicación. Hoy solo lo registramos y lo dejamos pasar tal cual a la red — interceptar de verdad y responder desde la caché es el tema completo de la Sesión 18.</p></div>
+      <div class="life-card"><div class="lc-n">5</div><span class="lc-event">"updatefound" event</span><b>Actualización</b><p>El Service Worker se mantiene activo hasta que se registra una nueva versión. El navegador la instala y la deja en espera hasta reemplazar a la anterior [3].</p></div>
+      <div class="life-card"><div class="lc-n">6</div><span class="lc-event">skipWaiting()</span><b>Salto de espera (opcional)</b><p>Un Service Worker nuevo puede llamar a skipWaiting() para activarse de inmediato en vez de esperar a que se cierren todas las pestañas abiertas.</p></div>
+    </div>
+    <p class="fig-caption">Las seis fases del ciclo de vida de un Service Worker. Fuente: adaptado de J. Wargo, "Fig. 3: Ciclo de vida de un service worker" [2][3].</p>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Limitaciones de los Service Workers</h2>
+    <div class="body-text"><p>Aunque son muy poderosos, los Service Workers tienen límites concretos que conviene conocer desde ya [4]:</p></div>
+    <ul class="clean">
+      <li>Solo se ejecutan si el navegador está abierto. En algunos dispositivos el navegador puede seguir corriendo en segundo plano, lo que mitiga parcialmente esta limitación.</li>
+      <li>No pueden manipular el DOM de la aplicación directamente — existen métodos de comunicación alternativos (mensajes) entre la página y el Service Worker.</li>
+      <li>Su implementación puede resultar compleja, a pesar de ofrecer un control muy detallado sobre caché y solicitudes de red.</li>
+      <li>Las PWA no están disponibles en tiendas como App Store o Google Play — deben instalarse directamente desde el navegador, lo que puede dificultar su adopción por algunos usuarios.</li>
+      <li>En iOS, las actualizaciones automáticas no son tan fluidas como en Android: el usuario suele tener que abrir la PWA manualmente para que se actualice el contenido.</li>
+    </ul>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Caso real: el sw.js del Gestor de tareas</h2>
+    <div class="body-text"><p>Juntando el registro, la instalación y la activación, este es el <code>sw.js</code> mínimo que agregamos hoy al proyecto. El manejador de <code>fetch</code> está presente porque el navegador lo exige para considerar instalable la aplicación, pero por ahora solo deja pasar la petición a la red tal cual — interceptar de verdad y responder desde la caché llega en la Sesión 18:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js</div>
+      <pre><code><span class="tok-kw">const</span> CACHE_NAME <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v1'</span>;
+<span class="tok-kw">const</span> CORE_ASSETS <span class="tok-punct">=</span> [
+  <span class="tok-str">'/index.html'</span>,
+  <span class="tok-str">'/css/estilos.css'</span>,
+  <span class="tok-str">'/js/app.js'</span>,
+  <span class="tok-str">'/manifest.json'</span>,
+];
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'install'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(
+    caches.<span class="tok-fn">open</span>(CACHE_NAME).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">addAll</span>(CORE_ASSETS))
+  );
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(self.clients.<span class="tok-fn">claim</span>());
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(<span class="tok-fn">fetch</span>(event.request));
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Para verificarlo: F12 → pestaña <b>Application</b> → sección <b>Service Workers</b>. Chrome debe mostrar el script registrado, con estado <code>activated and is running</code>. Y en la sección <b>Manifest</b>, la lista de "Installability" debería mostrar, por fin, los 5 criterios en verde.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Traza el ciclo de vida</h4></div>
+      <div class="meta-row">INDIVIDUAL · 15 MIN</div>
+      <p>Dibuja (en papel o en un editor de diagramas) las seis fases del ciclo de vida de un Service Worker, indicando qué evento dispara cada una y qué pasaría si el paso de "instalación" fallara.</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Detective del Service Worker</h4></div>
+      <div class="meta-row">PAREJAS · 15 MIN</div>
+      <p>En parejas, abran una PWA real en DevTools → Application → Service Workers. Identifiquen su estado actual (activated, waiting, etc.), su <code>scope</code>, y si aparece más de una versión registrada al mismo tiempo.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> el estado encontrado y una hipótesis de por qué está en ese estado, revisada en plenaria.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">3</div><h4>Registra tu propio Service Worker</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 20 MIN</div>
+      <p>Agrega el código de registro y un <code>sw.js</code> con los tres manejadores (<code>install</code>, <code>activate</code>, <code>fetch</code>) a tu propio proyecto (el mismo del manifest de la Sesión 16).</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> captura de la pestaña Service Workers en DevTools mostrando el estado <code>activated</code>, subida antes de la próxima sesión.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>Un <b>Service Worker</b> es un script que el navegador ejecuta por separado de la página, bajo tres requisitos: soporte del navegador, HTTPS (o localhost), y mismo origen.</li>
+      <li>Se registra con <code>navigator.serviceWorker.register()</code>.</li>
+      <li>Su <b>ciclo de vida</b> tiene seis fases: registro/instalación, espera, activación, fetch, actualización, y el salto opcional con <code>skipWaiting()</code>.</li>
+      <li>El evento <code>fetch</code> de hoy es un simple registro que deja pasar la petición a la red — interceptar de verdad y cachear rutas es el tema completo de la Sesión 18.</li>
+      <li>Tiene límites reales: solo corre con el navegador abierto, no toca el DOM directamente, y no vive en tiendas de aplicaciones.</li>
+      <li>Con el Service Worker de hoy, el Gestor de tareas cumple, por primera vez, los 5 criterios de instalabilidad.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 18: Service Workers (2/2) — cacheo de rutas.</b> Interceptar el evento <code>fetch</code> de verdad, cachear las primeras rutas del Gestor de tareas, y una estrategia básica de respuesta.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+      <div><b>[2]</b> Google, "Service Workers," web.dev, 2023.</div>
+      <div><b>[3]</b> MDN web docs, "Usar Service Workers — Referencia de la API Web," MDN Web Docs.</div>
+      <div><b>[4]</b> MDN web docs, "What is a progressive web app?," MDN Web Docs.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 3 de 30</span>
+  </div>
+</div>
+</body>
+</html>

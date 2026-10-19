@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 17 · Service Workers (1/2) · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .life-grid-deck{display:grid; grid-template-columns:repeat(3,1fr); gap:.7em; margin-top:.8em;}
+  .life-card-deck{border:1px solid var(--line); border-radius:10px; padding:.8em .8em;}
+  .life-card-deck .lc-n{width:1.7em; height:1.7em; border-radius:50%; background:var(--ink); color:var(--gold); display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:.82em; margin-bottom:.4em;}
+  .life-card-deck .lc-event{display:inline-block; font-size:.6em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.08em .5em; border-radius:999px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.35em;}
+  .life-card-deck b{display:block; font-size:.78em; margin-bottom:.25em;}
+  .life-card-deck p{margin:0; font-size:.68em; color:#444; line-height:1.35;}
+  .req-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1em; margin-top:1em;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9s1.3-6.5 3.8-9Z" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="ic-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3 5.6 5.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="ic-code" viewBox="0 0 24 24"><path d="M8 8L4 12l4 4M16 8l4 4-4 4M13.5 5.5l-3 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-alert" viewBox="0 0 24 24"><path d="M12 3.5 21 20H3L12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="9.5" x2="12" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 3 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>Service Workers<br>(1/2)</h1>
+          <div class="lead">Sesión 3 de 30 — requisitos, registro y el ciclo de vida completo del script que hace posible el funcionamiento offline.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>03 de 30 · Fundamentos PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <circle cx="200" cy="160" r="70" fill="none" stroke="#1A1A1A" stroke-width="4"/>
+              <circle cx="200" cy="160" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M200 90 v18 M200 212 v18 M270 160 h-18 M148 160 h-18 M247 113 l-13 13 M166 207 l-13 13 M247 207 l-13 -13 M166 113 l-13 -13" stroke="#373435" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap y bienvenida">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SESIÓN 03</div>
+            <h2>El último criterio de instalabilidad</h2>
+            <p>El manifest cubrió 4 de 5 criterios. Hoy construimos el quinto: el Service Worker.</p>
+            <div class="tb-preview"><span>Recap Sesión 16</span><span>Agenda de hoy</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="16" fill="#1A1A1A"/>
+              <text x="40" y="274" text-anchor="middle" font-size="9" font-weight="700" fill="#FFCC29">S16</text>
+              <circle cx="200" cy="165" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">S17</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="360" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#1A1A1A">S18</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap de la Sesión 16">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Lo que ya tenemos</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>manifest.json</b><span style="font-size:.78em;color:#555;">Nombre, íconos, colores y modo de visualización — 4 de 5 criterios cumplidos.</span></div>
+            <div class="mini-card fragment"><b>Criterio pendiente</b><span style="font-size:.78em;color:#555;">Un Service Worker registrado, con al menos un manejador de fetch.</span></div>
+            <div class="mini-card fragment"><b>Hoy</b><span style="font-size:.78em;color:#555;">Construimos esa pieza — y con ella, la instalabilidad completa.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Agenda (120 min)">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Agenda de la sesión</h2>
+          <hr class="rule">
+          <table class="uptc">
+            <tr><th>Momento</th><th>Duración</th></tr>
+            <tr><td>Bienvenida y recap de la Sesión 16</td><td class="num">8 min</td></tr>
+            <tr><td>¿Qué es un Service Worker? y sus requisitos</td><td class="num">10 min</td></tr>
+            <tr><td>Registrar el Service Worker (demo)</td><td class="num">12 min</td></tr>
+            <tr><td>El ciclo de vida completo (diagrama)</td><td class="num">26 min</td></tr>
+            <tr><td>Limitaciones de los Service Workers</td><td class="num">10 min</td></tr>
+            <tr><td>Caso real: el sw.js del Gestor de tareas (demo)</td><td class="num">24 min</td></tr>
+            <tr><td>Actividad 1 · Traza el ciclo de vida (individual)</td><td class="num">15 min</td></tr>
+            <tr><td>Actividad 2 · Detective del Service Worker (parejas) y cierre</td><td class="num">15 min</td></tr>
+          </table>
+        </section>
+
+        <section class="slide slide--divider" data-section="quees" data-section-label="¿Qué es un SW?" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>¿Qué es un Service Worker?</h2>
+            <p>Un script que el navegador ejecuta por separado de la página, en función de eventos.</p>
+            <div class="tb-preview"><span>Definición</span><span>3 requisitos</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="170" r="130" fill="#FFF6DC"/>
+              <rect x="150" y="100" width="100" height="140" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <circle cx="200" cy="150" r="18" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <path d="M175 200 h50 M175 218 h30" stroke="#373435" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="quees" data-section-label="¿Qué es un SW?" data-slide-label="Definición y requisitos">
+          <div class="kicker">¿Qué es un Service Worker? · 1.1</div>
+          <h2 class="slide-title">Un proxy programable entre la app y la red</h2>
+          <hr class="rule">
+          <div class="body-text"><p>Un bloque de código que la app instala en el navegador, y que se ejecuta según eventos — no según la interacción directa del usuario. Para instalarlo, el navegador exige tres requisitos:</p></div>
+          <div class="req-grid">
+            <div class="card fragment"><svg class="icon"><use href="#ic-globe"/></svg><h3>Soporte</h3><p>El navegador debe soportar la API de Service Workers.</p></div>
+            <div class="card fragment"><svg class="icon"><use href="#ic-shield"/></svg><h3>HTTPS</h3><p>O localhost durante el desarrollo.</p></div>
+            <div class="card fragment"><svg class="icon"><use href="#ic-code"/></svg><h3>Mismo origen</h3><p>El script debe venir del mismo servidor que la app.</p></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="registro" data-section-label="Registrar el SW" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>Registrar el Service Worker</h2>
+            <p>Una llamada desde la página arranca todo el ciclo de vida.</p>
+            <div class="tb-preview"><span>navigator.serviceWorker.register()</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="90" y="90" width="220" height="140" rx="12" fill="#1A1A1A"/>
+              <circle cx="200" cy="160" r="30" fill="#FFCC29"/>
+              <path d="M188 160 l8 8 l16 -16" stroke="#1A1A1A" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="registro" data-section-label="Registrar el SW" data-slide-label="El código de registro">
+          <div class="kicker">Registro · 2.1</div>
+          <h2 class="slide-title">Una llamada en app.js</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js</div>
+            <pre><code><span class="tok-kw">if</span> (<span class="tok-str">'serviceWorker'</span> <span class="tok-kw">in</span> navigator) {
+  navigator.serviceWorker
+    .<span class="tok-fn">register</span>(<span class="tok-str">'/sw.js'</span>)
+    .<span class="tok-fn">then</span>(reg <span class="tok-punct">=&gt;</span> <span class="tok-fn">console</span>.<span class="tok-fn">log</span>(<span class="tok-str">'SW registrado:'</span>, reg.scope))
+    .<span class="tok-fn">catch</span>(err <span class="tok-punct">=&gt;</span> <span class="tok-fn">console</span>.<span class="tok-fn">error</span>(<span class="tok-str">'Error al registrar SW:'</span>, err));
+}</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">La comprobación <code>if ('serviceWorker' in navigator)</code> evita errores en navegadores muy antiguos.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="ciclo" data-section-label="Ciclo de vida" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>El ciclo de vida completo</h2>
+            <p>Seis fases, diseñadas para el funcionamiento offline y las actualizaciones eficientes.</p>
+            <div class="tb-preview"><span>6 fases</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="120" fill="none" stroke="#EEB32D" stroke-width="4" stroke-dasharray="10 8"/>
+              <circle cx="200" cy="50" r="16" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="304" cy="120" r="16" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="304" cy="210" r="16" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="200" cy="270" r="16" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="96" cy="210" r="16" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="96" cy="120" r="16" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="ciclo" data-section-label="Ciclo de vida" data-slide-label="Las 6 fases">
+          <div class="kicker">Ciclo de vida · 3.1</div>
+          <h2 class="slide-title">Las seis fases</h2>
+          <hr class="rule">
+          <div class="life-grid-deck">
+            <div class="life-card-deck fragment"><div class="lc-n">1</div><span class="lc-event">"install"</span><b>Registro e instalación</b><p>Se registra, y almacena en caché los recursos esenciales. Si falla, no se activa.</p></div>
+            <div class="life-card-deck fragment"><div class="lc-n">2</div><span class="lc-event">waiting</span><b>Espera</b><p>Inactivo hasta que el SW anterior deje de controlar las sesiones activas.</p></div>
+            <div class="life-card-deck fragment"><div class="lc-n">3</div><span class="lc-event">"active"</span><b>Activación</b><p>Asume el control, gestiona cachés y migra datos si hace falta.</p></div>
+            <div class="life-card-deck fragment"><div class="lc-n">4</div><span class="lc-event">"fetch"</span><b>Interceptación</b><p>Hoy solo lo registramos y dejamos pasar la petición — interceptar de verdad es la Sesión 18.</p></div>
+            <div class="life-card-deck fragment"><div class="lc-n">5</div><span class="lc-event">"updatefound"</span><b>Actualización</b><p>Activo hasta que se registra una nueva versión, instalada y puesta en espera.</p></div>
+            <div class="life-card-deck fragment"><div class="lc-n">6</div><span class="lc-event">skipWaiting()</span><b>Salto de espera</b><p>Un SW nuevo puede activarse de inmediato en vez de esperar.</p></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="limitaciones" data-section-label="Limitaciones" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Limitaciones de los Service Workers</h2>
+            <p>Muy poderosos, pero con límites concretos que conviene conocer desde ya.</p>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <path d="M200 60 L340 260 H60 Z" fill="#FFF6DC" stroke="#EEB32D" stroke-width="4" stroke-linejoin="round"/>
+              <line x1="200" y1="130" x2="200" y2="200" stroke="#1A1A1A" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="200" cy="230" r="6" fill="#1A1A1A"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="limitaciones" data-section-label="Limitaciones" data-slide-label="Cinco límites reales">
+          <div class="kicker">Limitaciones</div>
+          <h2 class="slide-title">Cinco límites que conviene conocer</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment">Solo se ejecutan si el navegador está abierto (algunos dispositivos mitigan esto en segundo plano).</li>
+            <li class="fragment">No pueden manipular el DOM directamente — se comunican con la página por mensajes.</li>
+            <li class="fragment">Su implementación puede resultar compleja pese al control detallado que ofrecen.</li>
+            <li class="fragment">Las PWA no están en App Store ni Google Play — se instalan desde el navegador.</li>
+            <li class="fragment">En iOS, las actualizaciones no son tan fluidas como en Android.</li>
+          </ul>
+        </section>
+
+        <section class="slide slide--divider" data-section="caso" data-section-label="Caso real" data-slide-label="Caso real">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>Caso real: el sw.js del Gestor de tareas</h2>
+            <p>Registro, instalación y activación, juntos en un solo archivo — y cómo verificarlo.</p>
+            <div class="tb-preview"><span>sw.js completo</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="110" y="50" width="180" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="130" y="74" width="90" height="20" rx="4" fill="#FFCC29"/>
+              <path d="M130 106 h140 M130 124 h100 M130 142 h140 M130 160 h80 M130 178 h140 M130 196 h60 M130 214 h100" stroke="#373435" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="sw.js completo">
+          <div class="kicker">Caso real · 5.1</div>
+          <h2 class="slide-title">El sw.js completo</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js</div>
+            <pre><code><span class="tok-kw">const</span> CACHE_NAME <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v1'</span>;
+<span class="tok-kw">const</span> CORE_ASSETS <span class="tok-punct">=</span> [<span class="tok-str">'/index.html'</span>, <span class="tok-str">'/css/estilos.css'</span>, <span class="tok-str">'/js/app.js'</span>, <span class="tok-str">'/manifest.json'</span>];
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'install'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(caches.<span class="tok-fn">open</span>(CACHE_NAME).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">addAll</span>(CORE_ASSETS)));
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(self.clients.<span class="tok-fn">claim</span>());
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(<span class="tok-fn">fetch</span>(event.request));
+});</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">El manejador de <code>fetch</code> está aquí porque el navegador lo exige para la instalabilidad — hoy solo deja pasar la petición. Interceptar de verdad llega en la Sesión 18.</div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="Verificar en DevTools">
+          <div class="kicker">Caso real · 5.2</div>
+          <h2 class="slide-title">Verificar en DevTools</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>DevTools</div>
+            <pre><code><span class="tok-com">// F12 → Application → Service Workers</span>
+<span class="tok-com">// Debe mostrar: "activated and is running"</span>
+<span class="tok-com">//</span>
+<span class="tok-com">// F12 → Application → Manifest → Installability</span>
+<span class="tok-com">// Los 5 criterios, por primera vez, en verde</span></code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">El Gestor de tareas es, técnicamente, instalable desde hoy.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Actividades para la clase</h2>
+            <p>Trazar el ciclo de vida, investigar un Service Worker real, y construir el propio.</p>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="200" cy="215" rx="130" ry="32" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <circle cx="200" cy="108" r="26" fill="#373435"/>
+              <rect x="168" y="132" width="64" height="58" rx="22" fill="#FFCC29"/>
+              <circle cx="92" cy="150" r="23" fill="#373435"/>
+              <rect x="63" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <circle cx="308" cy="150" r="23" fill="#373435"/>
+              <rect x="279" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <rect x="182" y="200" width="36" height="26" rx="3" fill="#fff" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Las 3 actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Pongamos en práctica lo aprendido</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">1</div><h4>Traza el ciclo de vida</h4></div>
+              <div class="meta-row">INDIVIDUAL · 15 MIN</div>
+              <p>Dibujar las 6 fases, indicando qué evento dispara cada una.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">2</div><h4>Detective del Service Worker</h4></div>
+              <div class="meta-row">PAREJAS · 15 MIN</div>
+              <p>Inspeccionar el estado real de un Service Worker en DevTools.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">3</div><h4>Registra el tuyo</h4></div>
+              <div class="meta-row">TAREA · FUERA DE CLASE</div>
+              <p>Agregar el registro y un sw.js con install/activate/fetch a tu proyecto.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>Cierre de la sesión</h2>
+            <p>Lo esencial de hoy, y hacia dónde vamos en la Sesión 18.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="120" y="50" width="160" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="160" y="34" width="80" height="32" rx="8" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="150" cy="112" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 112 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="112" x2="250" y2="112" stroke="#373435" stroke-width="4"/>
+              <circle cx="150" cy="152" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 152 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="152" x2="250" y2="152" stroke="#373435" stroke-width="4"/>
+              <line x1="305" y1="90" x2="305" y2="250" stroke="#373435" stroke-width="5"/>
+              <path d="M305 90 L305 122 L347 105 Z" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la lección</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment">Un <b>Service Worker</b> es un script separado de la página, sujeto a 3 requisitos: soporte, HTTPS, mismo origen.</li>
+            <li class="fragment">Se registra con <code>navigator.serviceWorker.register()</code>.</li>
+            <li class="fragment">Su <b>ciclo de vida</b> tiene 6 fases: instalación, espera, activación, fetch, actualización, skipWaiting.</li>
+            <li class="fragment">El <code>fetch</code> de hoy solo deja pasar la petición — interceptar de verdad y cachear rutas es la Sesión 18.</li>
+            <li class="fragment">Con esto, el Gestor de tareas cumple, por primera vez, los 5 criterios de instalabilidad.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 18: Service Workers (2/2) — cacheo de rutas.</b> Interceptar el evento <code>fetch</code> de verdad, cachear las primeras rutas del Gestor de tareas, y una estrategia básica de respuesta.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+            <div><b>[2]</b> Google, "Service Workers," web.dev, 2023.</div>
+            <div><b>[3]</b> MDN web docs, "Usar Service Workers — Referencia de la API Web," MDN Web Docs.</div>
+            <div><b>[4]</b> MDN web docs, "What is a progressive web app?," MDN Web Docs.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 21</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>
