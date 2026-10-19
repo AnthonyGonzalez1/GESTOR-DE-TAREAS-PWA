@@ -1,0 +1,39 @@
+Gestor de Tareas — checkpoint al cierre de la Sesión 17
+Electiva - PWA · UPTC
+
+Qué es esto
+-----------
+El Gestor de Tareas con su Service Worker ya registrado (Sesión 17):
+sw.js con los tres manejadores — install (cachea index.html, estilos.css,
+app.js, tareas.js y manifest.json), activate (clients.claim()) y fetch
+(por ahora deja pasar cada petición directo a la red, sin interceptarla
+de verdad). Ese es justo el trabajo de la Sesión 18: cambiar el fetch
+para responder desde el caché. Es el punto de partida de hoy: no lo
+reemplaces, cotéjalo contra tu propio proyecto si te quedaste atrás.
+
+Cómo abrirlo
+------------
+Usa módulos de JavaScript (export/import) y un Service Worker, así que
+hace falta servidor local (los Service Workers no funcionan sobre file://):
+
+  1. VS Code + extensión "Live Server": clic derecho sobre index.html →
+     "Open with Live Server".
+  2. Terminal, parado en esta carpeta:
+       python3 -m http.server 8080
+     y abrir http://localhost:8080 en el navegador.
+
+Verifica en DevTools → Application → Service Workers que aparece
+"activated and is running" antes de empezar la Sesión 18.
+
+Estructura
+----------
+  index.html               interfaz + manifest enlazado
+  manifest.json             el manifest de la Sesión 16
+  sw.js                     Service Worker de la Sesión 17
+  icons/                    icon-192.png, icon-512.png, icon-512-maskable.png
+  css/estilos.css           estilos
+  app.js                    punto de entrada + registro del Service Worker
+  tareas.js                 lógica: crearTarea, renderizarTarea, cargarTareas
+  referencia-typescript/    versión tipada de referencia (no se ejecuta)
+
+UPTC · Facultad de Ingeniería · Electiva - PWA

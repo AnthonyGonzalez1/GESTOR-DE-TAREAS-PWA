@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 18 · Service Workers (2/2) · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .recursos-box{border:1px solid var(--gold); border-radius:12px; background:var(--gold-tint); padding:1.1em 1.3em; margin:1.4em 0;}
+  .recursos-box h3{margin:0 0 .3em; font-family:var(--serif); font-size:1.05em; color:var(--ink);}
+  .recursos-box p.rb-lead{margin:0 0 .8em; font-size:.88em; color:#444;}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.5em;}
+  .recursos-list li{display:flex; align-items:center; gap:.7em; font-size:.88em;}
+  .recursos-list a{font-weight:700; color:var(--ink); background:#fff; border:1px solid var(--gold); border-radius:999px; padding:.35em .9em; text-decoration:none; flex:0 0 auto;}
+  .recursos-list a:hover{background:var(--gold);}
+  .recursos-list span.rb-desc{color:#555;}
+  .flow-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.8em; margin:1.2em 0;}
+  .flow-card{border:1px solid var(--line); border-radius:10px; padding:1em 1em; position:relative;}
+  .flow-card .lc-n{width:1.9em; height:1.9em; border-radius:50%; background:var(--ink); color:var(--gold); display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:.95em; margin-bottom:.5em;}
+  .flow-card b{display:block; font-size:.92em; margin-bottom:.3em;}
+  .flow-card p{margin:0; font-size:.8em; color:#444; line-height:1.4;}
+  @media (max-width:760px){ .flow-grid{grid-template-columns:1fr;} }
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+      <a href="Guion_Clase_Sesion_18.docx">Guion de la clase (Word) →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 4 de 30</div>
+    <h1>Service Workers (2/2): cacheo de rutas</h1>
+    <div class="lead">La Sesión 17 dejó un Service Worker que registra un manejador de fetch, pero deja pasar cada petición sin tocarla. Hoy lo interceptamos de verdad: respondemos desde el caché cuando podemos, y aplicamos la versión más simple posible de una estrategia de respuesta. Las 5 estrategias completas, con nombre, llegan en la Sesión 20.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Distinguir</b> un manejador de <code>fetch</code> que deja pasar la petición (Sesión 17) de uno que la intercepta de verdad.</span></li>
+      <li><span class="chk">✓</span><span><b>Usar</b> <code>caches.match()</code> dentro del evento <code>fetch</code> para responder con un recurso ya guardado en caché.</span></li>
+      <li><span class="chk">✓</span><span><b>Aplicar</b> una estrategia básica de respuesta: caché primero, red si no está — sin escribir nada nuevo al caché todavía.</span></li>
+      <li><span class="chk">✓</span><span><b>Verificar</b> en DevTools, pestaña Network, que una ruta cacheada se sirve realmente desde el Service Worker y no desde la red.</span></li>
+      <li><span class="chk">✓</span><span><b>Reconocer</b> que esto es la versión más simple de una estrategia de caché — las 5 estrategias completas, con nombre, llegan en la Sesión 20.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <p class="rb-lead">Descarga esto antes de empezar — es tu Gestor de tareas exactamente como quedó al cierre de la Sesión 17, con el Service Worker ya registrado.</p>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion17.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 17.</b> El Gestor de tareas con el <code>sw.js</code> ya registrado (install, activate y un fetch que solo deja pasar la petición): es donde vas a interceptar de verdad hoy.</span></li>
+      </ul>
+    </div>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Agenda de la sesión · 120 minutos en clase</h3>
+    <table class="uptc">
+      <tr><th>Momento</th><th>Duración</th></tr>
+      <tr><td>Bienvenida y recap de la Sesión 17</td><td class="num">8 min</td></tr>
+      <tr><td>De "dejar pasar" a interceptar de verdad (explicación)</td><td class="num">10 min</td></tr>
+      <tr><td>caches.match(): responder desde el caché (explicación + demo)</td><td class="num">15 min</td></tr>
+      <tr><td>Cachear las primeras rutas: cuáles y por qué (explicación)</td><td class="num">12 min</td></tr>
+      <tr><td>Una estrategia básica de respuesta (explicación + demo)</td><td class="num">25 min</td></tr>
+      <tr><td>Caso real: el sw.js actualizado del Gestor de tareas (demo en vivo)</td><td class="num">25 min</td></tr>
+      <tr><td>Actividad 1 · Intercepta tu propio fetch (individual)</td><td class="num">15 min</td></tr>
+      <tr><td>Actividad 2 · Detective de red (parejas) y cierre</td><td class="num">10 min</td></tr>
+    </table>
+    <p class="small-note" style="margin-top:.6em;">La Actividad 3 es tarea individual fuera de clase: no está contada en los 120 minutos.</p>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida y recap</h2>
+    <div class="body-text"><p>En la Sesión 17 registramos el Service Worker del Gestor de tareas y completamos su ciclo de vida — install cachea los recursos esenciales con <code>cache.addAll()</code>, activate reclama el control con <code>clients.claim()</code>, y fetch... deja pasar cada petición directo a la red, sin tocarla. Cumplía el requisito de instalabilidad, pero no hacía nada útil todavía. Hoy cambiamos exactamente eso.</p></div>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> el <code>install</code> de la Sesión 17 ya guardó en caché <code>index.html</code>, <code>estilos.css</code>, <code>app.js</code> y <code>manifest.json</code>. Hoy no cacheamos nada nuevo — usamos lo que ya está ahí.</div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>De "dejar pasar" a interceptar de verdad</h2>
+    <div class="body-text"><p><code>event.respondWith()</code> es la llamada que de verdad controla qué recibe la página como respuesta a su petición. Pasarle directamente <code>fetch(event.request)</code>, como hicimos la sesión pasada, es una respuesta válida — pero ignora por completo el caché que el evento <code>install</code> ya construyó. La petición sigue yendo a la red aunque el recurso ya esté guardado localmente.</p></div>
+    <div class="body-text" style="margin-top:1em;"><p>Interceptar de verdad significa decidir, dentro del propio manejador de <code>fetch</code>, de dónde viene la respuesta: del caché, de la red, o de una combinación de ambas. Esa decisión es, en el fondo, lo que se llama una <b>estrategia de caché</b> — hoy construimos la más simple posible.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>caches.match(): responder desde el caché</h2>
+    <div class="body-text"><p><code>caches.match(request)</code> busca, en todos los cachés del origen, una respuesta guardada que coincida con la petición dada. Devuelve una promesa: se resuelve con el <code>Response</code> encontrado, o con <code>undefined</code> si no hay coincidencia [1].</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+      <pre><code>self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(
+    caches.<span class="tok-fn">match</span>(event.request).<span class="tok-fn">then</span>(encontrado <span class="tok-punct">=&gt;</span> {
+      <span class="tok-com">// encontrado es un Response, o undefined</span>
+      <span class="tok-kw">return</span> encontrado;
+    })
+  );
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Este fragmento por sí solo está incompleto a propósito: si <code>encontrado</code> es <code>undefined</code> (la ruta no está en caché), la respuesta sería <code>undefined</code> y la petición fallaría. Falta la segunda mitad — qué hacer cuando no está en caché — y eso es exactamente la sección siguiente.</p></div>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> <code>caches.match()</code> es la contraparte de lectura de <code>cache.addAll()</code>. La lista completa de operaciones de la interfaz Cache — <code>put()</code>, <code>delete()</code>, <code>keys()</code> y el resto — la vemos formalmente en la Sesión 19.</div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Cachear las primeras rutas</h2>
+    <div class="body-text"><p>"Las primeras rutas" son, literalmente, las que la Sesión 17 ya dejó en <code>CORE_ASSETS</code>: el shell mínimo de la aplicación — el HTML, el CSS, el JavaScript principal y el manifest. Son las rutas que, si fallan, la aplicación ni siquiera puede dibujarse en pantalla. Por eso se cachean en <code>install</code>, antes de que exista ninguna petición real del usuario.</p></div>
+    <div class="body-text" style="margin-top:1em;"><p>Lo que no cacheamos hoy: rutas dinámicas, respuestas de una API, o cualquier recurso que cambie con frecuencia. Cachear ese tipo de rutas sin una estrategia pensada puede dejar al usuario viendo datos viejos indefinidamente — ese cuidado es, precisamente, el tema de las 5 estrategias de caché de la Sesión 20.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Una estrategia básica de respuesta</h2>
+    <div class="body-text"><p>Uniendo las dos piezas anteriores: si la petición está en caché, respondemos con eso; si no, vamos a la red. Nada más — hoy no escribimos nada nuevo en el caché durante <code>fetch</code>, eso y las otras estrategias con nombre (Cache Only, Network Only, Network First, Stale-While-Revalidate) llegan formalmente en la Sesión 20.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+      <pre><code>self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(
+    caches.<span class="tok-fn">match</span>(event.request).<span class="tok-fn">then</span>(
+      encontrado <span class="tok-punct">=&gt;</span> encontrado <span class="tok-punct">||</span> <span class="tok-fn">fetch</span>(event.request)
+    )
+  );
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><code>encontrado || fetch(event.request)</code> es la forma corta de decir "si hay algo en caché, úsalo; si no, ve a la red". Para las cuatro rutas de <code>CORE_ASSETS</code>, la respuesta ahora viene del disco del usuario, no de la red — funcionan sin conexión por primera vez.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Caso real: el sw.js actualizado del Gestor de tareas</h2>
+    <div class="body-text"><p>El único cambio real de hoy frente a la Sesión 17 es el manejador de <code>fetch</code>. <code>install</code> y <code>activate</code> quedan exactamente igual:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js</div>
+      <pre><code><span class="tok-kw">const</span> CACHE_NAME <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v1'</span>;
+<span class="tok-kw">const</span> CORE_ASSETS <span class="tok-punct">=</span> [
+  <span class="tok-str">'/index.html'</span>,
+  <span class="tok-str">'/css/estilos.css'</span>,
+  <span class="tok-str">'/js/app.js'</span>,
+  <span class="tok-str">'/manifest.json'</span>,
+];
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'install'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(
+    caches.<span class="tok-fn">open</span>(CACHE_NAME).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">addAll</span>(CORE_ASSETS))
+  );
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(self.clients.<span class="tok-fn">claim</span>());
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(
+    caches.<span class="tok-fn">match</span>(event.request).<span class="tok-fn">then</span>(
+      encontrado <span class="tok-punct">=&gt;</span> encontrado <span class="tok-punct">||</span> <span class="tok-fn">fetch</span>(event.request)
+    )
+  );
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Para verificarlo: F12 → pestaña <b>Network</b> → recarga la página. Busca la fila de <code>estilos.css</code> o <code>app.js</code>: en la columna "Size" debería decir <code>(ServiceWorker)</code> en vez de un tamaño en KB — esa palabra es la prueba de que la respuesta vino del caché, no de la red. Compáralo con una petición que no esté en <code>CORE_ASSETS</code>: esa sí debería mostrar su tamaño normal, porque cae al <code>fetch()</code> de respaldo.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Intercepta tu propio fetch</h4></div>
+      <div class="meta-row">INDIVIDUAL · 15 MIN</div>
+      <p>Actualiza el manejador de <code>fetch</code> de tu propio <code>sw.js</code> (el de la Actividad de la Sesión 17): reemplaza el <code>fetch(event.request)</code> directo por la versión con <code>caches.match()</code> y respaldo a la red.</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Detective de red</h4></div>
+      <div class="meta-row">PAREJAS · 10 MIN</div>
+      <p>En parejas, abran una PWA real en DevTools → Network, recarguen, y busquen al menos una petición servida como <code>(ServiceWorker)</code> y una servida normalmente desde la red o el caché HTTP del navegador.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> las dos rutas encontradas y la diferencia observada, revisada en plenaria.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">3</div><h4>Prueba el offline real</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 15 MIN</div>
+      <p>En tu propio proyecto, con el Service Worker actualizado: DevTools → Network → marca "Offline", y recarga la página. Confirma que <code>CORE_ASSETS</code> sigue cargando y anota qué falla (si algo falla).</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> captura de la página funcionando en modo offline, subida antes de la próxima sesión.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>Pasar la petición directo a <code>fetch()</code> es válido, pero ignora el caché — no es interceptar de verdad.</li>
+      <li><code>caches.match(request)</code> busca una respuesta guardada; devuelve el <code>Response</code> o <code>undefined</code>.</li>
+      <li>La estrategia de hoy: <code>encontrado || fetch(event.request)</code> — caché primero, red si no está, sin escribir nada nuevo.</li>
+      <li>Solo cacheamos las primeras rutas (el shell de la app) — nada dinámico todavía.</li>
+      <li>En DevTools → Network, una respuesta servida desde el Service Worker se marca como <code>(ServiceWorker)</code> en la columna Size.</li>
+      <li>Esto es la versión más simple de una estrategia de caché — las 5 estrategias completas, con nombre, llegan en la Sesión 20.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 19: Almacenamiento y caché.</b> Cache Storage API vs. caché HTTP: las ocho operaciones principales de la interfaz Cache, gestión de versiones y limpieza de cachés antiguos.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> MDN web docs, "Cache," Progressive web apps, MDN Web Docs.</div>
+      <div><b>[2]</b> Google, "Service Workers," web.dev, 2023.</div>
+      <div><b>[3]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 4 de 30</span>
+  </div>
+</div>
+</body>
+</html>

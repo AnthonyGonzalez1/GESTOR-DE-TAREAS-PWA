@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 18 · Service Workers (2/2) · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .life-grid-deck{display:grid; grid-template-columns:repeat(3,1fr); gap:.7em; margin-top:.8em;}
+  .life-card-deck{border:1px solid var(--line); border-radius:10px; padding:.8em .8em;}
+  .life-card-deck .lc-n{width:1.7em; height:1.7em; border-radius:50%; background:var(--ink); color:var(--gold); display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:.82em; margin-bottom:.4em;}
+  .life-card-deck .lc-event{display:inline-block; font-size:.6em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.08em .5em; border-radius:999px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.35em;}
+  .life-card-deck b{display:block; font-size:.78em; margin-bottom:.25em;}
+  .life-card-deck p{margin:0; font-size:.68em; color:#444; line-height:1.35;}
+  .req-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1em; margin-top:1em;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9s1.3-6.5 3.8-9Z" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="ic-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3 5.6 5.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="ic-code" viewBox="0 0 24 24"><path d="M8 8L4 12l4 4M16 8l4 4-4 4M13.5 5.5l-3 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-alert" viewBox="0 0 24 24"><path d="M12 3.5 21 20H3L12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="9.5" x2="12" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 4 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>Service Workers<br>(2/2)</h1>
+          <div class="lead">Sesión 4 de 30 — de dejar pasar peticiones a responder desde el caché: cacheo de rutas y una primera estrategia de respuesta.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>04 de 30 · Fundamentos PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <rect x="130" y="90" width="140" height="140" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <circle cx="200" cy="160" r="34" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M186 160 l10 10 l20 -22" stroke="#1A1A1A" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap y bienvenida">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SESIÓN 04</div>
+            <h2>Un Service Worker que aún no usa su caché</h2>
+            <p>La Sesión 17 dejó el ciclo de vida completo, pero el fetch todavía deja pasar cada petición. Hoy lo cambiamos.</p>
+            <div class="tb-preview"><span>Recap Sesión 17</span><span>Agenda de hoy</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="16" fill="#1A1A1A"/>
+              <text x="40" y="274" text-anchor="middle" font-size="9" font-weight="700" fill="#FFCC29">S17</text>
+              <circle cx="200" cy="165" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">S18</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="360" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#1A1A1A">S19</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap de la Sesión 17">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Lo que ya tenemos</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>install y activate</b><span style="font-size:.78em;color:#555;">Cachean CORE_ASSETS con cache.addAll() y reclaman el control con clients.claim().</span></div>
+            <div class="mini-card fragment"><b>fetch (Sesión 17)</b><span style="font-size:.78em;color:#555;">Registrado, pero responde siempre con fetch(event.request) — deja pasar todo.</span></div>
+            <div class="mini-card fragment"><b>Hoy</b><span style="font-size:.78em;color:#555;">Interceptamos de verdad: caches.match() y una estrategia básica de respuesta.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Agenda (120 min)">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Agenda de la sesión</h2>
+          <hr class="rule">
+          <table class="uptc">
+            <tr><th>Momento</th><th>Duración</th></tr>
+            <tr><td>Bienvenida y recap de la Sesión 17</td><td class="num">8 min</td></tr>
+            <tr><td>De "dejar pasar" a interceptar de verdad</td><td class="num">10 min</td></tr>
+            <tr><td>caches.match(): responder desde el caché</td><td class="num">15 min</td></tr>
+            <tr><td>Cachear las primeras rutas</td><td class="num">12 min</td></tr>
+            <tr><td>Una estrategia básica de respuesta</td><td class="num">25 min</td></tr>
+            <tr><td>Caso real: sw.js actualizado del Gestor de tareas</td><td class="num">25 min</td></tr>
+            <tr><td>Actividad 1 · Intercepta tu propio fetch (individual)</td><td class="num">15 min</td></tr>
+            <tr><td>Actividad 2 · Detective de red (parejas) y cierre</td><td class="num">10 min</td></tr>
+          </table>
+        </section>
+
+        <section class="slide slide--divider" data-section="interceptar" data-section-label="Interceptar de verdad" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>De "dejar pasar" a interceptar de verdad</h2>
+            <p>event.respondWith() decide de dónde viene la respuesta — del caché, de la red, o de ambos.</p>
+            <div class="tb-preview"><span>event.respondWith()</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="140" cy="160" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M166 160 h50" stroke="#373435" stroke-width="4" stroke-linecap="round"/>
+              <path d="M216 160 l60 -60 M216 160 l60 60" stroke="#373435" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <rect x="276" y="70" width="80" height="50" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="276" y="170" width="80" height="50" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="316" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">caché</text>
+              <text x="316" y="200" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">red</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="interceptar" data-section-label="Interceptar de verdad" data-slide-label="Lo que respondWith() controla">
+          <div class="kicker">Interceptar de verdad · 1.1</div>
+          <h2 class="slide-title">Lo que event.respondWith() controla de verdad</h2>
+          <hr class="rule">
+          <div class="body-text"><p>Pasarle directamente <code>fetch(event.request)</code>, como hicimos la sesión pasada, es una respuesta válida — pero ignora por completo el caché que <code>install</code> ya construyó. La petición sigue yendo a la red aunque el recurso ya esté guardado localmente.</p></div>
+          <div class="body-text" style="margin-top:1em;"><p>Interceptar de verdad significa decidir, dentro del propio manejador de <code>fetch</code>, de dónde viene la respuesta: del caché, de la red, o de una combinación de ambas.</p></div>
+          <div class="callout" style="margin-top:1em;">Esa decisión es, en el fondo, una <b>estrategia de caché</b> — hoy construimos la más simple posible.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cachesmatch" data-section-label="caches.match()" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>caches.match(): responder desde el caché</h2>
+            <p>Busca una respuesta guardada en cualquier caché del origen — o undefined si no hay coincidencia.</p>
+            <div class="tb-preview"><span>caches.match(request)</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="110" y="90" width="180" height="140" rx="12" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <path d="M140 120 h120 M140 145 h90 M140 170 h120 M140 195 h60" stroke="#373435" stroke-width="4" stroke-linecap="round" opacity=".5"/>
+              <circle cx="270" cy="230" r="34" fill="#fff" stroke="#1A1A1A" stroke-width="5"/>
+              <line x1="294" y1="254" x2="330" y2="290" stroke="#1A1A1A" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cachesmatch" data-section-label="caches.match()" data-slide-label="Responder desde el caché">
+          <div class="kicker">caches.match() · 2.1</div>
+          <h2 class="slide-title">Responder desde el caché</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+            <pre><code>self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(
+    caches.<span class="tok-fn">match</span>(event.request).<span class="tok-fn">then</span>(encontrado <span class="tok-punct">=&gt;</span> {
+      <span class="tok-com">// encontrado es un Response, o undefined</span>
+      <span class="tok-kw">return</span> encontrado;
+    })
+  );
+});</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Incompleto a propósito: si <code>encontrado</code> es <code>undefined</code>, la petición fallaría. La lista completa de la interfaz Cache llega en la Sesión 19.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="rutas" data-section-label="Cachear rutas" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>Cachear las primeras rutas</h2>
+            <p>Las mismas cuatro rutas que el install de la Sesión 17 ya guardó — el shell mínimo de la aplicación.</p>
+            <div class="tb-preview"><span>CORE_ASSETS</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="120" y="70" width="140" height="170" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="150" y="50" width="140" height="170" rx="10" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <path d="M175 90 h90 M175 115 h60 M175 140 h90 M175 165 h50" stroke="#373435" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+              <circle cx="260" cy="200" r="18" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="rutas" data-section-label="Cachear rutas" data-slide-label="Cuáles, y por qué">
+          <div class="kicker">Cachear las primeras rutas · 3.1</div>
+          <h2 class="slide-title">Cuáles, y por qué esas y no otras</h2>
+          <hr class="rule">
+          <div class="body-text"><p>"Las primeras rutas" son, literalmente, las de <code>CORE_ASSETS</code>: el HTML, el CSS, el JavaScript principal y el manifest — el shell mínimo sin el cual la aplicación ni siquiera puede dibujarse en pantalla.</p></div>
+          <div class="body-text" style="margin-top:1em;"><p>Lo que <b>no</b> cacheamos hoy: rutas dinámicas, respuestas de una API, o cualquier recurso que cambie con frecuencia.</p></div>
+          <div class="callout" style="margin-top:1em;">Cachear ese tipo de rutas sin una estrategia pensada puede dejar al usuario viendo datos viejos indefinidamente — el tema exacto de las 5 estrategias de la Sesión 20.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="estrategia" data-section-label="Estrategia básica" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Una estrategia básica de respuesta</h2>
+            <p>Caché primero, red si no está — sin escribir nada nuevo al caché todavía.</p>
+            <div class="tb-preview"><span>encontrado || fetch(event.request)</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <path d="M200 70 L260 160 L200 250 L140 160 Z" fill="#FFCC29" stroke="#1A1A1A" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M200 250 v30 M140 160 h-40 M260 160 h40" stroke="#373435" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="80" cy="160" r="14" fill="#fff" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="320" cy="160" r="14" fill="#fff" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="200" cy="295" r="14" fill="#fff" stroke="#1A1A1A" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="estrategia" data-section-label="Estrategia básica" data-slide-label="El código completo">
+          <div class="kicker">Estrategia básica · 4.1</div>
+          <h2 class="slide-title">encontrado || fetch(event.request)</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+            <pre><code>self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(
+    caches.<span class="tok-fn">match</span>(event.request).<span class="tok-fn">then</span>(
+      encontrado <span class="tok-punct">=&gt;</span> encontrado <span class="tok-punct">||</span> <span class="tok-fn">fetch</span>(event.request)
+    )
+  );
+});</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Para las cuatro rutas de <code>CORE_ASSETS</code>, la respuesta ahora viene del disco del usuario, no de la red — funcionan sin conexión por primera vez.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="caso" data-section-label="Caso real" data-slide-label="Caso real">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>Caso real: el sw.js actualizado del Gestor de tareas</h2>
+            <p>install y activate quedan igual — el único cambio real está en fetch.</p>
+            <div class="tb-preview"><span>sw.js completo</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="110" y="50" width="180" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="130" y="74" width="90" height="20" rx="4" fill="#FFCC29"/>
+              <path d="M130 106 h140 M130 124 h100 M130 142 h140 M130 160 h80 M130 178 h140 M130 196 h60 M130 214 h100" stroke="#373435" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="sw.js completo">
+          <div class="kicker">Caso real · 5.1</div>
+          <h2 class="slide-title">El sw.js completo</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js</div>
+            <pre><code><span class="tok-kw">const</span> CACHE_NAME <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v1'</span>;
+<span class="tok-kw">const</span> CORE_ASSETS <span class="tok-punct">=</span> [<span class="tok-str">'/index.html'</span>, <span class="tok-str">'/css/estilos.css'</span>, <span class="tok-str">'/js/app.js'</span>, <span class="tok-str">'/manifest.json'</span>];
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'install'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(caches.<span class="tok-fn">open</span>(CACHE_NAME).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">addAll</span>(CORE_ASSETS)));
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(self.clients.<span class="tok-fn">claim</span>());
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(
+    caches.<span class="tok-fn">match</span>(event.request).<span class="tok-fn">then</span>(
+      encontrado <span class="tok-punct">=&gt;</span> encontrado <span class="tok-punct">||</span> <span class="tok-fn">fetch</span>(event.request)
+    )
+  );
+});</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">El único cambio frente a la Sesión 17 está en el manejador de <code>fetch</code> — install y activate quedan idénticos.</div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="Verificar en DevTools">
+          <div class="kicker">Caso real · 5.2</div>
+          <h2 class="slide-title">Verificar en DevTools</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>DevTools</div>
+            <pre><code><span class="tok-com">// F12 → Network → recarga la página</span>
+<span class="tok-com">// Busca la fila de estilos.css o app.js</span>
+<span class="tok-com">//</span>
+<span class="tok-com">// Columna "Size": debe decir (ServiceWorker)</span>
+<span class="tok-com">// en vez de un tamaño en KB</span></code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Esa palabra es la prueba de que la respuesta vino del caché, no de la red. Una ruta fuera de CORE_ASSETS sí debería mostrar su tamaño normal.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Actividades para la clase</h2>
+            <p>Interceptar tu propio fetch, investigar peticiones reales, y probar el offline de verdad.</p>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="200" cy="215" rx="130" ry="32" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <circle cx="200" cy="108" r="26" fill="#373435"/>
+              <rect x="168" y="132" width="64" height="58" rx="22" fill="#FFCC29"/>
+              <circle cx="92" cy="150" r="23" fill="#373435"/>
+              <rect x="63" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <circle cx="308" cy="150" r="23" fill="#373435"/>
+              <rect x="279" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <rect x="182" y="200" width="36" height="26" rx="3" fill="#fff" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Las 3 actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Pongamos en práctica lo aprendido</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">1</div><h4>Intercepta tu propio fetch</h4></div>
+              <div class="meta-row">INDIVIDUAL · 15 MIN</div>
+              <p>Reemplazar el fetch(event.request) directo por caches.match() con respaldo a la red.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">2</div><h4>Detective de red</h4></div>
+              <div class="meta-row">PAREJAS · 10 MIN</div>
+              <p>En DevTools → Network, encontrar una petición (ServiceWorker) y una servida normalmente.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">3</div><h4>Prueba el offline real</h4></div>
+              <div class="meta-row">TAREA · FUERA DE CLASE</div>
+              <p>Con Network en "Offline", confirmar que CORE_ASSETS sigue cargando en tu propio proyecto.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>Cierre de la sesión</h2>
+            <p>Lo esencial de hoy, y hacia dónde vamos en la Sesión 19.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="120" y="50" width="160" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="160" y="34" width="80" height="32" rx="8" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="150" cy="112" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 112 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="112" x2="250" y2="112" stroke="#373435" stroke-width="4"/>
+              <circle cx="150" cy="152" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 152 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="152" x2="250" y2="152" stroke="#373435" stroke-width="4"/>
+              <line x1="305" y1="90" x2="305" y2="250" stroke="#373435" stroke-width="5"/>
+              <path d="M305 90 L305 122 L347 105 Z" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la lección</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment">Pasar la petición directo a <code>fetch()</code> es válido, pero ignora el caché — no es interceptar de verdad.</li>
+            <li class="fragment"><code>caches.match(request)</code> busca una respuesta guardada; devuelve el <code>Response</code> o <code>undefined</code>.</li>
+            <li class="fragment">La estrategia de hoy: <code>encontrado || fetch(event.request)</code> — caché primero, red si no está, sin escribir nada nuevo.</li>
+            <li class="fragment">Solo cacheamos las primeras rutas (el shell de la app) — nada dinámico todavía.</li>
+            <li class="fragment">En DevTools → Network, una respuesta servida desde el Service Worker se marca <code>(ServiceWorker)</code> en la columna Size.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 19: Almacenamiento y caché.</b> Cache Storage API vs. caché HTTP: las ocho operaciones principales de la interfaz Cache, gestión de versiones y limpieza de cachés antiguos.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> MDN web docs, "Cache," Progressive web apps, MDN Web Docs.</div>
+            <div><b>[2]</b> Google, "Service Workers," web.dev, 2023.</div>
+            <div><b>[3]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 21</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>
