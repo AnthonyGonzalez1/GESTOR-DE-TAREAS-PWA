@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 19 · Almacenamiento y caché · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .recursos-box{border:1px solid var(--gold); border-radius:12px; background:var(--gold-tint); padding:1.1em 1.3em; margin:1.4em 0;}
+  .recursos-box h3{margin:0 0 .3em; font-family:var(--serif); font-size:1.05em; color:var(--ink);}
+  .recursos-box p.rb-lead{margin:0 0 .8em; font-size:.88em; color:#444;}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.5em;}
+  .recursos-list li{display:flex; align-items:center; gap:.7em; font-size:.88em;}
+  .recursos-list a{font-weight:700; color:var(--ink); background:#fff; border:1px solid var(--gold); border-radius:999px; padding:.35em .9em; text-decoration:none; flex:0 0 auto;}
+  .recursos-list a:hover{background:var(--gold);}
+  .recursos-list span.rb-desc{color:#555;}
+  .op-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.8em; margin:1.2em 0;}
+  .op-card{border:1px solid var(--line); border-radius:10px; padding:.85em 1em;}
+  .op-card .op-name{display:inline-block; font-size:.8em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .6em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .op-card p{margin:0; font-size:.84em; color:#444; line-height:1.4;}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} .op-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+      <a href="Guion_Clase_Sesion_19.docx">Guion de la clase (Word) →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 5 de 30</div>
+    <h1>Almacenamiento y caché</h1>
+    <div class="lead">Cómo el Service Worker guarda y recupera recursos con la interfaz Cache Storage — y en qué se diferencia del caché HTTP tradicional que el navegador ya maneja por su cuenta.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Distinguir</b> el caché HTTP tradicional de la Cache Storage API: quién los controla y cómo.</span></li>
+      <li><span class="chk">✓</span><span><b>Usar</b> las operaciones principales de la interfaz Cache: open, put, add/addAll, match, delete, keys.</span></li>
+      <li><span class="chk">✓</span><span><b>Explicar</b> por qué la Cache Storage API existe de forma independiente al caché HTTP, y qué gana un Service Worker con eso.</span></li>
+      <li><span class="chk">✓</span><span><b>Versionar</b> el nombre de un caché y limpiar versiones antiguas en el evento activate.</span></li>
+      <li><span class="chk">✓</span><span><b>Verificar</b> en DevTools el contenido exacto de un Cache Storage del Gestor de tareas.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <p class="rb-lead">Descarga esto antes de empezar — es tu Gestor de tareas exactamente como quedó al cierre de la Sesión 18, con el Service Worker ya respondiendo desde el caché.</p>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion18.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 18.</b> El <code>sw.js</code> ya intercepta <code>fetch</code> con <code>caches.match()</code>, pero sin escribir nada nuevo al caché ni versionarlo: eso es lo que agregas hoy.</span></li>
+      </ul>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida y recap</h2>
+    <div class="body-text"><p>En la Sesión 17 registramos el Service Worker del Gestor de tareas y cacheamos los recursos esenciales en el evento <code>install</code> con <code>cache.addAll()</code>. En la Sesión 18 aprendimos a leer ese caché de verdad, con <code>caches.match()</code> dentro de <code>fetch</code>. Las dos veces tratamos la interfaz Cache como una caja negra. Hoy la abrimos por completo: qué es exactamente un "caché" en el contexto de una PWA, cómo escribir en él a mano, y por qué es distinto del caché que el navegador ya maneja desde siempre.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>Dos mecanismos de caché</h2>
+    <div class="body-text"><p>Cuando se habla de "caché" en el navegador, en realidad se habla de dos sistemas completamente independientes:</p></div>
+    <div style="overflow-x:auto;">
+    <table class="uptc" style="margin-top:1em;">
+      <tr><th>Característica</th><th>Caché HTTP</th><th>Cache Storage API</th></tr>
+      <tr><td><b>Quién lo controla</b></td><td>El servidor, mediante encabezados HTTP</td><td>JavaScript, normalmente desde el Service Worker</td></tr>
+      <tr><td><b>Cómo se configura</b></td><td>Cache-Control, ETag, Last-Modified, Expires</td><td>Código explícito: put(), match(), delete()</td></tr>
+      <tr><td><b>Funciona sin Service Worker</b></td><td>Sí — es nativo del navegador</td><td>No — requiere un Service Worker activo</td></tr>
+      <tr><td><b>Nivel de control</b></td><td>Reglas generales por recurso</td><td>Total: qué se guarda, cuándo, y qué se sirve</td></tr>
+      <tr><td><b>Ideal para</b></td><td>Recursos estáticos con reglas simples</td><td>Offline real y estrategias de caché personalizadas</td></tr>
+    </table>
+    </div>
+    <p class="fig-caption">La interfaz Cache en los service workers es un mecanismo de almacenamiento independiente de la caché HTTP. Fuente: adaptado de [1].</p>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> la interfaz Cache ofrece un control más flexible a través de una API de JavaScript, permitiendo definir estrategias personalizadas sin que las configuraciones de la caché HTTP afecten directamente los recursos almacenados [1].</div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>El caché HTTP tradicional</h2>
+    <div class="body-text"><p>El caché HTTP existe desde mucho antes que las PWA: es el mecanismo por el cual el navegador decide, sin preguntarle nada a JavaScript, si puede reutilizar una respuesta que ya descargó. Lo controla el servidor con encabezados en la respuesta:</p></div>
+    <ul class="clean">
+      <li><b>Cache-Control:</b> el encabezado principal — por ejemplo <code>max-age=3600</code> (reutilizar por una hora) o <code>no-store</code> (nunca guardar).</li>
+      <li><b>ETag:</b> una "huella digital" del recurso; el navegador la envía de vuelta para preguntar "¿cambió esto?" sin descargar el archivo completo.</li>
+      <li><b>Last-Modified:</b> similar a ETag, pero basado en la fecha de la última modificación del recurso.</li>
+    </ul>
+    <div class="body-text" style="margin-top:.8em;"><p>Este mecanismo funciona igual con o sin Service Worker — es responsabilidad del navegador y del servidor, no de la aplicación.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>La interfaz Cache: operaciones principales</h2>
+    <div class="body-text"><p>La Cache Storage API expone dos objetos globales: <code>caches</code> (para administrar los cachés con nombre) y, dentro de cada uno, un objeto <code>Cache</code> (para administrar sus entradas). Estas son las operaciones que más se usan:</p></div>
+    <div class="op-grid">
+      <div class="op-card"><span class="op-name">caches.open(nombre)</span><p>Abre (o crea) un caché con ese nombre y devuelve una promesa con el objeto Cache correspondiente.</p></div>
+      <div class="op-card"><span class="op-name">cache.addAll([...])</span><p>Hace fetch() de cada URL de la lista y guarda automáticamente cada respuesta. La usamos en la Sesión 17.</p></div>
+      <div class="op-card"><span class="op-name">cache.put(request, response)</span><p>Guarda una respuesta específica para una petición — control total, sin hacer fetch() por dentro.</p></div>
+      <div class="op-card"><span class="op-name">cache.match(request)</span><p>Busca, dentro del caché, una respuesta guardada que coincida con la petición dada.</p></div>
+      <div class="op-card"><span class="op-name">cache.delete(request)</span><p>Elimina una entrada específica del caché.</p></div>
+      <div class="op-card"><span class="op-name">cache.keys()</span><p>Devuelve la lista de todas las peticiones (requests) guardadas en ese caché.</p></div>
+      <div class="op-card"><span class="op-name">caches.keys()</span><p>Devuelve los nombres de todos los cachés que existen para el origen actual.</p></div>
+      <div class="op-card"><span class="op-name">caches.delete(nombre)</span><p>Elimina un caché completo, con todas sus entradas.</p></div>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Cache Storage en la práctica</h2>
+    <div class="body-text"><p>Con <code>put()</code> y <code>match()</code> se puede construir, a mano, el mismo comportamiento que <code>addAll()</code> hace automáticamente — pero con control total sobre cada paso:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+      <pre><code><span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">guardarManual</span>() {
+  <span class="tok-kw">const</span> cache <span class="tok-punct">=</span> <span class="tok-kw">await</span> caches.<span class="tok-fn">open</span>(<span class="tok-str">'gestor-tareas-v1'</span>);
+  <span class="tok-kw">const</span> respuesta <span class="tok-punct">=</span> <span class="tok-kw">await</span> <span class="tok-fn">fetch</span>(<span class="tok-str">'/css/estilos.css'</span>);
+  <span class="tok-kw">await</span> cache.<span class="tok-fn">put</span>(<span class="tok-str">'/css/estilos.css'</span>, respuesta);
+}
+
+<span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">buscarEnCache</span>(peticion) {
+  <span class="tok-kw">const</span> cache <span class="tok-punct">=</span> <span class="tok-kw">await</span> caches.<span class="tok-fn">open</span>(<span class="tok-str">'gestor-tareas-v1'</span>);
+  <span class="tok-kw">const</span> encontrado <span class="tok-punct">=</span> <span class="tok-kw">await</span> cache.<span class="tok-fn">match</span>(peticion);
+  <span class="tok-kw">return</span> encontrado; <span class="tok-com">// Response, o undefined si no está</span>
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Esta pareja — <code>put()</code> para guardar, <code>match()</code> para recuperar — es, en esencia, la base sobre la que se construyen las 5 estrategias de caché de la Sesión 20.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Gestión de versiones y limpieza</h2>
+    <div class="body-text"><p>Cada vez que se actualiza el contenido cacheado, conviene cambiar el nombre del caché (por ejemplo, de <code>v1</code> a <code>v2</code>). Eso deja el caché viejo huérfano — y hay que borrarlo a mano en el evento <code>activate</code>, o se acumula espacio en el dispositivo del usuario para siempre:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+      <pre><code><span class="tok-kw">const</span> CACHE_ACTUAL <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v2'</span>;
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(
+    caches.<span class="tok-fn">keys</span>().<span class="tok-fn">then</span>(nombres <span class="tok-punct">=&gt;</span>
+      <span class="tok-fn">Promise</span>.<span class="tok-fn">all</span>(
+        nombres
+          .<span class="tok-fn">filter</span>(nombre <span class="tok-punct">=&gt;</span> nombre <span class="tok-punct">!==</span> CACHE_ACTUAL)
+          .<span class="tok-fn">map</span>(nombre <span class="tok-punct">=&gt;</span> caches.<span class="tok-fn">delete</span>(nombre))
+      )
+    )
+  );
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>El patrón es siempre el mismo: listar todos los cachés existentes con <code>caches.keys()</code>, filtrar los que no coinciden con la versión actual, y eliminarlos con <code>caches.delete()</code>.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Caso real: el sw.js actualizado</h2>
+    <div class="body-text"><p>Juntando la limpieza de versiones con lo que ya teníamos de la Sesión 17, así queda el <code>sw.js</code> del Gestor de tareas:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js</div>
+      <pre><code><span class="tok-kw">const</span> CACHE_ACTUAL <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v2'</span>;
+<span class="tok-kw">const</span> CORE_ASSETS <span class="tok-punct">=</span> [<span class="tok-str">'/index.html'</span>, <span class="tok-str">'/css/estilos.css'</span>, <span class="tok-str">'/js/app.js'</span>, <span class="tok-str">'/manifest.json'</span>];
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'install'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(
+    caches.<span class="tok-fn">open</span>(CACHE_ACTUAL).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">addAll</span>(CORE_ASSETS))
+  );
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(
+    caches.<span class="tok-fn">keys</span>().<span class="tok-fn">then</span>(nombres <span class="tok-punct">=&gt;</span>
+      <span class="tok-fn">Promise</span>.<span class="tok-fn">all</span>(nombres.<span class="tok-fn">filter</span>(n <span class="tok-punct">=&gt;</span> n <span class="tok-punct">!==</span> CACHE_ACTUAL).<span class="tok-fn">map</span>(n <span class="tok-punct">=&gt;</span> caches.<span class="tok-fn">delete</span>(n)))
+    ).<span class="tok-fn">then</span>(() <span class="tok-punct">=&gt;</span> self.clients.<span class="tok-fn">claim</span>())
+  );
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(<span class="tok-fn">fetch</span>(event.request));
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Para verificarlo: F12 → pestaña <b>Application</b> → sección <b>Cache Storage</b>. Ahí aparece <code>gestor-tareas-v2</code> con cada uno de los recursos guardados, y se puede inspeccionar el contenido exacto de cada respuesta.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">8</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Compara los dos cachés</h4></div>
+      <div class="meta-row">INDIVIDUAL · 12 MIN</div>
+      <p>Completa, con tus propias palabras, una tabla de dos columnas (Caché HTTP / Cache Storage API) respondiendo: ¿quién lo controla?, ¿necesita Service Worker?, ¿con qué código o encabezado se configura?</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Detective de Cache Storage</h4></div>
+      <div class="meta-row">PAREJAS · 13 MIN</div>
+      <p>En parejas, abran una PWA real en DevTools → Application → Cache Storage. Cuenten cuántos cachés distintos existen, y para cada uno, qué tipo de recursos guarda (¿HTML? ¿imágenes? ¿respuestas de API?).</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> la lista de cachés encontrados y su contenido, revisada en plenaria.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">3</div><h4>Versiona tu caché</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 20 MIN</div>
+      <p>Agrega el manejador de <code>activate</code> con limpieza de versiones antiguas a tu propio <code>sw.js</code> (el mismo del manifest y el Service Worker de las Sesiones 16-17), cambiando el nombre del caché de v1 a v2.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> captura de DevTools mostrando que solo existe el caché v2, subida antes de la próxima sesión.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>El <b>caché HTTP</b> lo controla el servidor con encabezados (Cache-Control, ETag) y funciona con o sin Service Worker.</li>
+      <li>La <b>Cache Storage API</b> es un mecanismo independiente, controlado por JavaScript, que requiere un Service Worker activo.</li>
+      <li>Operaciones clave: <code>caches.open()</code>, <code>cache.put()</code>/<code>addAll()</code>, <code>cache.match()</code>, <code>cache.delete()</code>, <code>cache.keys()</code>, <code>caches.keys()</code>, <code>caches.delete()</code>.</li>
+      <li><code>put()</code> + <code>match()</code> son la base de las estrategias de caché que vemos en la Sesión 20.</li>
+      <li>Versionar el nombre del caché y limpiar versiones antiguas en <code>activate</code> evita acumular espacio innecesario.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 20: Las 5 estrategias de caché (1/2).</b> Cache Only, Network Only y Cache First — la teoría de las 5 estrategias con nombre, y las 3 primeras implementadas y probadas sobre el Gestor de tareas.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> MDN web docs, "Caching," Progressive web apps, MDN Web Docs.</div>
+      <div><b>[2]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+      <div><b>[3]</b> Google, "Cache," web.dev / MDN Web API Reference.</div>
+      <div><b>[4]</b> MDN web docs, "HTTP caching," MDN Web Docs.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 5 de 30</span>
+  </div>
+</div>
+</body>
+</html>

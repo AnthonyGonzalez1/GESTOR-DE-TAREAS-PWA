@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 19 · Almacenamiento y caché · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .compare-table{width:100%; border-collapse:collapse; font-size:.72em;}
+  .compare-table th,.compare-table td{border:1px solid #ddd; padding:.5em .6em; text-align:left;}
+  .compare-table th{background:#1A1A1A; color:#fff;}
+  .compare-table td:first-child{font-weight:700; background:#FFF6DC;}
+  .compare-table tr:nth-child(even) td:not(:first-child){background:#FFFDF5;}
+  .op-grid-deck{display:grid; grid-template-columns:repeat(4,1fr); gap:.7em; margin-top:.8em;}
+  .op-card-deck{border:1px solid var(--line); border-radius:10px; padding:.75em .8em;}
+  .op-card-deck .op-name{display:inline-block; font-size:.66em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.08em .5em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.35em;}
+  .op-card-deck p{margin:0; font-size:.68em; color:#444; line-height:1.35;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-database" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 6v12c0 1.66 3.58 3 8 3s8-1.34 8-3V6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="ic-server" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="7.5" cy="7" r="1" fill="currentColor"/><circle cx="7.5" cy="17" r="1" fill="currentColor"/></symbol>
+<symbol id="ic-tag" viewBox="0 0 24 24"><path d="M12 3h6a2 2 0 0 1 2 2v6l-9 9-8-8 9-9Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15.5" cy="7.5" r="1.3" fill="currentColor"/></symbol>
+<symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-trash" viewBox="0 0 24 24"><path d="M5 7h14M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M7 7l1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 5 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>Almacenamiento<br>y caché</h1>
+          <div class="lead">Sesión 5 de 30 — la Cache Storage API y en qué se diferencia del caché HTTP tradicional del navegador.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>05 de 30 · Fundamentos PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <ellipse cx="200" cy="110" rx="70" ry="24" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <path d="M130 110 v90 c0 13 31 24 70 24 s70 -11 70 -24 v-90" fill="none" stroke="#1A1A1A" stroke-width="4"/>
+              <path d="M130 155 c0 13 31 24 70 24 s70 -11 70 -24" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="200" cy="132" r="16" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap y bienvenida">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SESIÓN 05</div>
+            <h2>Abrimos la caja negra del caché</h2>
+            <p>El Service Worker ya cachea recursos. Hoy vemos exactamente cómo, y por qué.</p>
+            <div class="tb-preview"><span>Recap Sesiones 17-18</span><span>Recursos de hoy</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="16" fill="#1A1A1A"/>
+              <text x="40" y="274" text-anchor="middle" font-size="9" font-weight="700" fill="#FFCC29">S17</text>
+              <circle cx="200" cy="165" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">S19</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="360" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#1A1A1A">S20</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap de las Sesiones 17-18">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Lo que ya tenemos</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>sw.js registrado</b><span style="font-size:.78em;color:#555;">Con install, activate y fetch — los 5 criterios de instalabilidad, cumplidos.</span></div>
+            <div class="mini-card fragment"><b>caches.match()</b><span style="font-size:.78em;color:#555;">Desde la Sesión 18, fetch ya responde desde el caché — pero seguimos usando la interfaz Cache como caja negra.</span></div>
+            <div class="mini-card fragment"><b>Hoy</b><span style="font-size:.78em;color:#555;">Abrimos esa caja: qué es un caché, y en qué se diferencia del caché HTTP.</span></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="dosmec" data-section-label="Dos mecanismos" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>Dos mecanismos de caché</h2>
+            <p>"Caché" en el navegador en realidad son dos sistemas completamente independientes.</p>
+            <div class="tb-preview"><span>Caché HTTP</span><span>Cache Storage API</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="60" y="90" width="130" height="150" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="210" y="90" width="130" height="150" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <text x="125" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A1A">HTTP</text>
+              <text x="275" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">Cache Storage</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="dosmec" data-section-label="Dos mecanismos" data-slide-label="Tabla comparativa">
+          <div class="kicker">Dos mecanismos · 1.1</div>
+          <h2 class="slide-title">Caché HTTP vs. Cache Storage API</h2>
+          <hr class="rule">
+          <table class="compare-table">
+            <tr><th>Característica</th><th>Caché HTTP</th><th>Cache Storage API</th></tr>
+            <tr><td>Quién lo controla</td><td>El servidor, con encabezados</td><td>JavaScript / Service Worker</td></tr>
+            <tr><td>Cómo se configura</td><td>Cache-Control, ETag, Expires</td><td>put(), match(), delete()</td></tr>
+            <tr><td>Funciona sin Service Worker</td><td>Sí</td><td>No</td></tr>
+            <tr><td>Nivel de control</td><td>Reglas generales por recurso</td><td>Total: qué, cuándo, y qué se sirve</td></tr>
+            <tr><td>Ideal para</td><td>Recursos estáticos simples</td><td>Offline real, estrategias personalizadas</td></tr>
+          </table>
+          <div class="callout" style="margin-top:1em;">La interfaz Cache ofrece control flexible vía JavaScript, sin que el caché HTTP afecte directamente los recursos que guarda.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="http" data-section-label="Caché HTTP" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>El caché HTTP tradicional</h2>
+            <p>Existe desde mucho antes que las PWA — lo controla el servidor con encabezados.</p>
+            <div class="tb-preview"><span>Cache-Control</span><span>ETag</span><span>Last-Modified</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="90" y="70" width="220" height="60" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="90" y="140" width="220" height="60" rx="8" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <rect x="90" y="210" width="220" height="60" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="http" data-section-label="Caché HTTP" data-slide-label="Los 3 encabezados">
+          <div class="kicker">Caché HTTP · 2.1</div>
+          <h2 class="slide-title">Tres encabezados que lo controlan</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="card fragment"><svg class="icon"><use href="#ic-tag"/></svg><h3>Cache-Control</h3><p>El principal: max-age=3600 (reutilizar 1h) o no-store (nunca guardar).</p></div>
+            <div class="card fragment"><svg class="icon"><use href="#ic-refresh"/></svg><h3>ETag</h3><p>Huella digital del recurso: pregunta "¿cambió?" sin descargarlo completo.</p></div>
+            <div class="card fragment"><svg class="icon"><use href="#ic-server"/></svg><h3>Last-Modified</h3><p>Similar a ETag, basado en la fecha de la última modificación.</p></div>
+          </div>
+          <div class="callout" style="margin-top:1.2em;">Funciona igual con o sin Service Worker — es responsabilidad del navegador y del servidor, no de la aplicación.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="interfaz" data-section-label="La interfaz Cache" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>La interfaz Cache</h2>
+            <p>Dos objetos globales, ocho operaciones que cubren casi todo lo que se necesita.</p>
+            <div class="tb-preview"><span>caches</span><span>Cache</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="200" cy="90" rx="90" ry="26" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <path d="M110 90 v100 c0 14 40 26 90 26 s90 -12 90 -26 v-100" fill="none" stroke="#1A1A1A" stroke-width="4"/>
+              <path d="M110 150 c0 14 40 26 90 26 s90 -12 90 -26" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="200" cy="115" r="18" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="interfaz" data-section-label="La interfaz Cache" data-slide-label="Las 8 operaciones">
+          <div class="kicker">La interfaz Cache · 3.1</div>
+          <h2 class="slide-title">Las operaciones principales</h2>
+          <hr class="rule">
+          <div class="op-grid-deck">
+            <div class="op-card-deck fragment"><span class="op-name">caches.open()</span><p>Abre o crea un caché con nombre.</p></div>
+            <div class="op-card-deck fragment"><span class="op-name">cache.addAll()</span><p>Hace fetch y guarda cada URL de la lista.</p></div>
+            <div class="op-card-deck fragment"><span class="op-name">cache.put()</span><p>Guarda una respuesta específica.</p></div>
+            <div class="op-card-deck fragment"><span class="op-name">cache.match()</span><p>Busca una respuesta guardada.</p></div>
+            <div class="op-card-deck fragment"><span class="op-name">cache.delete()</span><p>Elimina una entrada del caché.</p></div>
+            <div class="op-card-deck fragment"><span class="op-name">cache.keys()</span><p>Lista las peticiones guardadas.</p></div>
+            <div class="op-card-deck fragment"><span class="op-name">caches.keys()</span><p>Lista los nombres de todos los cachés.</p></div>
+            <div class="op-card-deck fragment"><span class="op-name">caches.delete()</span><p>Elimina un caché completo.</p></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="practica" data-section-label="En la práctica" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Cache Storage en la práctica</h2>
+            <p>put() para guardar, match() para recuperar — la base de todo lo que viene.</p>
+            <div class="tb-preview"><span>put() + match()</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="90" y="90" width="220" height="140" rx="12" fill="#1A1A1A"/>
+              <circle cx="160" cy="160" r="26" fill="#FFCC29"/>
+              <circle cx="250" cy="160" r="26" fill="#EEB32D"/>
+              <path d="M186 160 h34" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="practica" data-section-label="En la práctica" data-slide-label="put() y match()">
+          <div class="kicker">En la práctica · 4.1</div>
+          <h2 class="slide-title">Guardar y recuperar, a mano</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+            <pre><code><span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">guardarManual</span>() {
+  <span class="tok-kw">const</span> cache <span class="tok-punct">=</span> <span class="tok-kw">await</span> caches.<span class="tok-fn">open</span>(<span class="tok-str">'gestor-tareas-v1'</span>);
+  <span class="tok-kw">const</span> respuesta <span class="tok-punct">=</span> <span class="tok-kw">await</span> <span class="tok-fn">fetch</span>(<span class="tok-str">'/css/estilos.css'</span>);
+  <span class="tok-kw">await</span> cache.<span class="tok-fn">put</span>(<span class="tok-str">'/css/estilos.css'</span>, respuesta);
+}
+
+<span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">buscarEnCache</span>(peticion) {
+  <span class="tok-kw">const</span> cache <span class="tok-punct">=</span> <span class="tok-kw">await</span> caches.<span class="tok-fn">open</span>(<span class="tok-str">'gestor-tareas-v1'</span>);
+  <span class="tok-kw">return</span> <span class="tok-kw">await</span> cache.<span class="tok-fn">match</span>(peticion);
+}</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Esta pareja es la base de las 5 estrategias de caché de la Sesión 19.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="version" data-section-label="Versiones" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>Gestión de versiones</h2>
+            <p>Cambiar el nombre del caché deja huérfano al anterior — hay que limpiarlo a mano.</p>
+            <div class="tb-preview"><span>v1 → v2</span><span>activate</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="70" y="100" width="110" height="120" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3" opacity=".5"/>
+              <rect x="220" y="100" width="110" height="120" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <text x="125" y="165" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A1A" opacity=".6">v1</text>
+              <text x="275" y="165" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A1A">v2</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="version" data-section-label="Versiones" data-slide-label="Limpiar cachés antiguos">
+          <div class="kicker">Versiones · 5.1</div>
+          <h2 class="slide-title">Limpiar cachés antiguos en activate</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (fragmento)</div>
+            <pre><code><span class="tok-kw">const</span> CACHE_ACTUAL <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v2'</span>;
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(
+    caches.<span class="tok-fn">keys</span>().<span class="tok-fn">then</span>(nombres <span class="tok-punct">=&gt;</span>
+      <span class="tok-fn">Promise</span>.<span class="tok-fn">all</span>(
+        nombres.<span class="tok-fn">filter</span>(n <span class="tok-punct">=&gt;</span> n <span class="tok-punct">!==</span> CACHE_ACTUAL)
+               .<span class="tok-fn">map</span>(n <span class="tok-punct">=&gt;</span> caches.<span class="tok-fn">delete</span>(n))
+      )
+    )
+  );
+});</code></pre>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="caso" data-section-label="Caso real" data-slide-label="Caso real">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Caso real: el sw.js actualizado</h2>
+            <p>Instalación, limpieza de versiones y fetch, juntos — y cómo verificarlo.</p>
+            <div class="tb-preview"><span>sw.js completo</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="110" y="50" width="180" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="130" y="74" width="90" height="20" rx="4" fill="#FFCC29"/>
+              <path d="M130 106 h140 M130 124 h100 M130 142 h140 M130 160 h80 M130 178 h140 M130 196 h60 M130 214 h100" stroke="#373435" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="sw.js completo">
+          <div class="kicker">Caso real · 6.1</div>
+          <h2 class="slide-title">El sw.js completo</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js</div>
+            <pre><code><span class="tok-kw">const</span> CACHE_ACTUAL <span class="tok-punct">=</span> <span class="tok-str">'gestor-tareas-v2'</span>;
+<span class="tok-kw">const</span> CORE_ASSETS <span class="tok-punct">=</span> [<span class="tok-str">'/index.html'</span>, <span class="tok-str">'/css/estilos.css'</span>, <span class="tok-str">'/js/app.js'</span>, <span class="tok-str">'/manifest.json'</span>];
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'install'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(caches.<span class="tok-fn">open</span>(CACHE_ACTUAL).<span class="tok-fn">then</span>(cache <span class="tok-punct">=&gt;</span> cache.<span class="tok-fn">addAll</span>(CORE_ASSETS)));
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'activate'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">waitUntil</span>(
+    caches.<span class="tok-fn">keys</span>().<span class="tok-fn">then</span>(n <span class="tok-punct">=&gt;</span> <span class="tok-fn">Promise</span>.<span class="tok-fn">all</span>(n.<span class="tok-fn">filter</span>(x <span class="tok-punct">=&gt;</span> x<span class="tok-punct">!==</span>CACHE_ACTUAL).<span class="tok-fn">map</span>(x <span class="tok-punct">=&gt;</span> caches.<span class="tok-fn">delete</span>(x))))
+      .<span class="tok-fn">then</span>(() <span class="tok-punct">=&gt;</span> self.clients.<span class="tok-fn">claim</span>())
+  );
+});
+
+self.<span class="tok-fn">addEventListener</span>(<span class="tok-str">'fetch'</span>, event <span class="tok-punct">=&gt;</span> {
+  event.<span class="tok-fn">respondWith</span>(<span class="tok-fn">fetch</span>(event.request));
+});</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="Verificar en DevTools">
+          <div class="kicker">Caso real · 6.2</div>
+          <h2 class="slide-title">Verificar en DevTools</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>DevTools</div>
+            <pre><code><span class="tok-com">// F12 → Application → Cache Storage</span>
+<span class="tok-com">// Debe aparecer: gestor-tareas-v2</span>
+<span class="tok-com">// con cada recurso de CORE_ASSETS guardado</span>
+<span class="tok-com">// (y ningún gestor-tareas-v1 sobrante)</span></code></pre>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>Actividades para la clase</h2>
+            <p>Comparar los dos cachés, investigar uno real, y versionar el propio.</p>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="200" cy="215" rx="130" ry="32" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <circle cx="200" cy="108" r="26" fill="#373435"/>
+              <rect x="168" y="132" width="64" height="58" rx="22" fill="#FFCC29"/>
+              <circle cx="92" cy="150" r="23" fill="#373435"/>
+              <rect x="63" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <circle cx="308" cy="150" r="23" fill="#373435"/>
+              <rect x="279" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <rect x="182" y="200" width="36" height="26" rx="3" fill="#fff" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Las 3 actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Pongamos en práctica lo aprendido</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">1</div><h4>Compara los dos cachés</h4></div>
+              <div class="meta-row">INDIVIDUAL · 12 MIN</div>
+              <p>Tabla de dos columnas: quién controla, si necesita SW, cómo se configura.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">2</div><h4>Detective de Cache Storage</h4></div>
+              <div class="meta-row">PAREJAS · 13 MIN</div>
+              <p>Contar los cachés de una PWA real en DevTools y qué guarda cada uno.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">3</div><h4>Versiona tu caché</h4></div>
+              <div class="meta-row">TAREA · FUERA DE CLASE</div>
+              <p>Agregar limpieza de versiones antiguas a tu propio sw.js, de v1 a v2.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 08</div>
+            <h2>Cierre de la sesión</h2>
+            <p>Lo esencial de hoy, y hacia dónde vamos en la Sesión 20.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="120" y="50" width="160" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="160" y="34" width="80" height="32" rx="8" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="150" cy="112" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 112 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="112" x2="250" y2="112" stroke="#373435" stroke-width="4"/>
+              <circle cx="150" cy="152" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 152 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="152" x2="250" y2="152" stroke="#373435" stroke-width="4"/>
+              <line x1="305" y1="90" x2="305" y2="250" stroke="#373435" stroke-width="5"/>
+              <path d="M305 90 L305 122 L347 105 Z" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la lección</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment">El <b>caché HTTP</b> lo controla el servidor con encabezados; funciona con o sin Service Worker.</li>
+            <li class="fragment">La <b>Cache Storage API</b> es independiente, controlada por JS, y requiere un Service Worker activo.</li>
+            <li class="fragment">Operaciones clave: open(), put()/addAll(), match(), delete(), keys().</li>
+            <li class="fragment"><code>put()</code> + <code>match()</code> son la base de las estrategias de caché de la Sesión 20.</li>
+            <li class="fragment">Versionar el nombre del caché y limpiarlo en <code>activate</code> evita acumular espacio innecesario.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 20: Las 5 estrategias de caché (1/2).</b> Cache Only, Network Only y Cache First — la teoría de las 5 estrategias con nombre, y las 3 primeras implementadas y probadas.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> MDN web docs, "Caching," Progressive web apps, MDN Web Docs.</div>
+            <div><b>[2]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+            <div><b>[3]</b> Google, "Cache," web.dev / MDN Web API Reference.</div>
+            <div><b>[4]</b> MDN web docs, "HTTP caching," MDN Web Docs.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 23</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>
