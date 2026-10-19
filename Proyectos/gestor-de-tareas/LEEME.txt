@@ -1,16 +1,17 @@
-Gestor de Tareas — checkpoint al cierre de la Sesión 19
+Gestor de Tareas — checkpoint al cierre de la Sesión 20
 Electiva - PWA · UPTC
 
 Qué es esto
 -----------
-El Gestor de Tareas con la interfaz Cache versionada (Sesión 19):
-CACHE_ACTUAL ahora es 'gestor-tareas-v2', y activate limpia con
-caches.keys() + caches.delete() cualquier versión que no sea la actual.
-El manejador de fetch todavía responde igual que en la Sesión 18
-(caches.match con red de respaldo) — asignarle una estrategia con
-nombre (Cache Only, Network Only, Cache First...) es justo el trabajo
-de la Sesión 20. Es el punto de partida de hoy: no lo reemplaces,
-cotéjalo contra tu propio proyecto si te quedaste atrás.
+El Gestor de Tareas con su primera estrategia de caché con nombre
+(Sesión 20): el manejador de fetch ahora implementa Cache First de
+verdad — consulta el caché primero, y si no encuentra el recurso, lo
+pide a la red y lo guarda con cache.put() para la próxima vez. Se
+aplica igual a todo el shell porque enrutar distintas estrategias según
+el tipo de recurso (imágenes, API, HTML/CSS/JS) es justo el trabajo de
+la Sesión 21, con Network First y Stale-While-Revalidate ya sumadas al
+repertorio. Es el punto de partida de hoy: no lo reemplaces, cotéjalo
+contra tu propio proyecto si te quedaste atrás.
 
 Cómo abrirlo
 ------------
@@ -24,7 +25,7 @@ Estructura
 ----------
   index.html               interfaz + manifest enlazado
   manifest.json             el manifest de la Sesión 16
-  sw.js                     Service Worker de la Sesión 19 (versionado v2)
+  sw.js                     Service Worker de la Sesión 20 (Cache First)
   icons/                    icon-192.png, icon-512.png, icon-512-maskable.png
   css/estilos.css           estilos
   app.js                    punto de entrada + registro del Service Worker
