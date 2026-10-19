@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 23 · Workbox y auditoría · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .recap-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:.7em; margin-top:.6em;}
+  .recap-card{border:1px solid var(--line); border-radius:10px; padding:.75em .85em; background:#fbfaf5;}
+  .recap-card .rn{font-size:.62em; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--gold-deep);}
+  .recap-card h4{font-family:var(--serif); font-size:.92em; margin:.2em 0 .25em; color:var(--ink);}
+  .recap-card p{font-size:.68em; color:#444; margin:0; line-height:1.35;}
+  .module-list{display:grid; gap:.55em; margin-top:.6em;}
+  .module-row{border:1px solid var(--line); border-radius:10px; padding:.65em .9em;}
+  .module-row .mtag{display:inline-block; font-size:.68em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .55em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.3em;}
+  .module-row p{margin:0; font-size:.74em; color:#444; line-height:1.35;}
+  .term-box{background:#1c1c1e; color:#cfcac0; border-radius:10px; padding:.85em 1.05em; font-size:.74em; font-family:"Cascadia Code",Consolas,monospace; line-height:1.55; margin-top:.6em; overflow-x:auto;}
+  .term-box .prompt{color:#6ad06a;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:.8em 1.05em; font-size:.78em; line-height:1.4;}
+  .warn-box b{color:#9a6b00;}
+  .recursos-box-slide{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:12px; padding:1.1em 1.3em;}
+  .recursos-box-slide h4{font-family:var(--serif); font-size:1.05em; margin:0 0 .4em; color:var(--gold-deep);}
+  .recursos-box-slide a{font-weight:700; color:var(--ink);}
+  .recursos-box-slide .rb-desc{display:block; font-size:.84em; color:#444; margin-top:.35em; font-weight:400; line-height:1.4;}
+  .hash-table{font-size:.72em;}
+  @media (max-width:800px){ .recap-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 9 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>Workbox y<br>auditoría</h1>
+          <div class="lead">Sesión 9 de 30 — dejamos de escribir cacheFirst()/networkFirst() a mano: Workbox encapsula ese trabajo en una librería real, y Lighthouse mide qué tan bien lo hicimos.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>09 de 30 · Bloque PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <rect x="120" y="110" width="160" height="110" rx="12" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M150 140h100M150 160h100M150 180h60" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="255" cy="215" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M245 215l7 7 14-14" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap y bienvenida">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SESIÓN 09</div>
+            <h2>De cacheFirst() a mano a Workbox</h2>
+            <p>Nueve sesiones construyendo el Service Worker a mano. Hoy lo generamos con una librería real — y lo medimos con Lighthouse.</p>
+            <div class="tb-preview"><span>Objetivos</span><span>Recursos</span><span>Recap</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="16" fill="#1A1A1A"/>
+              <text x="40" y="274" text-anchor="middle" font-size="9" font-weight="700" fill="#FFCC29">S22</text>
+              <circle cx="200" cy="165" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">S23</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="360" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#1A1A1A">S24</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Objetivos de aprendizaje">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Objetivos de aprendizaje</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment"><b>Explicar</b> qué determina el nivel de compatibilidad de una PWA entre navegadores, y las limitaciones específicas de Safari/iOS.</li>
+            <li class="fragment"><b>Generar</b> un Service Worker real con Workbox (GenerateSW) a partir de un proyecto existente, y comparar su salida con el <code>sw.js</code> escrito a mano en la Sesión 21.</li>
+            <li class="fragment"><b>Elegir</b> entre GenerateSW e InjectManifest según si el proyecto necesita lógica propia dentro del Service Worker.</li>
+            <li class="fragment"><b>Aplicar</b> principios de UX/UI propios de una PWA: indicador de conexión, prompt de instalación personalizado, feedback de carga.</li>
+            <li class="fragment"><b>Auditar</b> una PWA real con Lighthouse, interpretar sus categorías, y aplicar al menos una mejora concreta a partir del resultado.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recursos de la sesión">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Recursos de esta sesión</h2>
+          <hr class="rule">
+          <div class="recursos-box-slide">
+            <h4>Descargar .zip — Checkpoint, cierre de la Sesión 22</h4>
+            <a href="recursos/gestor-de-tareas-sesion22.zip">gestor-de-tareas-sesion22.zip</a>
+            <span class="rb-desc">El Gestor de Tareas con IndexedDB y el cifrado de la nota privada ya integrados. Hoy no tocamos esa capa — generamos el <code>sw.js</code> con Workbox en vez de mantenerlo a mano.</span>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap: el camino hasta hoy">
+          <div class="kicker">Recap</div>
+          <h2 class="slide-title">Nueve sesiones construyendo una PWA</h2>
+          <hr class="rule">
+          <div class="recap-grid">
+            <div class="recap-card fragment"><div class="rn">Sesión 15</div><h4>¿Qué es una PWA?</h4><p>Comparación con apps nativas e híbridas, y las tres características que la definen.</p></div>
+            <div class="recap-card fragment"><div class="rn">Sesión 16</div><h4>El manifiesto</h4><p><code>manifest.json</code>: nombre, íconos, colores, modo de visualización.</p></div>
+            <div class="recap-card fragment"><div class="rn">Sesión 17</div><h4>Service Workers</h4><p>Requisitos, registro, y el ciclo install → activate → fetch.</p></div>
+            <div class="recap-card fragment"><div class="rn">Sesión 18</div><h4>Cache Storage API</h4><p>Las ocho operaciones principales, versiones y limpieza.</p></div>
+            <div class="recap-card fragment"><div class="rn">Sesiones 19-21</div><h4>Las 5 estrategias</h4><p>Cache/Network Only, Cache/Network First, Stale-While-Revalidate, enrutadas por recurso.</p></div>
+            <div class="recap-card fragment"><div class="rn">Sesión 22</div><h4>IndexedDB y Web Crypto</h4><p>Datos estructurados persistentes, migración de esquema, y cifrado selectivo con PBKDF2 + AES-GCM.</p></div>
+            <div class="recap-card fragment"><div class="rn">Hoy</div><h4>Workbox y auditoría</h4><p>El mismo <code>sw.js</code> de las Sesiones 17-21, pero generado en vez de escrito a mano — y medido con Lighthouse.</p></div>
+            <div class="recap-card fragment"><div class="rn">Sesiones 24-26</div><h4>Lo que falta del Sub-bloque A</h4><p>APIs de dispositivo (cámara, ubicación, sensores) y notificaciones push — ahí sí cierra.</p></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="compatibilidad" data-section-label="Compatibilidad de navegadores" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>Compatibilidad de navegadores</h2>
+            <p>Las PWAs se basan en estándares web — pero la instalación y el soporte sin conexión dependen de cada navegador.</p>
+            <div class="tb-preview"><span>Chrome / Edge</span><span>Safari / iOS</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="130" cy="160" r="55" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="270" cy="160" r="55" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M250 145a22 22 0 1 0 0 30 18 18 0 1 1 0-30Z" fill="#1A1A1A"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="compatibilidad" data-section-label="Compatibilidad de navegadores" data-slide-label="Cuota y soporte">
+          <div class="kicker">Compatibilidad · 1.1</div>
+          <h2 class="slide-title">Chrome, Edge y Safari no soportan lo mismo</h2>
+          <hr class="rule">
+          <table class="uptc" style="font-size:.76em;">
+            <tr><th>Navegador</th><th>Cuota LatAm</th><th>Service Worker</th><th>Instalación</th><th>Notas</th></tr>
+            <tr><td><b>Chrome / Android</b></td><td>62.85% – 69.6%</td><td>Completo</td><td><code>beforeinstallprompt</code> automático</td><td>Referencia de soporte completo</td></tr>
+            <tr><td><b>Edge</b></td><td>~5.5%</td><td>Completo</td><td><code>beforeinstallprompt</code> automático</td><td>Basado en Chromium</td></tr>
+            <tr><td><b>Safari / iOS</b></td><td>15% – 20%</td><td>Parcial</td><td>Solo manual: "Compartir → Añadir a inicio"</td><td>Sin <code>beforeinstallprompt</code>; sin actualización automática</td></tr>
+          </table>
+          <div class="callout fragment" style="margin-top:.9em;">Cifras de cuota y limitaciones de Safari según Google, web.dev [1].</div>
+        </section>
+
+        <section class="slide" data-section="compatibilidad" data-section-label="Compatibilidad de navegadores" data-slide-label="Feature detection">
+          <div class="kicker">Compatibilidad · 1.2</div>
+          <h2 class="slide-title">Nunca se asume soporte universal</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (fragmento)</div>
+            <pre><code>if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+if ('indexedDB' in window) {
+  abrirBaseDeDatos();
+}
+if (window.crypto && crypto.subtle) {
+  // cifrado disponible
+}</code></pre>
+          </div>
+          <div class="callout" style="margin-top:.9em;"><b>Consecuencia práctica:</b> una PWA bien construida se degrada con gracia — el mismo patrón que ya aplicamos a IndexedDB y Web Crypto en la Sesión 22.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="workbox" data-section-label="Workbox: módulos" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>Workbox: qué es y sus módulos</h2>
+            <p>Una librería que encapsula Service Worker y Cache Storage — presente en el 54% de los sitios móviles con service workers.</p>
+            <div class="tb-preview"><span>routing</span><span>strategies</span><span>precaching</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="110" y="90" width="180" height="140" rx="14" fill="#1A1A1A"/>
+              <circle cx="160" cy="160" r="22" fill="#FFCC29"/>
+              <circle cx="240" cy="160" r="22" fill="#EEB32D"/>
+              <path d="M182 160h36" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="workbox" data-section-label="Workbox: módulos" data-slide-label="Los 5 módulos">
+          <div class="kicker">Workbox: módulos · 2.1</div>
+          <h2 class="slide-title">Cinco módulos, el mismo trabajo de las Sesiones 17-21</h2>
+          <hr class="rule">
+          <div class="module-list">
+            <div class="module-row fragment"><span class="mtag">workbox-routing</span><p>Enruta las solicitudes interceptadas por el service worker — el equivalente a los <code>if/else</code> por path de la Sesión 21.</p></div>
+            <div class="module-row fragment"><span class="mtag">workbox-strategies</span><p><code>CacheFirst</code>, <code>NetworkFirst</code>, <code>StaleWhileRevalidate</code> ya implementadas — las mismas estrategias de las Sesiones 20-21.</p></div>
+            <div class="module-row fragment"><span class="mtag">workbox-precaching</span><p>Calcula un <b>hash del contenido</b> de cada archivo y genera la lista de precaché automáticamente — nunca se escribe a mano.</p></div>
+            <div class="module-row fragment"><span class="mtag">workbox-expiration</span><p>Expira entradas por antigüedad (<code>maxAgeSeconds</code>) o cantidad (<code>maxEntries</code>) — algo que <code>cacheFirst()</code> manual nunca hizo.</p></div>
+            <div class="module-row fragment"><span class="mtag">workbox-window</span><p>Simplifica el registro y la actualización del service worker desde la ventana del navegador [2].</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="workbox" data-section-label="Workbox: módulos" data-slide-label="El mismo enrutamiento, con Workbox">
+          <div class="kicker">Workbox: módulos · 2.2</div>
+          <h2 class="slide-title">El enrutamiento de la Sesión 21, con Workbox</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (con Workbox, escrito a mano)</div>
+            <pre><code>import { registerRoute } from 'workbox-routing';
+import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
+
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/icons/'),
+  new CacheFirst({
+    cacheName: 'imagenes',
+    plugins: [new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 30*24*60*60 })]
+  })
+);
+registerRoute(({ url }) => url.pathname.startsWith('/api/'),
+  new NetworkFirst({ cacheName: 'api-tareas' }));
+registerRoute(({ request }) => ['document','script','style'].includes(request.destination),
+  new StaleWhileRevalidate({ cacheName: 'shell' }));</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.4em;font-size:.9em;">Tres rutas, tres estrategias — sin clonar respuestas ni abrir el caché a mano. Esto todavía se escribe <i>a mano</i>; en la sección 4, ni esto se escribe.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="generatesw" data-section-label="GenerateSW vs. InjectManifest" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>GenerateSW vs. InjectManifest</h2>
+            <p>Dos formas de producir el sw.js final: configuración declarativa, o código propio con precaché inyectado.</p>
+            <div class="tb-preview"><span>GenerateSW</span><span>InjectManifest</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="70" y="100" width="110" height="120" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="220" y="100" width="110" height="120" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M186 160h28" stroke="#1A1A1A" stroke-width="3" fill="none"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="generatesw" data-section-label="GenerateSW vs. InjectManifest" data-slide-label="Tabla comparativa">
+          <div class="kicker">GenerateSW vs. InjectManifest · 3.1</div>
+          <h2 class="slide-title">¿Quién escribe el sw.js final?</h2>
+          <hr class="rule">
+          <table class="uptc">
+            <tr><th></th><th>GenerateSW</th><th>InjectManifest</th></tr>
+            <tr><td><b>Quién escribe sw.js</b></td><td>Workbox, de forma automática</td><td>El desarrollador, a mano</td></tr>
+            <tr><td><b>Control</b></td><td>Bajo: solo configuración declarativa</td><td>Alto: código propio, total libertad</td></tr>
+            <tr><td><b>Ideal para</b></td><td>Proyectos simples, empezar rápido</td><td>Push, sync en segundo plano, lógica a medida</td></tr>
+            <tr><td><b>Precarga</b></td><td><code>globPatterns</code> declarativos</td><td><code>precacheAndRoute(self.__WB_MANIFEST)</code> manual</td></tr>
+          </table>
+          <div class="callout fragment" style="margin-top:.8em;">Hoy, GenerateSW alcanza porque el Gestor de Tareas no necesita lógica propia dentro del Service Worker — eso cambia en la Sesión 26, con las notificaciones push [3].</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="demo" data-section-label="Demo real: Workbox CLI" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">DEMO REAL</div>
+            <h2>Generamos el sw.js del Gestor de Tareas</h2>
+            <p>Sin bundler: la CLI de Workbox calcula el hash de cada archivo real directamente desde su contenido.</p>
+            <div class="tb-preview"><span>workbox-config.js</span><span>npx workbox-cli</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="90" y="90" width="220" height="140" rx="10" fill="#1c1c1e"/>
+              <text x="115" y="140" font-size="16" font-family="monospace" fill="#6ad06a">$</text>
+              <path d="M140 134 l16 10 l-16 10" stroke="#cfcac0" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M115 175h150" stroke="#cfcac0" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M115 195h100" stroke="#cfcac0" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="demo" data-section-label="Demo real: Workbox CLI" data-slide-label="workbox-config.js">
+          <div class="kicker">Demo real · 4.1</div>
+          <h2 class="slide-title">La configuración, sobre el checkpoint de la Sesión 22</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>workbox-config.js</div>
+            <pre><code>module.exports = {
+  globDirectory: '.',
+  globPatterns: ['index.html', 'manifest.json', 'css/*.css', '*.js', 'icons/*.png'],
+  globIgnores: ['node_modules/**/*', 'workbox-config.js', 'package*.json'],
+  swDest: 'sw.js',
+  runtimeCaching: [
+    {
+      urlPattern: /\/icons\//,
+      handler: 'CacheFirst',
+      options: { cacheName: 'imagenes', expiration: { maxEntries: 60, maxAgeSeconds: 30*24*60*60 } },
+    },
+    { urlPattern: /\/api\//, handler: 'NetworkFirst', options: { cacheName: 'api-tareas' } },
+  ],
+};</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="demo" data-section-label="Demo real: Workbox CLI" data-slide-label="La salida real de la terminal">
+          <div class="kicker">Demo real · 4.2</div>
+          <h2 class="slide-title">npx workbox-cli generateSW — salida real</h2>
+          <hr class="rule">
+          <div class="term-box"><span class="prompt">$</span> npx workbox-cli generateSW workbox-config.js<br>
+Using configuration from workbox-config.js.<br>
+The service worker files were written to:<br>
+&nbsp;&nbsp;• sw.js<br>
+&nbsp;&nbsp;• sw.js.map<br>
+&nbsp;&nbsp;• workbox-0cf22cab.js<br>
+<b>The service worker will precache 10 URLs, totaling 25.9 kB.</b></div>
+          <div class="callout fragment" style="margin-top:.8em;">No es un número inventado: es la salida real de correr este comando contra el checkpoint de la Sesión 22.</div>
+        </section>
+
+        <section class="slide" data-section="demo" data-section-label="Demo real: Workbox CLI" data-slide-label="Hash de cada archivo">
+          <div class="kicker">Demo real · 4.3</div>
+          <h2 class="slide-title">Cada archivo, con el hash de su contenido</h2>
+          <hr class="rule">
+          <table class="uptc hash-table">
+            <tr><th>Archivo</th><th>revision (hash del contenido)</th></tr>
+            <tr><td><code>index.html</code></td><td><code>9a2f8711…</code></td></tr>
+            <tr><td><code>app.js</code></td><td><code>f1c93315…</code></td></tr>
+            <tr><td><code>db.js</code></td><td><code>890bf6f5…</code></td></tr>
+            <tr><td><code>crypto.js</code></td><td><code>d225961f…</code></td></tr>
+            <tr><td><code>tareas.js</code></td><td><code>6b46f3a1…</code></td></tr>
+            <tr><td><code>css/estilos.css</code></td><td><code>cca533fb…</code></td></tr>
+            <tr><td><code>manifest.json</code></td><td><code>1f4f7a2e…</code></td></tr>
+            <tr><td><code>icons/icon-192.png</code></td><td><code>30dad524…</code></td></tr>
+          </table>
+          <p style="font-size:.74em; color:var(--gray); font-style:italic; margin:.4em 0 0;">8 de los 10 archivos precacheados, por espacio. Hashes truncados a 8 caracteres.</p>
+          <div class="warn-box fragment" style="margin-top:.7em;"><b>No se edita a mano:</b> sw.js queda minificado y con un hash distinto cada vez que cambia un archivo — se regenera con el mismo comando y se versiona en git, como un <code>package-lock.json</code>.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="uxui" data-section-label="UX/UI en PWAs" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>UX/UI en PWAs</h2>
+            <p>Un diseño efectivo no solo es atractivo: también debe ser claro, organizado y consistente [4].</p>
+            <div class="tb-preview"><span>Conexión</span><span>Instalación</span><span>Carga</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="150" y="70" width="100" height="180" rx="16" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <circle cx="200" cy="150" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <path d="M190 150l7 7 14-14" stroke="#1A1A1A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="uxui" data-section-label="UX/UI en PWAs" data-slide-label="Tres patrones propios de una PWA">
+          <div class="kicker">UX/UI · 5.1</div>
+          <h2 class="slide-title">Tres patrones que no existen en un sitio tradicional</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="card fragment"><h3>Indicador de conexión</h3><p>Un banner simple ("Sin conexión — mostrando datos guardados") evita confundir datos frescos con datos en caché.</p></div>
+            <div class="card fragment"><h3>Prompt de instalación propio</h3><p>Capturar <code>beforeinstallprompt</code> y mostrarlo con un botón propio da control sobre el momento y el diseño.</p></div>
+            <div class="card fragment"><h3>Feedback de carga</h3><p>Un <i>skeleton screen</i> evita que la app se sienta "congelada" mientras responde el Service Worker.</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="uxui" data-section-label="UX/UI en PWAs" data-slide-label="Prompt de instalación">
+          <div class="kicker">UX/UI · 5.2</div>
+          <h2 class="slide-title">Capturar e instalar con un botón propio</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (prompt de instalación)</div>
+            <pre><code>let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btnInstalar.hidden = false;
+});
+btnInstalar.addEventListener('click', async () => {
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+});</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.8em;"><b>Nota de compatibilidad:</b> en Safari/iOS este evento nunca se dispara — ahí la única opción es instruir al usuario ("Toca Compartir → Añadir a inicio").</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="lighthouse" data-section-label="Auditando con Lighthouse" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Auditando con Lighthouse</h2>
+            <p>La herramienta de auditoría automatizada de Google, integrada en Chrome DevTools [5].</p>
+            <div class="tb-preview"><span>Categorías</span><span>Instalabilidad</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <path d="M170 230 L190 90 L210 90 L230 230 Z" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="200" cy="90" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M170 230h60" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="lighthouse" data-section-label="Auditando con Lighthouse" data-slide-label="Las cuatro categorías">
+          <div class="kicker">Lighthouse · 6.1</div>
+          <h2 class="slide-title">Cuatro categorías, puntajes de 0 a 100</h2>
+          <hr class="rule">
+          <table class="uptc" style="font-size:.84em;">
+            <tr><th>Categoría</th><th>Qué mide</th></tr>
+            <tr><td><b>Performance</b></td><td>First Contentful Paint, Largest Contentful Paint, bloqueo del hilo principal.</td></tr>
+            <tr><td><b>Accessibility</b></td><td>Contraste de color, etiquetas ARIA, texto alternativo, navegación por teclado.</td></tr>
+            <tr><td><b>Best Practices</b></td><td>HTTPS, ausencia de vulnerabilidades conocidas, proporciones correctas de imagen.</td></tr>
+            <tr><td><b>SEO</b></td><td>Meta etiquetas, texto rastreable, enlaces con texto descriptivo.</td></tr>
+          </table>
+        </section>
+
+        <section class="slide" data-section="lighthouse" data-section-label="Auditando con Lighthouse" data-slide-label="Instalabilidad y cómo correrlo">
+          <div class="kicker">Lighthouse · 6.2</div>
+          <h2 class="slide-title">Lo específico de una PWA vive dentro de Best Practices</h2>
+          <hr class="rule">
+          <div class="callout">Un conjunto de auditorías de instalabilidad: manifest válido y enlazado, Service Worker registrado, HTTPS activo, y al menos un ícono de 512×512 — los requisitos de las Sesiones 16 y 17.</div>
+          <div class="callout fragment" style="margin-top:.8em;"><b>Cómo ejecutarlo:</b> Chrome DevTools → pestaña <i>Lighthouse</i> → <i>Analyze page load</i>. Desde terminal, <code>npx lighthouse https://mi-app.com --view</code>.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="casoreal" data-section-label="Caso real" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>El Gestor de Tareas, automatizado y auditado</h2>
+            <p>Cada pieza vista desde la Sesión 15, reunida en un solo proyecto.</p>
+            <div class="tb-preview"><span>Workbox</span><span>IndexedDB</span><span>Lighthouse</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="80" y="110" width="110" height="100" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="220" y="110" width="110" height="100" rx="10" fill="#1A1A1A"/>
+              <circle cx="275" cy="160" r="16" fill="#FFCC29"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="casoreal" data-section-label="Caso real" data-slide-label="Lo que ya reúne el proyecto">
+          <div class="kicker">Caso real · 7.1</div>
+          <h2 class="slide-title">Todo lo visto desde la Sesión 15, en un solo proyecto</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment"><code>manifest.json</code> completo, con íconos, colores y modo de visualización (Sesión 16).</li>
+            <li class="fragment"><code>sw.js</code>, ahora generado por Workbox, con las mismas tres estrategias por ruta y expiración real de íconos.</li>
+            <li class="fragment">Datos de tareas en IndexedDB, con la nota privada cifrada con PBKDF2 + AES-GCM (Sesión 22).</li>
+            <li class="fragment">Un botón de instalación propio, y un indicador de conexión visible en todo momento (UX/UI de esta sesión).</li>
+            <li class="fragment">Un reporte de Lighthouse con las auditorías de instalabilidad en verde.</li>
+          </ul>
+          <div class="callout fragment" style="margin-top:.8em;">Todavía faltan las APIs de dispositivo y las notificaciones push (Sesiones 24-26) para que el Sub-bloque A quede realmente cerrado — hoy el proyecto queda automatizado y auditado, no terminado.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">ACTIVIDADES</div>
+            <h2>Generar, auditar, mejorar</h2>
+            <p>De la compatibilidad al Service Worker generado, y de ahí a una auditoría real.</p>
+            <div class="tb-preview"><span>Fallback</span><span>Genera</span><span>Audita</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="55" y="80" width="90" height="160" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="170" y="80" width="90" height="160" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="285" y="80" width="90" height="160" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Las 3 actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Tres actividades</h2>
+          <hr class="rule">
+          <div class="activity-card fragment" style="margin-bottom:.7em;">
+            <div class="a-head"><div class="a-num">1</div><h4>Compatibilidad y fallback</h4></div>
+            <div class="meta-row">INDIVIDUAL · 10 MIN</div>
+            <p>Para <code>beforeinstallprompt</code>, actualización automática del SW y notificaciones push: qué pasa en Safari/iOS y qué alternativa manual se ofrece.</p>
+          </div>
+          <div class="activity-card fragment" style="margin-bottom:.7em;">
+            <div class="a-head"><div class="a-num">2</div><h4>Genera tu propio sw.js con Workbox</h4></div>
+            <div class="meta-row">PAREJAS · 20 MIN</div>
+            <p>Instalen <code>workbox-cli</code>, escriban un <code>workbox-config.js</code> real (≥2 <code>runtimeCaching</code>, 1 <code>expiration</code>) y corran <code>generateSW</code> de verdad. Entregable: el archivo de configuración y una captura con URLs/KB precacheados.</p>
+          </div>
+          <div class="activity-card fragment">
+            <div class="a-head"><div class="a-num">3</div><h4>Audita, mejora y vuelve a auditar</h4></div>
+            <div class="meta-row">TAREA · FUERA DE CLASE · 25 MIN</div>
+            <p>Corre Lighthouse, aplica al menos una recomendación real, y vuelve a correrlo. Entregable: dos capturas (antes/después) y qué categoría subió.</p>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">CIERRE</div>
+            <h2>Automatizado y auditado, pero no terminado</h2>
+            <p>Workbox genera el Service Worker; Lighthouse mide qué tan bien lo hicimos.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span><span>Referencias</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="90" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-dasharray="6 6"/>
+              <circle cx="200" cy="160" r="40" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la sesión</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment">La compatibilidad real depende del navegador: Chrome y Edge dan soporte completo, Safari/iOS tiene limitaciones en instalación y actualización.</li>
+            <li class="fragment">Workbox encapsula en módulos (routing, strategies, precaching, expiration, window) el trabajo escrito a mano en las Sesiones 17-21 — y <code>workbox-precaching</code> genera la lista de precaché por hash de contenido.</li>
+            <li class="fragment">GenerateSW automatiza todo el <code>sw.js</code> — lo corrimos de verdad: 10 archivos, 25.9 kB. InjectManifest da control total cuando hace falta lógica propia (push, sync), como en la Sesión 26.</li>
+            <li class="fragment">Una buena UX de PWA avisa cuándo se está offline, ofrece un prompt de instalación propio, y da feedback de carga.</li>
+            <li class="fragment">Lighthouse audita Performance, Accessibility, Best Practices y SEO, con el checklist de instalabilidad de una PWA — y una auditoría real sirve para encontrar mejoras concretas.</li>
+            <li class="fragment">El Gestor de Tareas automatiza su Service Worker y queda auditado hoy, pero el Sub-bloque A no cierra todavía: faltan las APIs de dispositivo y las notificaciones push (Sesiones 24-26).</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 24: APIs de dispositivo (1/2) — cámara y ubicación.</b> MediaDevices y getUserMedia para cámara y micrófono, Geolocation para ubicación — permisos, privacidad y HTTPS.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> Google, "Progressive Web Apps," web.dev, 2023.</div>
+            <div><b>[2]</b> Web.dev, "Workbox," web.dev, 2023.</div>
+            <div><b>[3]</b> Google, "Workbox Strategies," Chrome Developers, 2023.</div>
+            <div><b>[4]</b> K. Ramírez-Acosta, "Interfaz y experiencia de usuario: parámetros importantes para un diseño efectivo," 2017.</div>
+            <div><b>[5]</b> Google, "Lighthouse," Chrome for Developers, developer.chrome.com/docs/lighthouse.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 31</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>

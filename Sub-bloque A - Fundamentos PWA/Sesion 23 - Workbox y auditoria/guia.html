@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 23 · Workbox y auditoría · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .compare-wrap{overflow-x:auto;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:1em 1.2em; margin:1em 0; font-size:.92em;}
+  .warn-box b{color:#9a6b00;}
+  .recursos-box{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:6px; padding:1.1em 1.4em; margin:1.4em 0 0;}
+  .recursos-box h3{font-family:var(--serif); font-size:1.05em; margin:0 0 .5em; color:var(--gold-deep);}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.4em;}
+  .recursos-list a{font-weight:700; color:var(--ink);}
+  .rb-desc{display:block; font-size:.88em; color:var(--gray); margin-top:.2em; font-weight:400;}
+  .recap-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:.8em; margin-top:1em;}
+  .recap-card{border:1px solid var(--line); border-radius:8px; padding:.9em 1em; background:#fbfaf5;}
+  .recap-card .rn{font-size:.7em; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--gold-deep);}
+  .recap-card h4{font-family:var(--serif); font-size:1em; margin:.2em 0 .3em; color:var(--ink);}
+  .recap-card p{font-size:.86em; color:var(--gray); margin:0; line-height:1.4;}
+  .module-list{display:grid; gap:.6em; margin:1.1em 0;}
+  .module-row{border:1px solid var(--line); border-radius:10px; padding:.8em 1em;}
+  .module-row .mtag{display:inline-block; font-size:.78em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .6em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .module-row p{margin:0; font-size:.88em; color:#444; line-height:1.4;}
+  .term-box{background:#1c1c1e; color:#cfcac0; border-radius:10px; padding:.9em 1.1em; font-size:.82em; font-family:"Cascadia Code",Consolas,monospace; line-height:1.55; margin:1em 0; overflow-x:auto;}
+  .term-box .prompt{color:#6ad06a;}
+  @media (max-width:800px){ .recap-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} .recap-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+      <a href="Guion_Clase_Sesion_23.docx">Guion de la clase (Word) →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 9 de 30</div>
+    <h1>Workbox y auditoría</h1>
+    <div class="lead">Dejamos de escribir cacheFirst()/networkFirst() a mano: Workbox encapsula ese trabajo en una librería real. Además, medimos qué tan bien soporta cada navegador lo que construimos, aplicamos patrones de UX propios de una PWA, y auditamos el resultado con la misma herramienta que usa la industria.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Explicar</b> qué determina el nivel de compatibilidad de una PWA entre navegadores, y las limitaciones específicas de Safari/iOS.</span></li>
+      <li><span class="chk">✓</span><span><b>Generar</b> un Service Worker real con Workbox (GenerateSW) a partir de un proyecto existente, y comparar su salida con el <code>sw.js</code> escrito a mano en la Sesión 21.</span></li>
+      <li><span class="chk">✓</span><span><b>Elegir</b> entre GenerateSW e InjectManifest según si el proyecto necesita lógica propia dentro del Service Worker.</span></li>
+      <li><span class="chk">✓</span><span><b>Aplicar</b> principios de UX/UI propios de una PWA: indicador de conexión, prompt de instalación personalizado, feedback de carga.</span></li>
+      <li><span class="chk">✓</span><span><b>Auditar</b> una PWA real con Lighthouse, interpretar sus categorías, y aplicar al menos una mejora concreta a partir del resultado.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion22.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 22.</b> El Gestor de Tareas con IndexedDB y el cifrado de la nota privada ya integrados. Hoy no tocamos esa capa — generamos el <code>sw.js</code> con Workbox en vez de mantenerlo a mano.</span></li>
+      </ul>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida y recap</h2>
+    <div class="body-text"><p>Llevamos nueve sesiones construyendo, pieza por pieza, una PWA completa a partir del Gestor de Tareas. Todavía falta APIs de dispositivo y notificaciones push (Sesiones 24-26) para cerrar el Sub-bloque A, pero hoy es un buen punto para ver el camino recorrido antes de automatizar la pieza más laboriosa de escribir a mano: el Service Worker.</p></div>
+    <div class="recap-grid">
+      <div class="recap-card"><div class="rn">Sesión 15</div><h4>¿Qué es una PWA?</h4><p>Comparación con apps nativas e híbridas, y las tres características que definen a una PWA.</p></div>
+      <div class="recap-card"><div class="rn">Sesión 16</div><h4>El manifiesto</h4><p><code>manifest.json</code>: nombre, íconos, colores, modo de visualización.</p></div>
+      <div class="recap-card"><div class="rn">Sesión 17</div><h4>Service Workers</h4><p>Requisitos, registro, y el ciclo install → activate → fetch.</p></div>
+      <div class="recap-card"><div class="rn">Sesión 18</div><h4>Cache Storage API</h4><p>Las ocho operaciones principales, versiones y limpieza.</p></div>
+      <div class="recap-card"><div class="rn">Sesiones 19-21</div><h4>Las 5 estrategias de caché</h4><p>Cache/Network Only, Cache/Network First, Stale-While-Revalidate, y cómo enrutarlas por tipo de recurso.</p></div>
+      <div class="recap-card"><div class="rn">Sesión 22</div><h4>IndexedDB y Web Crypto</h4><p>Datos estructurados persistentes, migración de esquema, y cifrado selectivo con PBKDF2 + AES-GCM.</p></div>
+      <div class="recap-card"><div class="rn">Hoy</div><h4>Workbox y auditoría</h4><p>El mismo <code>sw.js</code> de las Sesiones 17-21, pero generado en vez de escrito a mano — y medido con Lighthouse.</p></div>
+      <div class="recap-card"><div class="rn">Sesiones 24-26</div><h4>Lo que falta del Sub-bloque A</h4><p>APIs de dispositivo (cámara, ubicación, sensores) y notificaciones push — ahí sí cierra el Sub-bloque A.</p></div>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>Compatibilidad de navegadores</h2>
+    <div class="body-text"><p>Las PWAs funcionan en cualquier dispositivo con un navegador moderno, ya que se basan en estándares web. Sin embargo, características avanzadas como la instalación y el soporte sin conexión dependen del navegador y del sistema operativo. En Latinoamérica, los navegadores más utilizados en los últimos años han sido Google Chrome (62.85% – 69.6%), Safari (15% – 20%) y Microsoft Edge (aproximadamente 5.5%). Aunque en general ofrecen un soporte sólido para las PWAs, Safari presenta algunas limitaciones importantes [1].</p></div>
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em;">
+      <tr><th>Navegador</th><th>Cuota LatAm (aprox.)</th><th>Service Worker</th><th>Instalación</th><th>Notas</th></tr>
+      <tr><td><b>Chrome / Android</b></td><td>62.85% – 69.6%</td><td>Completo</td><td><code>beforeinstallprompt</code> automático</td><td>Referencia de soporte completo</td></tr>
+      <tr><td><b>Edge</b></td><td>~5.5%</td><td>Completo</td><td><code>beforeinstallprompt</code> automático</td><td>Basado en Chromium, se comporta como Chrome</td></tr>
+      <tr><td><b>Safari / iOS</b></td><td>15% – 20%</td><td>Parcial</td><td>Solo manual: "Compartir → Añadir a inicio"</td><td>Sin <code>beforeinstallprompt</code>; actualizaciones no automáticas — el usuario debe reabrir la app</td></tr>
+    </table>
+    </div>
+    <p class="fig-caption">Cifras de cuota de navegador y limitaciones de Safari según Google, web.dev. Fuente: [1].</p>
+    <div class="callout" style="margin-top:1em;"><b>Consecuencia práctica:</b> una PWA bien construida debe degradarse con gracia. Antes de usar cualquier API avanzada, se verifica su disponibilidad — nunca se asume soporte universal.</div>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (fragmento)</div>
+      <pre><code>// Feature detection: nunca asumir soporte — el mismo patrón que ya
+// aplicamos a IndexedDB y Web Crypto en la Sesión 22
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+if ('indexedDB' in window) {
+  abrirBaseDeDatos();
+}
+if (window.crypto && crypto.subtle) {
+  // cifrado disponible
+}</code></pre>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>Workbox: qué es y sus módulos</h2>
+    <div class="body-text"><p>Workbox es un conjunto de bibliotecas de código abierto que simplifica la gestión de service workers y el almacenamiento en caché en PWAs. Proporciona una interfaz más accesible para los desarrolladores al encapsular APIs de bajo nivel, como Service Worker y Cache Storage, facilitando su implementación. Es una herramienta ampliamente utilizada, presente en el 54% de los sitios móviles con service workers, y es compatible con frameworks y herramientas de compilación como Angular CLI, Create-React-App y Vue CLI [2].</p></div>
+    <div class="module-list">
+      <div class="module-row"><span class="mtag">workbox-routing</span><p>Gestiona las solicitudes interceptadas por el service worker, enrutándolas a funciones que generan respuestas adecuadas — el equivalente a los <code>if/else</code> por path que escribimos a mano en la Sesión 21.</p></div>
+      <div class="module-row"><span class="mtag">workbox-strategies</span><p>Provee las estrategias de caché como clases ya implementadas: <code>CacheFirst</code>, <code>NetworkFirst</code>, <code>StaleWhileRevalidate</code> — las mismas estrategias de las Sesiones 20-21, sin escribirlas a mano.</p></div>
+      <div class="module-row"><span class="mtag">workbox-precaching</span><p>Calcula un <b>hash del contenido</b> de cada archivo declarado y genera la lista de precaché automáticamente — es, literalmente, la respuesta a la limitación que vimos en la Sesión 29/32 con el Atlas 3D: la lista de precaché se genera, no se escribe a mano.</p></div>
+      <div class="module-row"><span class="mtag">workbox-expiration</span><p>Administra la expiración de la caché, eliminando entradas según su antigüedad (<code>maxAgeSeconds</code>) o un límite máximo de elementos (<code>maxEntries</code>) — algo que nuestro <code>cacheFirst()</code> manual de la Sesión 20 nunca hizo: una vez que algo entraba al caché, se quedaba ahí para siempre.</p></div>
+      <div class="module-row"><span class="mtag">workbox-window</span><p>Facilita la comunicación entre el service worker y la ventana del navegador, simplificando su registro y actualización [2].</p></div>
+    </div>
+    <div class="body-text" style="margin-top:1.2em;"><p>El mismo enrutamiento por path que construimos a mano en la Sesión 21 se ve así, escrito directamente con los módulos de Workbox:</p></div>
+    <div class="code-block" style="margin-top:.5em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw.js (con Workbox, escrito a mano)</div>
+      <pre><code>import { registerRoute } from 'workbox-routing';
+import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
+
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/icons/'),
+  new CacheFirst({
+    cacheName: 'imagenes',
+    plugins: [new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 30 * 24 * 60 * 60 })]
+  })
+);
+
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/'),
+  new NetworkFirst({ cacheName: 'api-tareas' })
+);
+
+registerRoute(
+  ({ request }) => ['document', 'script', 'style'].includes(request.destination),
+  new StaleWhileRevalidate({ cacheName: 'shell' })
+);</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Es exactamente el mismo diseño que ya conocemos — tres rutas, tres estrategias — pero sin escribir <code>cacheFirst()</code>, <code>networkFirst()</code> ni <code>staleWhileRevalidate()</code> a mano, ni preocuparse por clonar respuestas o abrir el caché manualmente. Esto se escribe <i>a mano</i> importando los módulos — en la sección 4 vemos la otra forma, donde ni siquiera esto se escribe.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>GenerateSW vs. InjectManifest</h2>
+    <div class="body-text"><p>Workbox ofrece dos formas de producir el Service Worker final. <b>GenerateSW</b> genera automáticamente un Service Worker completo a partir de un archivo de configuración: ni siquiera se escribe el código de la sección 3, solo se declara qué cachear y con qué estrategia. <b>InjectManifest</b> es la alternativa cuando el proyecto necesita lógica propia dentro del Service Worker (por ejemplo, manejar notificaciones push o sincronización en segundo plano) — Workbox solo se encarga de inyectar la lista de precaché dentro del archivo que el desarrollador escribe [3].</p></div>
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em;">
+      <tr><th></th><th>GenerateSW</th><th>InjectManifest</th></tr>
+      <tr><td><b>Quién escribe sw.js</b></td><td>Workbox, de forma automática</td><td>El desarrollador, a mano</td></tr>
+      <tr><td><b>Control</b></td><td>Bajo: solo configuración declarativa</td><td>Alto: código propio, total libertad</td></tr>
+      <tr><td><b>Ideal para</b></td><td>Proyectos simples, empezar rápido</td><td>Push, sync en segundo plano, lógica a medida</td></tr>
+      <tr><td><b>Precarga</b></td><td><code>globPatterns</code> declarativos</td><td><code>precacheAndRoute(self.__WB_MANIFEST)</code> manual</td></tr>
+    </table>
+    </div>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Demo real: generamos el sw.js del Gestor de Tareas</h3>
+    <div class="body-text"><p>El Gestor de Tareas no usa un bundler — es HTML/CSS/JS plano, igual que en las Sesiones 15-22. Eso no impide usar Workbox: la CLI de Workbox calcula el hash de cada archivo real del proyecto directamente desde su contenido, sin necesitar un paso de build. Así se ve la configuración, apuntando a los archivos reales del checkpoint de la Sesión 22:</p></div>
+    <div class="code-block" style="margin-top:.5em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>workbox-config.js</div>
+      <pre><code>module.exports = {
+  globDirectory: '.',
+  globPatterns: ['index.html', 'manifest.json', 'css/*.css', '*.js', 'icons/*.png'],
+  globIgnores: ['node_modules/**/*', 'workbox-config.js', 'package*.json'],
+  swDest: 'sw.js',
+  runtimeCaching: [
+    {
+      urlPattern: /\/icons\//,
+      handler: 'CacheFirst',
+      options: { cacheName: 'imagenes', expiration: { maxEntries: 60, maxAgeSeconds: 30 * 24 * 60 * 60 } },
+    },
+    { urlPattern: /\/api\//, handler: 'NetworkFirst', options: { cacheName: 'api-tareas' } },
+  ],
+};</code></pre>
+    </div>
+    <div class="term-box"><span class="prompt">$</span> npx workbox-cli generateSW workbox-config.js<br>
+Using configuration from workbox-config.js.<br>
+The service worker files were written to:<br>
+&nbsp;&nbsp;• sw.js<br>
+&nbsp;&nbsp;• sw.js.map<br>
+&nbsp;&nbsp;• workbox-0cf22cab.js<br>
+<b>The service worker will precache 10 URLs, totaling 25.9 kB.</b></div>
+    <div class="body-text" style="margin-top:1em;"><p>Esto no es un número inventado — es la salida real de correr este comando contra el checkpoint de la Sesión 22. Workbox leyó cada archivo declarado en <code>globPatterns</code>, calculó un hash de su contenido, y escribió la lista de precaché con esos hashes como <code>revision</code> — la misma idea que resuelve la limitación de Vite en el Atlas 3D (Sesión 34), pero aplicada aquí a un proyecto sin bundler:</p></div>
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em; font-size:.82em;">
+      <tr><th>Archivo</th><th>revision (hash del contenido)</th></tr>
+      <tr><td><code>index.html</code></td><td><code>9a2f8711…</code></td></tr>
+      <tr><td><code>app.js</code></td><td><code>f1c93315…</code></td></tr>
+      <tr><td><code>db.js</code></td><td><code>890bf6f5…</code></td></tr>
+      <tr><td><code>crypto.js</code></td><td><code>d225961f…</code></td></tr>
+      <tr><td><code>tareas.js</code></td><td><code>6b46f3a1…</code></td></tr>
+      <tr><td><code>css/estilos.css</code></td><td><code>cca533fb…</code></td></tr>
+      <tr><td><code>manifest.json</code></td><td><code>1f4f7a2e…</code></td></tr>
+      <tr><td><code>icons/icon-192.png</code></td><td><code>30dad524…</code></td></tr>
+    </table>
+    </div>
+    <p class="fig-caption">Tabla reducida a 8 de los 10 archivos precacheados, por espacio. Hashes truncados a 8 caracteres — en el <code>sw.js</code> generado aparecen completos.</p>
+    <div class="warn-box"><b>No se edita a mano:</b> <code>sw.js</code> queda minificado y con un hash distinto cada vez que cambia cualquier archivo precacheado — exactamente como el <code>dist/</code> de un bundler. Se regenera con el mismo comando después de cada cambio, y se versiona en git como cualquier otro archivo generado (como un <code>package-lock.json</code>), nunca se edita directamente.</div>
+    <div class="body-text" style="margin-top:1em;"><p><b>¿Cuándo preferir InjectManifest aquí?</b> Hoy, GenerateSW alcanza porque el Gestor de Tareas no necesita lógica propia dentro del Service Worker. Eso cambia en la Sesión 26, cuando lleguen las notificaciones push: recibir un push y decidir qué notificación mostrar es lógica que Workbox no puede generar por configuración — ahí InjectManifest (precaché generado + <code>self.addEventListener('push', ...)</code> escrito a mano) será la opción correcta.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>UX/UI en PWAs</h2>
+    <div class="body-text"><p>La Experiencia de Usuario (UX) y el Diseño de Interfaz de Usuario (UI) son conceptos clave en el desarrollo de software. La UX abarca la interacción general del usuario con la aplicación, incluyendo usabilidad, eficiencia y satisfacción. El UI es la interfaz visual que conecta al usuario con el sistema: un diseño efectivo no solo debe ser atractivo, sino también funcional, asegurando claridad, organización y consistencia [4].</p></div>
+    <div class="body-text" style="margin-top:1em;"><p>Tres patrones de UX específicos de una PWA, que no aparecen en un sitio web tradicional:</p></div>
+    <ul class="clean">
+      <li><b>Indicador de conexión:</b> el usuario debe saber si está viendo datos frescos o una versión guardada en caché — un banner simple ("Sin conexión — mostrando datos guardados") evita confusión.</li>
+      <li><b>Prompt de instalación personalizado:</b> Chrome/Edge disparan <code>beforeinstallprompt</code>, pero mostrarlo con un botón propio da control sobre el momento y el diseño.</li>
+      <li><b>Feedback de carga:</b> como el Service Worker puede responder al instante desde caché o tardar por red, un <i>skeleton screen</i> evita que la app se sienta "congelada" en la primera carga.</li>
+    </ul>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (prompt de instalación)</div>
+      <pre><code>let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btnInstalar.hidden = false;
+});
+btnInstalar.addEventListener('click', async () => {
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><b>Nota de compatibilidad:</b> en Safari/iOS este evento nunca se dispara — ahí, la única opción es instruir al usuario con un mensaje visible ("Toca Compartir → Añadir a inicio").</p></div>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Auditando con Lighthouse</h2>
+    <div class="body-text"><p>Lighthouse es la herramienta de auditoría automatizada de Google, integrada en Chrome DevTools, y también disponible como comando de terminal (<code>npx lighthouse</code>) o en PageSpeed Insights. Analiza una página cargada y genera un reporte con puntajes de 0 a 100 en varias categorías, además de una lista concreta de qué corregir en cada una [5].</p></div>
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em;">
+      <tr><th>Categoría</th><th>Qué mide</th></tr>
+      <tr><td><b>Performance</b></td><td>Tiempos de carga y renderizado: First Contentful Paint, Largest Contentful Paint, bloqueo del hilo principal.</td></tr>
+      <tr><td><b>Accessibility</b></td><td>Contraste de color, etiquetas ARIA, texto alternativo en imágenes, navegación por teclado.</td></tr>
+      <tr><td><b>Best Practices</b></td><td>Uso de HTTPS, ausencia de librerías con vulnerabilidades conocidas, imágenes con proporciones correctas.</td></tr>
+      <tr><td><b>SEO</b></td><td>Meta etiquetas, texto rastreable, enlaces con texto descriptivo.</td></tr>
+    </table>
+    </div>
+    <div class="callout" style="margin-top:1em;"><b>Lo específico de una PWA</b> no vive en una categoría aparte, sino en un conjunto de auditorías de instalabilidad dentro de Best Practices: manifest válido y enlazado, Service Worker registrado, HTTPS activo, y al menos un ícono de 512×512 — exactamente los requisitos que construimos en las Sesiones 16 y 17.</div>
+    <div class="body-text" style="margin-top:1em;"><p><b>Cómo ejecutarlo:</b> en Chrome, DevTools → pestaña <i>Lighthouse</i> → elegir categorías → <i>Analyze page load</i>. Desde la terminal, <code>npx lighthouse https://mi-app.com --view</code> genera el mismo reporte como archivo HTML.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Caso real: el Gestor de tareas con Workbox y Lighthouse</h2>
+    <div class="body-text"><p>Hasta hoy, el Gestor de Tareas reúne, en un solo proyecto, cada pieza vista desde la Sesión 15:</p></div>
+    <ul class="clean">
+      <li><code>manifest.json</code> completo, con íconos, colores y modo de visualización (Sesión 16).</li>
+      <li><code>sw.js</code>, ahora generado por Workbox en lugar de escrito a mano, con las mismas tres estrategias por ruta y expiración real de íconos.</li>
+      <li>Datos de tareas persistidos en IndexedDB, con la nota privada cifrada con PBKDF2 + AES-GCM (Sesión 22).</li>
+      <li>Un botón de instalación propio, y un indicador de conexión visible en todo momento (UX/UI de esta sesión).</li>
+      <li>Un reporte de Lighthouse con las auditorías de instalabilidad en verde.</li>
+    </ul>
+    <div class="body-text" style="margin-top:1em;"><p>Todavía faltan las APIs de dispositivo y las notificaciones push (Sesiones 24-26) para que el Sub-bloque A quede realmente cerrado — hoy el proyecto queda automatizado y auditado, no terminado. El Sub-bloque B aplica exactamente esta misma migración a Workbox sobre el Atlas 3D en la Sesión 34, con una diferencia importante: ahí sí hay un bundler (Vite) de por medio, y esa diferencia es justo lo que resuelve la limitación de offline pendiente desde la Sesión 29.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">8</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Compatibilidad y fallback</h4></div>
+      <div class="meta-row">INDIVIDUAL · 10 MIN</div>
+      <p>Para cada una de estas tres funcionalidades, describe en una frase qué pasa en Safari/iOS y qué alternativa manual se le ofrecería al usuario: (a) <code>beforeinstallprompt</code> para instalar, (b) actualización automática del Service Worker, (c) notificaciones push.</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Genera tu propio sw.js con Workbox</h4></div>
+      <div class="meta-row">PAREJAS · 20 MIN</div>
+      <p>Sobre tu propio Gestor de Tareas (el checkpoint de la Sesión 22, o tu propio avance), instalen <code>workbox-cli</code> y escriban un <code>workbox-config.js</code> real con al menos dos entradas de <code>runtimeCaching</code> y una de <code>expiration</code>, que reemplacen el enrutamiento manual del <code>sw.js</code> de la Sesión 21. Corran <code>npx workbox-cli generateSW workbox-config.js</code> de verdad — no basta con escribir el archivo de configuración sin ejecutarlo.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> el <code>workbox-config.js</code>, y una captura de la terminal mostrando cuántas URLs precacheó y cuántos KB totalizó — revisado en plenaria.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">3</div><h4>Audita, mejora y vuelve a auditar</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 25 MIN</div>
+      <p>Corre Lighthouse sobre tu Gestor de Tareas (con el <code>sw.js</code> generado por Workbox de la Actividad 2). Identifica al menos una recomendación real del reporte, aplícala en tu proyecto, y vuelve a correr Lighthouse.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> dos capturas del reporte — antes y después de la mejora — y una frase explicando qué cambiaste y en qué categoría subió el puntaje. Subidas antes de la próxima sesión.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>La compatibilidad real de una PWA depende del navegador: Chrome y Edge ofrecen soporte completo, Safari/iOS tiene limitaciones importantes en instalación y actualización.</li>
+      <li>Workbox encapsula en módulos (routing, strategies, precaching, expiration, window) el mismo trabajo que se escribió a mano en las Sesiones 17-21 — y <code>workbox-precaching</code> calcula hashes de contenido automáticamente, generando la lista de precaché en vez de escribirla a mano.</li>
+      <li>GenerateSW automatiza todo el <code>sw.js</code> a partir de configuración — lo corrimos de verdad contra el Gestor de Tareas y precacheó 10 archivos, 25.9 kB. InjectManifest da control total cuando hace falta lógica propia (push, sync), como pasará en la Sesión 26.</li>
+      <li>Una buena UX de PWA avisa cuándo se está offline, ofrece un prompt de instalación propio, y da feedback de carga.</li>
+      <li>Lighthouse audita Performance, Accessibility, Best Practices y SEO, incluyendo el checklist de instalabilidad de una PWA — y una auditoría real sirve para encontrar mejoras concretas, no solo para obtener un puntaje.</li>
+      <li>El Gestor de Tareas automatiza su Service Worker y queda auditado hoy, pero el Sub-bloque A no cierra todavía: faltan las APIs de dispositivo y las notificaciones push (Sesiones 24-26).</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 24: APIs de dispositivo (1/2) — cámara y ubicación.</b> MediaDevices y getUserMedia para cámara y micrófono, Geolocation para ubicación — permisos, privacidad y HTTPS.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> Google, "Progressive Web Apps," web.dev, 2023.</div>
+      <div><b>[2]</b> Web.dev, "Workbox," web.dev, 2023.</div>
+      <div><b>[3]</b> Google, "Workbox Strategies," Chrome Developers, 2023.</div>
+      <div><b>[4]</b> K. Ramírez-Acosta, "Interfaz y experiencia de usuario: parámetros importantes para un diseño efectivo," 2017.</div>
+      <div><b>[5]</b> Google, "Lighthouse," Chrome for Developers, developer.chrome.com/docs/lighthouse.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 9 de 30</span>
+  </div>
+</div>
+</body>
+</html>
