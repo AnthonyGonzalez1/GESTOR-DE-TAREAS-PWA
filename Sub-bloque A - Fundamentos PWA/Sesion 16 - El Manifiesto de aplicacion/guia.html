@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 16 · El Manifiesto de aplicación · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .mode-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.9em; margin:1.2em 0;}
+  .mode-card{border:1px solid var(--line); border-radius:10px; padding:1em 1.1em;}
+  .mode-card .mc-badge{display:inline-flex; align-items:center; justify-content:center; padding:.15em .7em; border-radius:999px; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); font-size:.72em; font-weight:800; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .mode-card p{margin:0; font-size:.85em; color:#444; line-height:1.45;}
+  .recursos-box{border:1px solid var(--gold); border-radius:12px; background:var(--gold-tint); padding:1.1em 1.3em; margin:1.4em 0;}
+  .recursos-box h3{margin:0 0 .3em; font-family:var(--serif); font-size:1.05em; color:var(--ink);}
+  .recursos-box p.rb-lead{margin:0 0 .8em; font-size:.88em; color:#444;}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.5em;}
+  .recursos-list li{display:flex; align-items:center; gap:.7em; font-size:.88em;}
+  .recursos-list a{font-weight:700; color:var(--ink); background:#fff; border:1px solid var(--gold); border-radius:999px; padding:.35em .9em; text-decoration:none; flex:0 0 auto;}
+  .recursos-list a:hover{background:var(--gold);}
+  .recursos-list span.rb-desc{color:#555;}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} .mode-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 2 de 23</div>
+    <h1>El Manifiesto de aplicación</h1>
+    <div class="lead">El archivo JSON que le dice al navegador y al sistema operativo cómo debe verse y comportarse tu PWA una vez instalada: su nombre, sus íconos, sus colores, su modo de visualización — y qué hace falta para que el navegador la ofrezca instalar.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Explicar</b> qué es el Web App Manifest y qué papel cumple en la integración de una PWA con el navegador y el sistema operativo.</span></li>
+      <li><span class="chk">✓</span><span><b>Escribir</b> un manifest.json completo, con las propiedades correctas para el nombre, los colores, la orientación y el modo de visualización.</span></li>
+      <li><span class="chk">✓</span><span><b>Distinguir</b> los cuatro modos de <code>display</code> y elegir el correcto según el tipo de aplicación.</span></li>
+      <li><span class="chk">✓</span><span><b>Preparar</b> íconos en los tamaños y con el <code>purpose</code> (any / maskable) que el navegador exige para instalar.</span></li>
+      <li><span class="chk">✓</span><span><b>Vincular</b> el manifest a un documento HTML y verificar, en DevTools, que cumple los criterios de instalabilidad.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <p class="rb-lead">Descarga esto antes de empezar — así todo el grupo parte del mismo código y nadie pierde tiempo consiguiendo íconos.</p>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-base.zip">Descargar .zip</a><span class="rb-desc"><b>Proyecto base — Gestor de Tareas.</b> El mismo proyecto cerrado en la Sesión 14, sin PWA todavía: es donde vas a agregar el manifest.json de hoy.</span></li>
+        <li><a href="recursos/iconos-manifest-sesion16.zip">Descargar .zip</a><span class="rb-desc"><b>Íconos para el manifest.</b> Los dos obligatorios (192×192 y 512×512 maskable) y uno a propósito con el tamaño incorrecto, para la Actividad 1.</span></li>
+      </ul>
+    </div>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Agenda de la sesión · 120 minutos en clase</h3>
+    <table class="uptc">
+      <tr><th>Momento</th><th>Duración</th></tr>
+      <tr><td>Bienvenida y recap de la Sesión 15</td><td class="num">8 min</td></tr>
+      <tr><td>¿Qué es el manifest.json? (explicación)</td><td class="num">10 min</td></tr>
+      <tr><td>Anatomía del manifest.json: propiedad por propiedad (explicación + demo)</td><td class="num">20 min</td></tr>
+      <tr><td>Los modos de <code>display</code> (explicación + demo)</td><td class="num">15 min</td></tr>
+      <tr><td>Los íconos: tamaños y maskable icons (explicación + demo)</td><td class="num">15 min</td></tr>
+      <tr><td>Vincular el manifest y criterios de instalabilidad (demo)</td><td class="num">15 min</td></tr>
+      <tr><td>Caso real: el manifest.json del Gestor de tareas (demo en vivo)</td><td class="num">10 min</td></tr>
+      <tr><td>Actividad 1 · Ejecute, Observe y Analice (individual → parejas) y cierre</td><td class="num">27 min</td></tr>
+    </table>
+    <p class="small-note" style="margin-top:.6em;">La Actividad 2 es tarea individual fuera de clase: no está contada en los 120 minutos.</p>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida y recap</h2>
+    <div class="body-text"><p>En la Sesión 15 vimos el mapa completo de qué es una PWA: sus 8 características y sus 4 funcionalidades clave. También vimos que, detrás de la característica <b>Installable</b>, hay una pieza concreta: el <b>Web App Manifest</b>. Hoy dejamos de hablar de él en abstracto y escribimos el nuestro — el primer archivo nuevo que el Gestor de tareas recibe en este bloque.</p></div>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> hoy es la primera sesión del bloque en la que escribimos código de verdad. Todo lo anterior (Sesión 15) fue panorama; a partir de hoy, cada sesión agrega una pieza concreta y funcional al proyecto.</div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>¿Qué es el manifest.json?</h2>
+    <div class="body-text"><p>El <b>manifiesto de aplicación</b> (<code>manifest.json</code>) es un archivo JSON esencial para la integración de una PWA con el navegador y con el sistema operativo. Define su apariencia y su comportamiento una vez instalada en el dispositivo del usuario, permitiendo una experiencia más fluida y más parecida a la de una aplicación nativa [1][2].</p></div>
+    <div class="body-text"><p>En la práctica, es el archivo que responde preguntas muy concretas: ¿cómo se llama la app? ¿qué ícono usa? ¿de qué color es la barra de título cuando está instalada? ¿se abre como una ventana propia o como una pestaña más del navegador? Sin manifest, el navegador no tiene forma de saber que tu web "quiere" comportarse como una aplicación instalable — es, junto al Service Worker (Sesión 17), uno de los dos requisitos técnicos de toda PWA.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>Anatomía del manifest.json</h2>
+    <div class="body-text"><p>El manifest es un objeto JSON plano: un conjunto de propiedades clave-valor. Estas son las que usamos en el Gestor de tareas:</p></div>
+    <div style="overflow-x:auto;">
+    <table class="uptc" style="margin-top:1em;">
+      <tr><th>Propiedad</th><th>Qué hace</th><th>Nuestro valor</th></tr>
+      <tr><td><code>name</code></td><td>Nombre completo. Aparece en el diálogo de instalación y en la pantalla de carga (splash screen).</td><td>"Gestor de Tareas — Electiva PWA"</td></tr>
+      <tr><td><code>short_name</code></td><td>Nombre corto. Aparece bajo el ícono en la pantalla de inicio, donde el espacio es limitado.</td><td>"Tareas"</td></tr>
+      <tr><td><code>description</code></td><td>Descripción breve de la aplicación, usada por el navegador y algunas tiendas.</td><td>"Gestiona tus tareas, incluso sin conexión."</td></tr>
+      <tr><td><code>start_url</code></td><td>La URL que se abre cuando el usuario lanza la app ya instalada.</td><td>"/index.html"</td></tr>
+      <tr><td><code>scope</code></td><td>Qué parte del sitio se considera "dentro" de la app (fuera de <code>scope</code>, se abre el navegador normal).</td><td>"/"</td></tr>
+      <tr><td><code>display</code></td><td>Cómo se muestra la app instalada. Ver la sección siguiente.</td><td>"standalone"</td></tr>
+      <tr><td><code>orientation</code></td><td>Orientación de pantalla preferida.</td><td>"portrait"</td></tr>
+      <tr><td><code>theme_color</code></td><td>Color de la barra de título / barra de estado del sistema operativo.</td><td>"#1A1A1A"</td></tr>
+      <tr><td><code>background_color</code></td><td>Color de fondo mientras la app carga, antes de pintar la primera pantalla (splash screen).</td><td>"#FFCC29"</td></tr>
+      <tr><td><code>lang</code> / <code>dir</code></td><td>Idioma del contenido y dirección de lectura del texto.</td><td>"es" / "ltr"</td></tr>
+      <tr><td><code>icons</code></td><td>Arreglo de íconos en distintos tamaños y propósitos. Ver la sección de íconos.</td><td>Arreglo con 2 objetos</td></tr>
+    </table>
+    </div>
+    <p class="fig-caption">Las propiedades del manifest.json usadas en el Gestor de tareas. Fuente: adaptado de Microsoft Edge Developer Documentation [1] y MDN Web Docs [3].</p>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Los modos de <code>display</code></h2>
+    <div class="body-text"><p>La propiedad <code>display</code> es, probablemente, la que más cambia cómo se <i>siente</i> la app instalada. El navegador ofrece cuatro modos, de más inmersivo a menos inmersivo:</p></div>
+    <div class="mode-grid">
+      <div class="mode-card"><span class="mc-badge">fullscreen</span><p>Usa toda el área de la pantalla, sin ninguna interfaz del navegador ni del sistema operativo (ni siquiera la barra de estado). Se usa casi exclusivamente en juegos.</p></div>
+      <div class="mode-card"><span class="mc-badge">standalone</span><p>Se ve y se siente como una app nativa: sin barra de direcciones, con su propio ícono en la barra de tareas o el conmutador de apps. Es el modo más común para una PWA — el que usa el Gestor de tareas.</p></div>
+      <div class="mode-card"><span class="mc-badge">minimal-ui</span><p>Similar a <code>standalone</code>, pero conserva un mínimo de controles de navegación del navegador (por ejemplo, atrás/adelante). Útil cuando la app necesita que el usuario pueda "retroceder" con facilidad.</p></div>
+      <div class="mode-card"><span class="mc-badge">browser</span><p>Se abre como una pestaña normal del navegador, con toda su interfaz visible. Es el comportamiento por defecto si no se especifica <code>display</code> — es decir, si se omite esta propiedad, la app <i>no</i> se ve como instalada aunque técnicamente lo esté.</p></div>
+    </div>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> si <code>display</code> se omite o vale <code>"browser"</code>, Chrome no la considera "app-like" y puede no ofrecer instalarla — esta propiedad es, en la práctica, obligatoria para una PWA real.</div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Los íconos: tamaños y maskable icons</h2>
+    <div class="body-text"><p>La propiedad <code>icons</code> es un arreglo de objetos, cada uno con <code>src</code> (la ruta del archivo), <code>sizes</code> (el tamaño, en píxeles) y <code>type</code> (el formato MIME). Chrome exige, como mínimo, un ícono de <b>192×192</b> y uno de <b>512×512</b> para ofrecer la instalación — el primero se usa en la pantalla de inicio, el segundo en el splash screen y en contextos de mayor resolución.</p></div>
+    <div style="overflow-x:auto;">
+    <table class="uptc" style="margin-top:1em;">
+      <tr><th><code>purpose</code></th><th>Qué significa</th><th>Cuándo usarlo</th></tr>
+      <tr><td>"any" (por defecto)</td><td>El sistema operativo puede recortar el ícono a la forma que use (círculo, cuadrado redondeado, squircle) sin ninguna garantía sobre qué queda dentro.</td><td>Íconos simples, ya centrados, sin detalle cerca del borde.</td></tr>
+      <tr><td>"maskable"</td><td>El ícono se diseñó con una <b>zona segura</b> central (aprox. el 80% del lienzo): el sistema puede recortar libremente fuera de esa zona sin cortar contenido importante.</td><td>Cuando se quiere que el ícono se vea bien recortado en <i>cualquier</i> forma del sistema operativo — la práctica recomendada hoy en día.</td></tr>
+    </table>
+    </div>
+    <p class="fig-caption">Los dos valores de <code>purpose</code> para un ícono de manifest. Fuente: adaptado de "Maskable icon," web.dev [4].</p>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Vinculando el manifest y criterios de instalabilidad</h2>
+    <div class="body-text"><p>Tener un <code>manifest.json</code> no basta: hay que enlazarlo desde el HTML, en el <code>&lt;head&gt;</code>, y acompañarlo de un <code>&lt;meta&gt;</code> de color de tema para navegadores que lo leen por separado:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>index.html</div>
+      <pre><code><span class="tok-punct">&lt;</span><span class="tok-fn">head</span><span class="tok-punct">&gt;</span>
+  <span class="tok-com">&lt;!-- ...meta charset, viewport, title... --&gt;</span>
+  <span class="tok-punct">&lt;</span><span class="tok-fn">link</span> <span class="tok-prop">rel</span><span class="tok-punct">=</span><span class="tok-str">"manifest"</span> <span class="tok-prop">href</span><span class="tok-punct">=</span><span class="tok-str">"manifest.json"</span><span class="tok-punct">&gt;</span>
+  <span class="tok-punct">&lt;</span><span class="tok-fn">meta</span> <span class="tok-prop">name</span><span class="tok-punct">=</span><span class="tok-str">"theme-color"</span> <span class="tok-prop">content</span><span class="tok-punct">=</span><span class="tok-str">"#1A1A1A"</span><span class="tok-punct">&gt;</span>
+<span class="tok-punct">&lt;/</span><span class="tok-fn">head</span><span class="tok-punct">&gt;</span></code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Con eso enlazado, el navegador evalúa si la app cumple los <b>criterios de instalabilidad</b>. En Chrome, hoy en día, son básicamente cinco:</p></div>
+    <ol style="font-size:.95em; line-height:1.6; margin:.5em 0 0 1.3em;">
+      <li>Servirse por <b>HTTPS</b> (o desde <code>localhost</code> en desarrollo).</li>
+      <li>Tener un manifest enlazado, válido, con al menos <code>name</code> o <code>short_name</code>.</li>
+      <li>Incluir al menos un ícono de <b>192×192</b> y uno de <b>512×512</b>.</li>
+      <li>Definir <code>start_url</code> y un <code>display</code> de <code>standalone</code>, <code>fullscreen</code> o <code>minimal-ui</code>.</li>
+      <li>Tener un <b>Service Worker registrado</b>, con al menos un manejador del evento <code>fetch</code> — la pieza que construimos en la Sesión 17.</li>
+    </ol>
+    <div class="callout" style="margin-top:1em;"><b>Adelanto:</b> hasta que no tengamos Service Worker (próxima sesión), el manifest de hoy cumple 4 de los 5 criterios. Chrome no ofrecerá instalar el Gestor de tareas todavía — pero ya podemos verificar en DevTools que los primeros cuatro están en verde. El navegador también dispara un evento, <code>beforeinstallprompt</code>, que una app puede capturar para mostrar su <i>propio</i> botón "Instalar" en vez de esperar al ícono automático de la barra de direcciones — lo usaremos más adelante en el bloque.</div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Caso real: el manifest.json del Gestor de tareas</h2>
+    <div class="body-text"><p>Juntando todo lo anterior, este es el <code>manifest.json</code> completo que agregamos hoy al proyecto:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>manifest.json</div>
+      <pre><code>{
+  <span class="tok-prop">"name"</span><span class="tok-punct">:</span> <span class="tok-str">"Gestor de Tareas — Electiva PWA"</span>,
+  <span class="tok-prop">"short_name"</span><span class="tok-punct">:</span> <span class="tok-str">"Tareas"</span>,
+  <span class="tok-prop">"description"</span><span class="tok-punct">:</span> <span class="tok-str">"Gestiona tus tareas, incluso sin conexión."</span>,
+  <span class="tok-prop">"start_url"</span><span class="tok-punct">:</span> <span class="tok-str">"/index.html"</span>,
+  <span class="tok-prop">"scope"</span><span class="tok-punct">:</span> <span class="tok-str">"/"</span>,
+  <span class="tok-prop">"display"</span><span class="tok-punct">:</span> <span class="tok-str">"standalone"</span>,
+  <span class="tok-prop">"orientation"</span><span class="tok-punct">:</span> <span class="tok-str">"portrait"</span>,
+  <span class="tok-prop">"theme_color"</span><span class="tok-punct">:</span> <span class="tok-str">"#1A1A1A"</span>,
+  <span class="tok-prop">"background_color"</span><span class="tok-punct">:</span> <span class="tok-str">"#FFCC29"</span>,
+  <span class="tok-prop">"lang"</span><span class="tok-punct">:</span> <span class="tok-str">"es"</span>,
+  <span class="tok-prop">"dir"</span><span class="tok-punct">:</span> <span class="tok-str">"ltr"</span>,
+  <span class="tok-prop">"icons"</span><span class="tok-punct">:</span> [
+    {
+      <span class="tok-prop">"src"</span><span class="tok-punct">:</span> <span class="tok-str">"icons/icon-192.png"</span>,
+      <span class="tok-prop">"sizes"</span><span class="tok-punct">:</span> <span class="tok-str">"192x192"</span>,
+      <span class="tok-prop">"type"</span><span class="tok-punct">:</span> <span class="tok-str">"image/png"</span>,
+      <span class="tok-prop">"purpose"</span><span class="tok-punct">:</span> <span class="tok-str">"any"</span>
+    },
+    {
+      <span class="tok-prop">"src"</span><span class="tok-punct">:</span> <span class="tok-str">"icons/icon-512-maskable.png"</span>,
+      <span class="tok-prop">"sizes"</span><span class="tok-punct">:</span> <span class="tok-str">"512x512"</span>,
+      <span class="tok-prop">"type"</span><span class="tok-punct">:</span> <span class="tok-str">"image/png"</span>,
+      <span class="tok-prop">"purpose"</span><span class="tok-punct">:</span> <span class="tok-str">"maskable"</span>
+    }
+  ]
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Para verificarlo: F12 → pestaña <b>Application</b> → sección <b>Manifest</b>. Chrome muestra cada propiedad interpretada, una vista previa del ícono en distintas formas de recorte, y — muy importante — una lista de "Installability" con los criterios que faltan por cumplir (hoy nos va a marcar el Service Worker en rojo; eso es exactamente lo esperado).</p></div>
+
+    <h2 class="section-title"><span class="num-badge">8</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Ejecute, Observe y Analice</h4></div>
+      <div class="meta-row">INDIVIDUAL → PAREJAS · 27 MIN</div>
+      <p><b>Ejecute:</b> descarga el proyecto base y los íconos de la sección de Recursos, arriba. Sobre tu copia del Gestor de tareas, crea un <code>manifest.json</code> y enlaza <code>icon-96-incorrecto.png</code> dentro de <code>icons</code> como si fuera el ícono de <b>192×192</b> (mismo valor en <code>sizes</code>, aunque el archivo mida menos).</p>
+      <p style="margin-top:.8em;"><b>Observe:</b> abre DevTools → Application → Manifest y anota, textualmente, qué dice Chrome sobre ese ícono.</p>
+      <p style="margin-top:.8em;"><b>Analice</b> (ya en parejas): comparen lo que cada uno observó. ¿Por qué falla exactamente — Chrome exige que el archivo <i>mida</i> ese tamaño, o solo que el valor declarado coincida? Reemplacen el ícono por <code>icon-192.png</code> (el real) y confirmen que el aviso desaparece.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> la nota de lo observado y lo analizado, revisada en plenaria al terminar.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">2</div><h4>Construye tu manifest.json</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 20 MIN</div>
+      <p>Sobre el mismo proyecto de la Actividad 1, completa un <code>manifest.json</code> real y correcto: enlázalo desde el <code>&lt;head&gt;</code> con <code>&lt;link rel="manifest"&gt;</code>, con los dos íconos obligatorios ya en su tamaño real (192×192 y 512×512) y el resto de las propiedades vistas hoy.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> captura de pantalla de la pestaña Manifest en DevTools mostrando tu manifest interpretado sin errores, subida a la plataforma del curso antes de la próxima sesión.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>El <b>manifest.json</b> es el archivo JSON que le dice al navegador y al sistema operativo cómo debe verse y comportarse tu PWA instalada.</li>
+      <li>Propiedades clave: <code>name</code>/<code>short_name</code>, <code>start_url</code>, <code>scope</code>, <code>display</code>, <code>theme_color</code>/<code>background_color</code>, <code>icons</code>.</li>
+      <li>Los <b>4 modos de display</b> van de más a menos inmersivo: <code>fullscreen</code>, <code>standalone</code> (el más usado), <code>minimal-ui</code>, <code>browser</code>.</li>
+      <li>Se necesitan al menos íconos de <b>192×192</b> y <b>512×512</b>; <code>purpose: "maskable"</code> asegura que se vean bien recortados en cualquier forma.</li>
+      <li>El manifest cubre 4 de los 5 criterios de instalabilidad — el quinto, el Service Worker, llega en la Sesión 17.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 17: Service Workers — requisitos y ciclo de vida completo.</b> El script que el navegador ejecuta por separado de la página: cómo se registra, sus fases (instalación, espera, activación, fetch, actualización) y sus limitaciones. Con esto, el Gestor de tareas cumple el último criterio de instalabilidad.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> Microsoft, "Uso de un manifiesto de aplicación web para integrar un PWA en el sistema operativo," Microsoft Edge Developer Documentation, Microsoft Learn.</div>
+      <div><b>[2]</b> S. López, "Qué es PWA: características, ventajas y desventajas," digital55.</div>
+      <div><b>[3]</b> MDN web docs, "Web app manifests," MDN Web Docs.</div>
+      <div><b>[4]</b> Google, "Maskable icon," web.dev, 2020.</div>
+      <div><b>[5]</b> Google, "Web app manifests," web.dev, 2023.</div>
+      <div><b>[6]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 2 de 23</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 16 · El Manifiesto de aplicación · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .mode-grid-deck{display:grid; grid-template-columns:repeat(2,1fr); gap:.9em; margin-top:.8em;}
+  .mode-card-deck{border:1px solid var(--line); border-radius:10px; padding:.9em 1em;}
+  .mode-card-deck .mc-badge{display:inline-flex; align-items:center; justify-content:center; padding:.15em .7em; border-radius:999px; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); font-size:.72em; font-weight:800; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.35em;}
+  .mode-card-deck p{margin:0; font-size:.78em; color:#444; line-height:1.4;}
+  .prop-table{width:100%; border-collapse:collapse; font-size:.7em;}
+  .prop-table th,.prop-table td{border:1px solid #ddd; padding:.45em .6em; text-align:left;}
+  .prop-table th{background:#1A1A1A; color:#fff;}
+  .prop-table td:first-child{font-weight:700; background:#FFF6DC; font-family:"Cascadia Code",Consolas,monospace;}
+  .prop-table tr:nth-child(even) td:not(:first-child){background:#FFFDF5;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-flag" viewBox="0 0 24 24"><path d="M6 3v18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M6 4h12l-3 4 3 4H6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="ic-palette" viewBox="0 0 24 24"><path d="M12 3a9 8 0 1 0 0 16c1.2 0 1.7-.9.9-1.7-.6-.6-.2-1.5.7-1.5H15a5 5 0 0 0 5-5c0-4.4-3.6-7.8-8-7.8Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="10" r="1.2" fill="currentColor"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor"/><circle cx="16" cy="10" r="1.2" fill="currentColor"/></symbol>
+<symbol id="ic-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="9.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4 17l5-5 4 4 3-3 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="ic-link" viewBox="0 0 24 24"><path d="M9.5 14.5l5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M11 6.5l1.2-1.2a3.6 3.6 0 0 1 5 5l-1.2 1.2M13 17.5l-1.2 1.2a3.6 3.6 0 0 1-5-5l1.2-1.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-code" viewBox="0 0 24 24"><path d="M8 8L4 12l4 4M16 8l4 4-4 4M13.5 5.5l-3 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 2 de 23</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>El Manifiesto<br>de aplicación</h1>
+          <div class="lead">Sesión 2 de 23 — el archivo JSON que convierte una web en una app instalable: nombre, íconos, colores y modo de visualización.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>02 de 23 · Fundamentos PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <rect x="130" y="60" width="140" height="200" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <text x="200" y="100" text-anchor="middle" font-size="26" font-weight="700" fill="#1A1A1A" font-family="monospace">{ }</text>
+              <path d="M150 130 h100 M150 150 h80 M150 170 h100 M150 190 h60 M150 210 h90" stroke="#373435" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+              <circle cx="300" cy="230" r="30" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M287 230 l8 9 l17 -19" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap y bienvenida">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SESIÓN 02</div>
+            <h2>De la teoría al primer archivo</h2>
+            <p>La Sesión 15 fue panorama. Hoy escribimos el primer archivo nuevo del bloque: el manifest.json.</p>
+            <div class="tb-preview"><span>Recap Sesión 15</span><span>Agenda de hoy</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="18" fill="#1A1A1A"/>
+              <text x="40" y="275" text-anchor="middle" font-size="10" font-weight="700" fill="#FFCC29">S15</text>
+              <circle cx="200" cy="165" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">S16</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="360" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#1A1A1A">S17</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap de la Sesión 15">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Lo que ya sabemos</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>8 características</b><span style="font-size:.78em;color:#555;">Discoverable, Responsive, Independent connectivity, App-like, Installable, Secure, Upgradable, Re-engageable.</span></div>
+            <div class="mini-card fragment"><b>4 funcionalidades</b><span style="font-size:.78em;color:#555;">Cacheo, segundo plano, notificaciones push, experiencia offline.</span></div>
+            <div class="mini-card fragment"><b>Installable</b><span style="font-size:.78em;color:#555;">La característica de hoy: depende directamente del Web App Manifest.</span></div>
+          </div>
+          <div class="body-text" style="margin-top:1.4em;"><p>Hoy convertimos "Installable" de una palabra en la lista, a un archivo real dentro del proyecto.</p></div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Agenda (120 min)">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Agenda de la sesión</h2>
+          <hr class="rule">
+          <table class="uptc">
+            <tr><th>Momento</th><th>Duración</th></tr>
+            <tr><td>Bienvenida y recap de la Sesión 15</td><td class="num">8 min</td></tr>
+            <tr><td>¿Qué es el manifest.json? (explicación)</td><td class="num">10 min</td></tr>
+            <tr><td>Anatomía del manifest.json (explicación + demo)</td><td class="num">20 min</td></tr>
+            <tr><td>Los modos de display (explicación + demo)</td><td class="num">15 min</td></tr>
+            <tr><td>Los íconos: tamaños y maskable (explicación + demo)</td><td class="num">15 min</td></tr>
+            <tr><td>Vincular el manifest y criterios de instalabilidad (demo)</td><td class="num">15 min</td></tr>
+            <tr><td>Caso real: el manifest del Gestor de tareas (demo)</td><td class="num">10 min</td></tr>
+            <tr><td>Actividad 1 · Ejecute, Observe y Analice (individual → parejas)</td><td class="num">27 min</td></tr>
+          </table>
+          <div class="body-text" style="margin-top:1em;"><p><b>Total: 120 minutos de clase.</b> La Actividad 2 es tarea fuera de clase.</p></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="quees" data-section-label="¿Qué es el manifest?" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>¿Qué es el manifest.json?</h2>
+            <p>Un archivo JSON esencial para la integración de una PWA con el navegador y el sistema operativo.</p>
+            <div class="tb-preview"><span>Definición</span><span>Para qué sirve</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="170" r="130" fill="#FFF6DC"/>
+              <rect x="140" y="90" width="120" height="160" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <text x="200" y="140" text-anchor="middle" font-size="22" font-weight="700" fill="#1A1A1A" font-family="monospace">{ }</text>
+              <path d="M160 175 h80 M160 195 h60 M160 215 h80" stroke="#373435" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="quees" data-section-label="¿Qué es el manifest?" data-slide-label="Definición">
+          <div class="kicker">¿Qué es el manifest? · 1.1</div>
+          <h2 class="slide-title">El archivo que define la app instalada</h2>
+          <hr class="rule">
+          <div class="two-col-content">
+            <div class="body-text">
+              <p>El manifiesto de aplicación es un archivo JSON esencial para la integración de una PWA con el navegador y el sistema operativo. Define su apariencia y su comportamiento una vez instalada en el dispositivo del usuario.</p>
+              <div class="callout" style="margin-top:1em;"><b>En una frase:</b> sin manifest, el navegador no tiene forma de saber que tu web "quiere" comportarse como una aplicación instalable.</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:1em;">
+              <div class="card fragment">
+                <svg class="icon"><use href="#ic-code"/></svg>
+                <h3>Es solo JSON</h3>
+                <p>Un objeto plano de propiedades clave-valor. Ningún lenguaje nuevo que aprender.</p>
+              </div>
+              <div class="card fragment">
+                <svg class="icon"><use href="#ic-link"/></svg>
+                <h3>Se enlaza desde el HTML</h3>
+                <p>Una sola línea en el <code>&lt;head&gt;</code> conecta el manifest con tu página.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="anatomia" data-section-label="Anatomía" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>Anatomía del manifest.json</h2>
+            <p>Once propiedades, dos grupos: identidad de la app, y cómo se ve una vez instalada.</p>
+            <div class="tb-preview"><span>Identidad</span><span>Apariencia</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="90" y="60" width="220" height="200" rx="12" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="110" y="80" width="90" height="24" rx="4" fill="#FFCC29"/>
+              <rect x="110" y="114" width="180" height="12" rx="3" fill="#eee"/>
+              <rect x="110" y="134" width="150" height="12" rx="3" fill="#eee"/>
+              <rect x="110" y="154" width="180" height="12" rx="3" fill="#eee"/>
+              <rect x="110" y="174" width="120" height="12" rx="3" fill="#eee"/>
+              <rect x="110" y="200" width="60" height="40" rx="8" fill="#FFF6DC" stroke="#EEB32D" stroke-width="2"/>
+              <rect x="180" y="200" width="60" height="40" rx="8" fill="#FFF6DC" stroke="#EEB32D" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="anatomia" data-section-label="Anatomía" data-slide-label="Propiedades de identidad">
+          <div class="kicker">Anatomía · 2.1</div>
+          <h2 class="slide-title">Propiedades de identidad</h2>
+          <hr class="rule">
+          <table class="prop-table">
+            <tr><th>Propiedad</th><th>Qué hace</th><th>Nuestro valor</th></tr>
+            <tr class="fragment"><td>name</td><td>Nombre completo, en el diálogo de instalación y el splash screen.</td><td>"Gestor de Tareas — Electiva PWA"</td></tr>
+            <tr class="fragment"><td>short_name</td><td>Nombre corto, bajo el ícono en la pantalla de inicio.</td><td>"Tareas"</td></tr>
+            <tr class="fragment"><td>description</td><td>Descripción breve de la aplicación.</td><td>"Gestiona tus tareas, incluso sin conexión."</td></tr>
+            <tr class="fragment"><td>start_url</td><td>URL que se abre al lanzar la app instalada.</td><td>"/index.html"</td></tr>
+            <tr class="fragment"><td>scope</td><td>Qué parte del sitio se considera "dentro" de la app.</td><td>"/"</td></tr>
+          </table>
+        </section>
+
+        <section class="slide" data-section="anatomia" data-section-label="Anatomía" data-slide-label="Propiedades de apariencia">
+          <div class="kicker">Anatomía · 2.2</div>
+          <h2 class="slide-title">Propiedades de apariencia</h2>
+          <hr class="rule">
+          <table class="prop-table">
+            <tr><th>Propiedad</th><th>Qué hace</th><th>Nuestro valor</th></tr>
+            <tr class="fragment"><td>display</td><td>Cómo se muestra la app instalada (siguiente sección).</td><td>"standalone"</td></tr>
+            <tr class="fragment"><td>orientation</td><td>Orientación de pantalla preferida.</td><td>"portrait"</td></tr>
+            <tr class="fragment"><td>theme_color</td><td>Color de la barra de título / estado del sistema.</td><td>"#1A1A1A"</td></tr>
+            <tr class="fragment"><td>background_color</td><td>Color de fondo mientras carga (splash screen).</td><td>"#FFCC29"</td></tr>
+            <tr class="fragment"><td>lang / dir</td><td>Idioma y dirección del texto.</td><td>"es" / "ltr"</td></tr>
+            <tr class="fragment"><td>icons</td><td>Arreglo de íconos en distintos tamaños (siguiente sección).</td><td>2 objetos</td></tr>
+          </table>
+        </section>
+
+        <section class="slide slide--divider" data-section="display" data-section-label="Modos de display" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>Los modos de display</h2>
+            <p>La propiedad que más cambia cómo se siente la app instalada: cuatro niveles de inmersión.</p>
+            <div class="tb-preview"><span>fullscreen</span><span>standalone</span><span>minimal-ui</span><span>browser</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="70" y="60" width="260" height="200" rx="10" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <rect x="90" y="80" width="220" height="24" rx="4" fill="#1A1A1A"/>
+              <rect x="90" y="114" width="220" height="126" rx="6" fill="#fff" stroke="#EEB32D" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="display" data-section-label="Modos de display" data-slide-label="Los 4 modos">
+          <div class="kicker">Display · 3.1</div>
+          <h2 class="slide-title">De más a menos inmersivo</h2>
+          <hr class="rule">
+          <div class="mode-grid-deck">
+            <div class="mode-card-deck fragment"><span class="mc-badge">fullscreen</span><p>Toda la pantalla, sin ninguna interfaz del navegador ni del sistema. Casi exclusivo de juegos.</p></div>
+            <div class="mode-card-deck fragment"><span class="mc-badge">standalone</span><p>Se ve como app nativa: sin barra de direcciones. El modo más común — el nuestro.</p></div>
+            <div class="mode-card-deck fragment"><span class="mc-badge">minimal-ui</span><p>Como standalone, pero conserva controles mínimos de navegación (atrás/adelante).</p></div>
+            <div class="mode-card-deck fragment"><span class="mc-badge">browser</span><p>Pestaña normal del navegador. Comportamiento por defecto si se omite la propiedad.</p></div>
+          </div>
+          <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> si <code>display</code> se omite o vale "browser", la app no se ve como instalada aunque técnicamente lo esté.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="iconos" data-section-label="Los íconos" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Los íconos: tamaños y maskable</h2>
+            <p>Dos tamaños obligatorios, y una propiedad que decide cómo se recortan en cada sistema.</p>
+            <div class="tb-preview"><span>192×192</span><span>512×512</span><span>maskable</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="140" cy="160" r="70" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="230" y="90" width="140" height="140" rx="24" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3.5"/>
+              <circle cx="140" cy="160" r="35" fill="#1A1A1A"/>
+              <rect x="265" y="125" width="70" height="70" rx="10" fill="#1A1A1A"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="iconos" data-section-label="Los íconos" data-slide-label="Tamaños y purpose">
+          <div class="kicker">Íconos · 4.1</div>
+          <h2 class="slide-title">Tamaños obligatorios y <code>purpose</code></h2>
+          <hr class="rule">
+          <div class="body-text"><p>Cada objeto en <code>icons</code> trae <code>src</code>, <code>sizes</code>, <code>type</code> y opcionalmente <code>purpose</code>. Chrome exige, como mínimo, 192×192 y 512×512.</p></div>
+          <table class="prop-table" style="margin-top:.8em;">
+            <tr><th>purpose</th><th>Qué significa</th><th>Cuándo usarlo</th></tr>
+            <tr class="fragment"><td>"any"</td><td>El sistema puede recortarlo a cualquier forma, sin garantía de qué queda dentro.</td><td>Íconos simples ya centrados.</td></tr>
+            <tr class="fragment"><td>"maskable"</td><td>Tiene una zona segura central (~80%) pensada para recortarse sin perder contenido.</td><td>Práctica recomendada hoy en día.</td></tr>
+          </table>
+        </section>
+
+        <section class="slide slide--divider" data-section="vincular" data-section-label="Vincular e instalabilidad" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>Vincular el manifest e instalabilidad</h2>
+            <p>Una línea en el HTML, y cinco criterios que Chrome revisa antes de ofrecer instalar.</p>
+            <div class="tb-preview"><span>&lt;link rel="manifest"&gt;</span><span>5 criterios</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="130" cy="160" r="55" fill="#FFF6DC" stroke="#EEB32D" stroke-width="4"/>
+              <circle cx="270" cy="160" r="55" fill="#FFCC29" stroke="#1A1A1A" stroke-width="4"/>
+              <path d="M175 160 h50" stroke="#373435" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="vincular" data-section-label="Vincular e instalabilidad" data-slide-label="Enlazando el manifest">
+          <div class="kicker">Vincular · 5.1</div>
+          <h2 class="slide-title">Dos líneas en el &lt;head&gt;</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>index.html</div>
+            <pre><code><span class="tok-punct">&lt;</span><span class="tok-fn">head</span><span class="tok-punct">&gt;</span>
+  <span class="tok-com">&lt;!-- ... --&gt;</span>
+  <span class="tok-punct">&lt;</span><span class="tok-fn">link</span> <span class="tok-prop">rel</span><span class="tok-punct">=</span><span class="tok-str">"manifest"</span> <span class="tok-prop">href</span><span class="tok-punct">=</span><span class="tok-str">"manifest.json"</span><span class="tok-punct">&gt;</span>
+  <span class="tok-punct">&lt;</span><span class="tok-fn">meta</span> <span class="tok-prop">name</span><span class="tok-punct">=</span><span class="tok-str">"theme-color"</span> <span class="tok-prop">content</span><span class="tok-punct">=</span><span class="tok-str">"#1A1A1A"</span><span class="tok-punct">&gt;</span>
+<span class="tok-punct">&lt;/</span><span class="tok-fn">head</span><span class="tok-punct">&gt;</span></code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="vincular" data-section-label="Vincular e instalabilidad" data-slide-label="Los 5 criterios">
+          <div class="kicker">Vincular · 5.2</div>
+          <h2 class="slide-title">Los 5 criterios de instalabilidad</h2>
+          <hr class="rule">
+          <div class="steps-flow" style="flex-wrap:wrap;">
+            <div class="step-box fragment"><div class="n">1</div><b>HTTPS</b><span>o localhost</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">2</div><b>Manifest válido</b><span>name/short_name</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">3</div><b>Íconos</b><span>192 y 512</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">4</div><b>display + start_url</b><span>standalone/fullscreen/minimal-ui</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">5</div><b>Service Worker</b><span>con fetch — Sesión 17</span></div>
+          </div>
+          <div class="callout" style="margin-top:1.4em;">Hoy cumplimos 4 de 5. El quinto criterio, el Service Worker, es exactamente el tema de la próxima sesión — y también dispara el evento <code>beforeinstallprompt</code>.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="caso" data-section-label="Caso real" data-slide-label="Caso real">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Caso real: el manifest del Gestor de tareas</h2>
+            <p>Todo lo visto hoy, junto, en un solo archivo — y cómo verificarlo en DevTools.</p>
+            <div class="tb-preview"><span>manifest.json completo</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="110" y="50" width="180" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="130" y="74" width="90" height="20" rx="4" fill="#FFCC29"/>
+              <path d="M130 106 h140 M130 124 h100 M130 142 h140 M130 160 h80 M130 178 h140 M130 196 h60 M130 214 h100" stroke="#373435" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="manifest.json completo">
+          <div class="kicker">Caso real · 6.1</div>
+          <h2 class="slide-title">El manifest.json completo</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>manifest.json</div>
+            <pre><code>{
+  <span class="tok-prop">"name"</span><span class="tok-punct">:</span> <span class="tok-str">"Gestor de Tareas — Electiva PWA"</span>,
+  <span class="tok-prop">"short_name"</span><span class="tok-punct">:</span> <span class="tok-str">"Tareas"</span>,
+  <span class="tok-prop">"start_url"</span><span class="tok-punct">:</span> <span class="tok-str">"/index.html"</span>,
+  <span class="tok-prop">"scope"</span><span class="tok-punct">:</span> <span class="tok-str">"/"</span>,
+  <span class="tok-prop">"display"</span><span class="tok-punct">:</span> <span class="tok-str">"standalone"</span>,
+  <span class="tok-prop">"theme_color"</span><span class="tok-punct">:</span> <span class="tok-str">"#1A1A1A"</span>,
+  <span class="tok-prop">"background_color"</span><span class="tok-punct">:</span> <span class="tok-str">"#FFCC29"</span>,
+  <span class="tok-prop">"icons"</span><span class="tok-punct">:</span> [
+    { <span class="tok-prop">"src"</span><span class="tok-punct">:</span> <span class="tok-str">"icons/icon-192.png"</span>, <span class="tok-prop">"sizes"</span><span class="tok-punct">:</span> <span class="tok-str">"192x192"</span>, <span class="tok-prop">"purpose"</span><span class="tok-punct">:</span> <span class="tok-str">"any"</span> },
+    { <span class="tok-prop">"src"</span><span class="tok-punct">:</span> <span class="tok-str">"icons/icon-512-maskable.png"</span>, <span class="tok-prop">"sizes"</span><span class="tok-punct">:</span> <span class="tok-str">"512x512"</span>, <span class="tok-prop">"purpose"</span><span class="tok-punct">:</span> <span class="tok-str">"maskable"</span> }
+  ]
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="caso" data-section-label="Caso real" data-slide-label="Verificar en DevTools">
+          <div class="kicker">Caso real · 6.2</div>
+          <h2 class="slide-title">Verificar en DevTools</h2>
+          <hr class="rule">
+          <div class="code-block">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>DevTools</div>
+            <pre><code><span class="tok-com">// F12 → pestaña "Application" → sección "Manifest"</span>
+<span class="tok-com">// Chrome muestra:</span>
+<span class="tok-com">//  - cada propiedad interpretada</span>
+<span class="tok-com">//  - vista previa del ícono recortado en varias formas</span>
+<span class="tok-com">//  - lista "Installability" con los criterios que faltan</span></code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">Hoy la lista de Installability marcará el Service Worker en rojo — es exactamente lo esperado hasta la Sesión 17.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>Actividades para la clase</h2>
+            <p>Recursos para partir del mismo código, una dinámica de ejecutar-observar-analizar, y una tarea de construcción.</p>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="200" cy="215" rx="130" ry="32" fill="#FFF6DC" stroke="#EEB32D" stroke-width="3"/>
+              <circle cx="200" cy="108" r="26" fill="#373435"/>
+              <rect x="168" y="132" width="64" height="58" rx="22" fill="#FFCC29"/>
+              <circle cx="92" cy="150" r="23" fill="#373435"/>
+              <rect x="63" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <circle cx="308" cy="150" r="23" fill="#373435"/>
+              <rect x="279" y="173" width="58" height="52" rx="20" fill="#EEB32D"/>
+              <rect x="182" y="200" width="36" height="26" rx="3" fill="#fff" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Recursos y actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Pongamos en práctica lo aprendido</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">·</div><h4>Recursos primero</h4></div>
+              <div class="meta-row">DESCARGA · GESTOR DE TAREAS + ÍCONOS</div>
+              <p>El proyecto base y los íconos (incluido uno a propósito con tamaño incorrecto) para la Actividad 1.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">1</div><h4>Ejecute, Observe y Analice</h4></div>
+              <div class="meta-row">INDIVIDUAL → PAREJAS · 27 MIN</div>
+              <p>Enlazar el ícono incorrecto, observar el error en DevTools, y analizar en parejas por qué ocurre.</p>
+            </div>
+            <div class="activity-card fragment">
+              <div class="a-head"><div class="a-num">2</div><h4>Construye tu manifest.json</h4></div>
+              <div class="meta-row">TAREA · FUERA DE CLASE</div>
+              <p>Agregar un manifest.json real, enlazado y con sus dos íconos obligatorios, a tu propio proyecto.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 08</div>
+            <h2>Cierre de la sesión</h2>
+            <p>Lo esencial de hoy, y hacia dónde vamos en la Sesión 17.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="120" y="50" width="160" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <rect x="160" y="34" width="80" height="32" rx="8" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="150" cy="112" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 112 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="112" x2="250" y2="112" stroke="#373435" stroke-width="4"/>
+              <circle cx="150" cy="152" r="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2"/>
+              <path d="M144 152 l4 5 l9 -10" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="172" y1="152" x2="250" y2="152" stroke="#373435" stroke-width="4"/>
+              <line x1="305" y1="90" x2="305" y2="250" stroke="#373435" stroke-width="5"/>
+              <path d="M305 90 L305 122 L347 105 Z" fill="#EEB32D" stroke="#1A1A1A" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la lección</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment">El <b>manifest.json</b> le dice al navegador y al SO cómo debe verse y comportarse tu PWA instalada.</li>
+            <li class="fragment">Propiedades clave: name/short_name, start_url, scope, display, theme_color/background_color, icons.</li>
+            <li class="fragment">Los <b>4 modos de display</b>: fullscreen, standalone (el más usado), minimal-ui, browser.</li>
+            <li class="fragment">Íconos mínimos: <b>192×192</b> y <b>512×512</b>; <code>purpose: "maskable"</code> para recortes seguros.</li>
+            <li class="fragment">El manifest cubre 4 de 5 criterios de instalabilidad — el quinto llega con el Service Worker.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 17: Service Workers — requisitos y ciclo de vida completo.</b> El script que el navegador ejecuta por separado de la página: registro, instalación, espera, activación, fetch y actualización. Con esto, el Gestor de tareas cumple el último criterio de instalabilidad.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> Microsoft, "Uso de un manifiesto de aplicación web para integrar un PWA en el sistema operativo," Microsoft Edge Developer Documentation, Microsoft Learn.</div>
+            <div><b>[2]</b> S. López, "Qué es PWA: características, ventajas y desventajas," digital55.</div>
+            <div><b>[3]</b> MDN web docs, "Web app manifests," MDN Web Docs.</div>
+            <div><b>[4]</b> Google, "Maskable icon," web.dev, 2020.</div>
+            <div><b>[5]</b> Google, "Web app manifests," web.dev, 2023.</div>
+            <div><b>[6]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 25</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>
