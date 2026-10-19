@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 22 · IndexedDB y Web Crypto API · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .db-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.8em; margin:1.2em 0;}
+  .db-card{border:1px solid var(--line); border-radius:10px; padding:.85em 1em;}
+  .db-card .op-name{display:inline-block; font-size:.8em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .6em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .db-card p{margin:0; font-size:.84em; color:#444; line-height:1.4;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:1em 1.2em; margin:1em 0; font-size:.92em;}
+  .warn-box b{color:#9a6b00;}
+  .compare-wrap{overflow-x:auto;}
+  .recursos-box{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:6px; padding:1.1em 1.4em; margin:1.4em 0 0;}
+  .recursos-box h3{font-family:var(--serif); font-size:1.05em; margin:0 0 .5em; color:var(--gold-deep);}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.4em;}
+  .recursos-list a{font-weight:700; color:var(--ink);}
+  .rb-desc{display:block; font-size:.88em; color:var(--gray); margin-top:.2em; font-weight:400;}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} .db-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+      <a href="Guion_Clase_Sesion_22.docx">Guion de la clase (Word) →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 8 de 30</div>
+    <h1>IndexedDB y Web Crypto API</h1>
+    <div class="lead">Cuando un simple par clave-valor en el caché no alcanza: cómo guardar datos estructurados y consultables en el navegador, versionar el esquema con el tiempo, y cifrar los campos sensibles con una clave derivada de una contraseña real — no una clave de juguete que se pierde al recargar la página.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Explicar</b> por qué un caché de pares clave-valor no alcanza para datos estructurados, consultables y que crecen con el tiempo.</span></li>
+      <li><span class="chk">✓</span><span><b>Crear y versionar</b> una base de datos IndexedDB con object stores, índices, y una migración real entre versiones del esquema.</span></li>
+      <li><span class="chk">✓</span><span><b>Realizar</b> operaciones CRUD completas (add, put, get, delete, getAll, count) y recorrer/editar resultados con un cursor.</span></li>
+      <li><span class="chk">✓</span><span><b>Derivar</b> una clave criptográfica real a partir de una contraseña del usuario con PBKDF2 — no una clave aleatoria que se pierde al recargar.</span></li>
+      <li><span class="chk">✓</span><span><b>Cifrar, descifrar y verificar integridad</b> de datos sensibles con AES-GCM y SHA-256 antes de guardarlos en IndexedDB.</span></li>
+      <li><span class="chk">✓</span><span><b>Reconocer</b> qué protege realmente el cifrado en el cliente, y qué no.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion21.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 21.</b> El Gestor de Tareas con las 5 estrategias de caché ya enrutadas por tipo de recurso. Hoy no tocamos el caché — agregamos almacenamiento estructurado aparte, con IndexedDB.</span></li>
+      </ul>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Bienvenida y recap</h2>
+    <div class="body-text"><p>En la Sesión 21 cerramos las 5 estrategias de caché y aprendimos a enrutarlas por tipo de recurso dentro de <code>fetch</code>. Pero tanto el caché HTTP como la Cache Storage API comparten una limitación de fondo: guardan pares <i>Request → Response</i>, es decir, archivos completos. Ninguno de los dos sabe responder preguntas como "dame todas las tareas con prioridad alta" sin descargar y revisar cada archivo uno por uno, y ninguno soporta actualizar un solo campo de un registro sin reescribir el archivo entero. Hoy resolvemos eso con IndexedDB — y de paso aprendemos a cifrar los datos más sensibles que guardamos ahí, con una clave que de verdad sobrevive entre sesiones del usuario.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>De Cache Storage a IndexedDB</h2>
+    <div class="body-text"><p>El funcionamiento sin conexión en una PWA se logra combinando tecnologías distintas para trabajos distintos. La Cache Storage API permite a los service workers almacenar en caché respuestas a solicitudes de red, asegurando que recursos esenciales como HTML, CSS, JavaScript e imágenes puedan cargarse sin depender de la conexión. IndexedDB, en cambio, proporciona almacenamiento estructurado para datos dinámicos, permitiendo consultas por campo y sincronización con el servidor cuando la conexión se restablece [1].</p></div>
+
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em;">
+      <tr><th>Característica</th><th>localStorage</th><th>Cache Storage API</th><th>IndexedDB</th></tr>
+      <tr><td><b>Qué guarda</b></td><td>Pares string → string</td><td>Pares Request → Response (archivos)</td><td>Objetos JavaScript estructurados</td></tr>
+      <tr><td><b>Cómo se consulta</b></td><td>Por clave exacta</td><td>Por URL exacta (match)</td><td>Por clave, por índice, o recorriendo con un cursor</td></tr>
+      <tr><td><b>Síncrono o asíncrono</b></td><td>Síncrono — bloquea el hilo principal</td><td>Asíncrono (promesas)</td><td>Asíncrono (eventos)</td></tr>
+      <tr><td><b>Límite típico</b></td><td>~5-10 MB, y todo en memoria a la vez</td><td>Decenas de archivos, depende del navegador</td><td>Cientos de MB o más (con permiso del usuario)</td></tr>
+      <tr><td><b>Ideal para</b></td><td>Preferencias simples (tema, idioma)</td><td>El "shell" de la app: HTML, CSS, JS, imágenes</td><td>Datos dinámicos: tareas, mensajes, registros de un formulario</td></tr>
+    </table>
+    </div>
+    <p class="fig-caption">localStorage añadido a la comparación porque es la alternativa que más estudiantes conocen ya — y la razón exacta por la que no alcanza para este caso: al ser síncrono, una operación grande congela la interfaz, y solo guarda texto plano, nunca objetos ni blobs binarios. Comparación adaptada de [1][2].</p>
+
+    <h2 class="section-title"><span class="num-badge">3</span>Abrir y versionar una base de datos</h2>
+    <div class="body-text"><p>IndexedDB es asíncrona pero <b>basada en eventos</b>, no en promesas — a diferencia de <code>fetch()</code> o de la Web Crypto API que veremos más adelante. Abrir una base de datos dispara hasta tres eventos posibles:</p></div>
+    <ul class="clean">
+      <li><b>onupgradeneeded:</b> se dispara solo cuando la base de datos no existe, o cuando el número de versión aumenta. Aquí — y solo aquí — se pueden crear, modificar o borrar object stores e índices.</li>
+      <li><b>onsuccess:</b> la base de datos quedó abierta y lista para usarse.</li>
+      <li><b>onerror:</b> algo falló — por ejemplo, el usuario negó el permiso de almacenamiento, o quedó sin espacio.</li>
+    </ul>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+      <pre><code>function abrirBaseDeDatos() {
+  return new Promise((resolve, reject) => {
+    const peticion = indexedDB.open('gestor-tareas-db', 1);
+
+    peticion.onupgradeneeded = event => {
+      const db = event.target.result;
+      const store = db.createObjectStore('tareas', { keyPath: 'id', autoIncrement: true });
+      store.createIndex('porPrioridad', 'prioridad', { unique: false });
+      store.createIndex('porTitulo', 'titulo', { unique: true });
+    };
+
+    peticion.onsuccess = event => resolve(event.target.result);
+    peticion.onerror = event => reject(event.target.error);
+  });
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><code>createObjectStore()</code> es el equivalente a crear una tabla; <code>keyPath</code> indica qué propiedad del objeto sirve como clave única (aquí, <code>id</code>), y <code>autoIncrement</code> hace que IndexedDB genere ese <code>id</code> automáticamente. <code>createIndex()</code> crea un índice secundario — aquí, uno para buscar tareas por prioridad sin recorrerlas todas, y otro que exige título único con <code>{ unique: true }</code>.</p></div>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Migrar el esquema: qué pasa cuando la versión sube</h3>
+    <div class="body-text"><p>Un proyecto real no diseña su esquema una sola vez. Cuando el Gestor de tareas necesite, por ejemplo, agrupar tareas por proyecto, hay que subir el número de versión y <code>onupgradeneeded</code> se dispara de nuevo — pero esta vez con datos ya guardados por los usuarios que hay que preservar:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js (migración v1 → v2)</div>
+      <pre><code>const peticion = indexedDB.open('gestor-tareas-db', 2);  // subimos de 1 a 2
+
+peticion.onupgradeneeded = event => {
+  const db = event.target.result;
+  const tx = event.target.transaction;
+  const version = event.oldVersion;  // versión desde la que se migra
+
+  if (version < 1) {
+    const store = db.createObjectStore('tareas', { keyPath: 'id', autoIncrement: true });
+    store.createIndex('porPrioridad', 'prioridad', { unique: false });
+  }
+  if (version < 2) {
+    // Nuevo en la v2: índice por proyecto, sobre el store que ya existía
+    const store = tx.objectStore('tareas');
+    store.createIndex('porProyecto', 'proyectoId', { unique: false });
+  }
+};</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><code>event.oldVersion</code> dice desde qué versión viene el navegador de ese usuario — puede ser 0 (base de datos nueva) o cualquier versión anterior. El patrón <code>if (version &lt; N)</code> encadenado deja que un usuario que nunca abrió la app salte directo a la v2, y uno que ya tenía la v1 solo reciba el índice nuevo, sin perder sus tareas guardadas. Intentar crear un object store o índice que ya existe lanza un error — de ahí que cada bloque solo corra si hace falta.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Operaciones CRUD con IndexedDB</h2>
+    <div class="body-text"><p>Toda operación de lectura o escritura ocurre dentro de una <b>transacción</b>, que declara de antemano qué object stores va a tocar y en qué modo. Una transacción se cierra sola (<code>oncomplete</code>) cuando todas sus operaciones terminan, o se cancela entera (<code>onabort</code>) si una falla — no hay una mezcla parcial de cambios.</p></div>
+
+    <div class="db-grid">
+      <div class="db-card"><span class="op-name">db.transaction(stores, modo)</span><p>Abre una transacción. modo es 'readonly' o 'readwrite'.</p></div>
+      <div class="db-card"><span class="op-name">tx.objectStore(nombre)</span><p>Obtiene el object store dentro de esa transacción.</p></div>
+      <div class="db-card"><span class="op-name">store.add(objeto)</span><p>Inserta un registro nuevo. Falla si la clave ya existe.</p></div>
+      <div class="db-card"><span class="op-name">store.put(objeto)</span><p>Inserta o actualiza — sin fallar si la clave ya existe.</p></div>
+      <div class="db-card"><span class="op-name">store.get(clave)</span><p>Recupera un único registro por su clave.</p></div>
+      <div class="db-card"><span class="op-name">store.delete(clave)</span><p>Elimina un registro por su clave.</p></div>
+      <div class="db-card"><span class="op-name">store.getAll()</span><p>Recupera todos los registros del store.</p></div>
+      <div class="db-card"><span class="op-name">store.count()</span><p>Cuenta cuántos registros hay, sin traerlos.</p></div>
+    </div>
+
+    <div class="warn-box">
+      <b>Ojo:</b> estas operaciones NO devuelven promesas — devuelven un objeto <code>IDBRequest</code> con sus propios <code>onsuccess</code>/<code>onerror</code>. Es habitual (y muy recomendable) envolverlas en una <code>Promise</code> propia para poder usar <code>async/await</code>, como en el ejemplo siguiente. En un proyecto real es común además usar una librería ligera como <code>idb</code> (de Jake Archibald) que hace exactamente esto por ti — aquí lo escribimos a mano para entender qué hay detrás.
+    </div>
+
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+      <pre><code>function agregarTarea(db, tarea) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('tareas', 'readwrite');
+    const peticion = tx.objectStore('tareas').add(tarea);
+    peticion.onsuccess = () => resolve(peticion.result);
+    peticion.onerror = () => reject(peticion.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
+
+function obtenerTarea(db, id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('tareas', 'readonly');
+    const peticion = tx.objectStore('tareas').get(id);
+    peticion.onsuccess = () => resolve(peticion.result);
+    peticion.onerror = () => reject(peticion.error);
+  });
+}
+
+// Uso, ahora con await:
+const id = await agregarTarea(db, { titulo: 'Estudiar IndexedDB', prioridad: 'alta', hecha: false });
+const tarea = await obtenerTarea(db, id);</code></pre>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Consultas con índices y cursores</h2>
+    <div class="body-text"><p><code>getAll()</code> trae todo el store — perfecto para pocos registros, ineficiente para muchos. Para consultas dirigidas se usan los índices creados con <code>createIndex()</code>, y para recorrer resultados uno a uno sin cargarlos todos en memoria —o para editarlos o borrarlos mientras se recorren— un <b>cursor</b>:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+      <pre><code>function tareasPorPrioridad(db, prioridad) {
+  return new Promise((resolve) => {
+    const resultado = [];
+    const store = db.transaction('tareas', 'readonly').objectStore('tareas');
+    const indice = store.index('porPrioridad');
+    const cursor = indice.openCursor(IDBKeyRange.only(prioridad));
+
+    cursor.onsuccess = event => {
+      const c = event.target.result;
+      if (c) {
+        resultado.push(c.value);
+        c.continue();  // avanza al siguiente registro que coincide
+      } else {
+        resolve(resultado);  // no hay más — terminamos
+      }
+    };
+  });
+}
+
+// Marcar como hechas todas las tareas de prioridad "baja", con el cursor en modo escritura:
+function completarTareasDeBajaPrioridad(db) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('tareas', 'readwrite');
+    const indice = tx.objectStore('tareas').index('porPrioridad');
+    const cursor = indice.openCursor(IDBKeyRange.only('baja'));
+    let actualizadas = 0;
+
+    cursor.onsuccess = event => {
+      const c = event.target.result;
+      if (!c) return resolve(actualizadas);
+      const registro = c.value;
+      registro.hecha = true;
+      c.update(registro);   // reescribe el registro actual sin cerrar el cursor
+      actualizadas++;
+      c.continue();
+    };
+    tx.onerror = () => reject(tx.error);
+  });
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><code>IDBKeyRange.only(valor)</code> limita el cursor a las entradas cuyo índice coincide exactamente; también existen <code>IDBKeyRange.bound()</code>, <code>lowerBound()</code> y <code>upperBound()</code> para rangos, y <code>openCursor(range, 'prev')</code> para recorrer en orden descendente. El patrón <code>c.continue()</code> dentro de <code>onsuccess</code> es lo que hace avanzar el cursor — olvidarlo deja el bucle detenido en el primer resultado. <code>c.update(objeto)</code> y <code>c.delete()</code> operan sobre el registro que el cursor tiene enfocado en ese momento, sin necesitar su clave por separado.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Web Crypto API: fundamentos</h2>
+    <div class="body-text"><p>La API Web Crypto permite realizar operaciones criptográficas en entornos seguros, proporcionando primitivas de bajo nivel para el cifrado de datos y para verificar su integridad. Su uso requiere un manejo cuidadoso para evitar vulnerabilidades. Solo funciona en conexiones HTTPS (o localhost) y es compatible con Web Workers, lo que permite realizar procesos criptográficos en segundo plano [3].</p></div>
+    <ul class="clean">
+      <li><b>window.crypto.subtle:</b> el objeto que expone todas las operaciones — generar y derivar claves, cifrar, descifrar, calcular hashes.</li>
+      <li><b>Basada en promesas:</b> a diferencia de IndexedDB, cada método de <code>crypto.subtle</code> devuelve una Promise — se puede usar <code>await</code> directamente.</li>
+      <li><b>Solo HTTPS:</b> igual que los Service Workers, <code>crypto.subtle</code> no está disponible en páginas servidas por HTTP simple (excepto localhost).</li>
+    </ul>
+    <div class="body-text" style="margin-top:1em;"><p>Además de cifrar, <code>crypto.subtle</code> calcula <b>hashes</b> — huellas digitales de un dato, útiles para verificar que no fue alterado sin necesitar guardar el dato original:</p></div>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>crypto.js</div>
+      <pre><code>async function calcularHash(texto) {
+  const datos = new TextEncoder().encode(texto);
+  const buffer = await crypto.subtle.digest('SHA-256', datos);
+  return Array.from(new Uint8Array(buffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');  // hash en hexadecimal, listo para comparar o guardar
+}</code></pre>
+    </div>
+    <div class="callout" style="margin-top:1em;"><b>Dato clave:</b> AES-GCM es el algoritmo recomendado por MDN para cifrado simétrico de propósito general en el navegador — es rápido y además detecta si el texto cifrado fue alterado. SHA-256 es el algoritmo de hash recomendado cuando hace falta verificar integridad sin cifrar.</div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Derivar una clave real: PBKDF2 desde una contraseña</h2>
+    <div class="body-text"><p>Una clave generada con <code>crypto.subtle.generateKey()</code> es aleatoria — perfecta para una demo, inútil en la práctica: si no se guarda en ningún lado, se pierde en cuanto se recarga la página, y con ella, todo lo cifrado. Lo que un proyecto real necesita es una clave que el usuario pueda <b>reproducir</b> cada vez que abre la app, típicamente a partir de una contraseña que él mismo recuerda. Para eso existe <b>PBKDF2</b> (Password-Based Key Derivation Function 2): toma una contraseña y una <b>sal</b> (salt) aleatoria, y las combina miles de veces para producir una clave — deliberadamente lento, para que probar contraseñas por fuerza bruta sea costoso.</p></div>
+    <div class="code-block" style="margin-top:1em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>crypto.js</div>
+      <pre><code>async function derivarClaveDesdeContrasena(contrasena, sal) {
+  // 1. La contraseña entra como material crudo, todavía no es una CryptoKey utilizable
+  const materialBase = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(contrasena),
+    'PBKDF2',
+    false,
+    ['deriveKey']
+  );
+
+  // 2. PBKDF2 combina la contraseña y la sal 100 000 veces para producir la clave real
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: sal, iterations: 100000, hash: 'SHA-256' },
+    materialBase,
+    { name: 'AES-GCM', length: 256 },
+    false,                    // no exportable: se re-deriva cada vez, no se guarda
+    ['encrypt', 'decrypt']
+  );
+}
+
+// La sal no es secreta, pero debe guardarse junto a los datos cifrados —
+// sin ella, ni siquiera la contraseña correcta reproduce la misma clave.
+const sal = crypto.getRandomValues(new Uint8Array(16));
+const clave = await derivarClaveDesdeContrasena(contrasenaDelUsuario, sal);</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Con este cambio, la clave ya no vive solo en memoria: se puede <b>reconstruir</b> en cualquier sesión futura con la misma contraseña y la misma sal — la sal se guarda en IndexedDB junto al dato cifrado (no es secreta), pero la contraseña nunca se guarda en ningún lado. Es exactamente el mismo principio que usa un gestor de contraseñas: la contraseña maestra nunca se envía ni se almacena, solo se usa, en el momento, para derivar la clave.</p></div>
+    <div class="warn-box"><b>100 000 iteraciones no es un número mágico:</b> es el mínimo que OWASP recomendaba para PBKDF2-SHA256 al momento de escribir esta guía — y sube con el tiempo, a medida que el hardware se vuelve más rápido para probar contraseñas. En un proyecto real conviene revisar la recomendación vigente en vez de copiar este número indefinidamente.</div>
+
+    <h2 class="section-title"><span class="num-badge">8</span>Cifrar y descifrar con AES-GCM</h2>
+    <div class="body-text"><p>Con la clave ya derivada, cifrar un texto requiere además un <b>vector de inicialización</b> (IV) aleatorio y distinto en cada operación, y los datos convertidos a bytes con <code>TextEncoder</code>:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>crypto.js</div>
+      <pre><code>async function cifrarTexto(clave, texto) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const datos = new TextEncoder().encode(texto);
+  const cifrado = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, clave, datos);
+  return { cifrado, iv };  // el IV se guarda junto al cifrado, no es secreto
+}
+
+async function descifrarTexto(clave, { cifrado, iv }) {
+  const datos = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, clave, cifrado);
+  return new TextDecoder().decode(datos);
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>El IV no es secreto — se puede guardar en texto plano junto al dato cifrado — pero debe ser distinto cada vez que se cifra algo con la misma clave, o AES-GCM pierde sus garantías de seguridad. <code>crypto.getRandomValues()</code> ya garantiza esa aleatoriedad. Si se intenta descifrar con la clave o el IV equivocados, o si el cifrado fue alterado, <code>decrypt()</code> rechaza la promesa en vez de devolver datos corruptos silenciosamente — así es como AES-GCM detecta manipulación.</p></div>
+    <div class="warn-box">
+      <b>Sobre guardar la clave:</b> una <code>CryptoKey</code> no exportable como la de la sección 7 no se puede leer ni guardar directamente — solo se puede volver a derivar con la contraseña. Eso es intencional: cualquier persona con acceso al navegador del usuario (perfil local, extensión maliciosa) que sí encontrara una clave guardada podría descifrar todo sin conocer la contraseña. El cifrado en el cliente protege contra fugas de la base de datos del servidor o de terceros que interceptan el tráfico — no contra alguien con acceso físico al dispositivo ya desbloqueado y a la contraseña en uso.
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">9</span>Caso real: el Gestor de tareas con datos cifrados</h2>
+    <div class="body-text"><p>No todo necesita cifrarse — cifrar campos que se usan para buscar o filtrar los vuelve inconsultables sin descifrar cada registro primero. El patrón real: cifrar solo lo sensible, dejar el resto plano y consultable, y usar la clave derivada por contraseña de la sección 7 en vez de una clave de un solo uso:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+      <pre><code>async function guardarTareaConNota(db, clave, tarea) {
+  const { cifrado, iv } = await cifrarTexto(clave, tarea.notaPrivada);
+  const registro = {
+    titulo: tarea.titulo,           // plano: se busca y se filtra
+    prioridad: tarea.prioridad,     // plano: tiene un índice
+    notaCifrada: cifrado,           // cifrado: solo se lee de a uno
+    notaIv: iv,
+  };
+  return agregarTarea(db, registro);
+}
+
+async function leerNotaPrivada(clave, registro) {
+  return descifrarTexto(clave, { cifrado: registro.notaCifrada, iv: registro.notaIv });
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Con esto, el Gestor de tareas puede seguir filtrando por prioridad instantáneamente con el índice de la sección 5, mientras que la nota privada de cada tarea solo se descifra cuando el usuario abre esa tarea en particular — y solo si conoce la contraseña que reconstruye la clave. La sal (sección 7) se guarda una sola vez, aparte, en un registro de configuración del propio Gestor de tareas.</p></div>
+    <div class="body-text" style="margin-top:.8em;"><p><b>Para verificarlo:</b> DevTools → Application → IndexedDB → <code>gestor-tareas-db</code> → <code>tareas</code>. El campo <code>notaCifrada</code> debe verse como un <code>ArrayBuffer</code> de bytes ilegibles, nunca como el texto original — si se ve el texto plano ahí, el cifrado no se está aplicando antes de guardar.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">10</span>Actividades</h2>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">1</div><h4>Diseña y versiona el esquema</h4></div>
+      <div class="meta-row">INDIVIDUAL · 12 MIN</div>
+      <p>Para una app de notas de clase, diseña el object store: nombre, keyPath, y al menos dos índices, justificando cada uno. Luego describe, en una frase, qué bloque de <code>if (version &lt; N)</code> agregarías si más adelante quisieras sumar un índice por fecha de creación, sin romper los datos que ya existen.</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Implementa CRUD y un cursor</h4></div>
+      <div class="meta-row">PAREJAS · 20 MIN</div>
+      <p>En parejas, implementen <code>agregarTarea()</code>, <code>obtenerTarea()</code> y <code>eliminarTarea()</code> sobre un object store de prueba, envolviendo cada <code>IDBRequest</code> en una Promise. Luego implementen una función con cursor que marque como <code>hecha: true</code> todas las tareas de una prioridad dada, usando <code>cursor.update()</code>.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> las cuatro funciones funcionando, revisadas en plenaria.</p>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:1em;">
+      <div class="a-head"><div class="a-num">3</div><h4>Deriva una clave y verifica su reproducibilidad</h4></div>
+      <div class="meta-row">PAREJAS · 15 MIN</div>
+      <p>Implementen <code>derivarClaveDesdeContrasena()</code> de la sección 7. Cifren un texto con la clave derivada, recarguen la página, vuelvan a derivar la clave con la misma contraseña y la misma sal (guardada aparte), y confirmen que <code>descifrarTexto()</code> recupera el texto original — la prueba real de que la clave es reproducible, no aleatoria.</p>
+    </div>
+
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">4</div><h4>Cifra un campo sensible del Gestor de tareas</h4></div>
+      <div class="meta-row">TAREA INDIVIDUAL · FUERA DE CLASE · 25 MIN</div>
+      <p>Agrega un campo "notaPrivada" cifrado con AES-GCM al Gestor de tareas (el checkpoint de la Sesión 21, o tu propio avance), usando una clave derivada por contraseña — no una clave aleatoria de un solo uso. Deja título y prioridad sin cifrar, consultables por el índice existente.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> captura de DevTools → Application → IndexedDB mostrando el campo cifrado como datos ilegibles (<code>ArrayBuffer</code>), y una segunda captura mostrando que, tras recargar la página e ingresar la misma contraseña, la nota se descifra correctamente — subidas antes de la próxima sesión.</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li><b>IndexedDB</b> guarda objetos estructurados y consultables — a diferencia de Cache Storage (archivos) y localStorage (texto plano, síncrono).</li>
+      <li>Object stores e índices se crean o modifican solo dentro de <code>onupgradeneeded</code>; <code>event.oldVersion</code> permite migrar el esquema sin perder datos existentes.</li>
+      <li>IndexedDB es basada en eventos (<code>onsuccess</code>/<code>onerror</code>), no en promesas — conviene envolverla para usar <code>async/await</code>. Un cursor permite recorrer, actualizar (<code>update()</code>) o borrar (<code>delete()</code>) registros uno a uno sin cargarlos todos en memoria.</li>
+      <li>La <b>Web Crypto API</b> (basada en promesas, solo HTTPS) permite calcular hashes con SHA-256 y cifrar con AES-GCM.</li>
+      <li><b>PBKDF2</b> deriva una clave real y reproducible a partir de una contraseña del usuario y una sal — muy distinto de una clave aleatoria que se pierde al recargar.</li>
+      <li>El patrón real: cifrar solo los campos sensibles, dejando el resto plano y consultable con índices; el cifrado en el cliente protege contra fugas de servidor o de red, no contra acceso físico al dispositivo ya desbloqueado.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 23: Workbox y auditoría.</b> GenerateSW vs. InjectManifest, compatibilidad de navegadores, buenas prácticas de UX/UI, y cómo auditar todo con Lighthouse.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> MDN web docs, "IndexedDB API," MDN Web Docs.</div>
+      <div><b>[2]</b> MDN web docs, "Window: localStorage property," MDN Web Docs.</div>
+      <div><b>[3]</b> Mozilla MDN, "Web Crypto API," MDN Web Docs.</div>
+      <div><b>[4]</b> OWASP, "Password Storage Cheat Sheet" (recomendación de iteraciones para PBKDF2), OWASP Foundation.</div>
+      <div><b>[5]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 8 de 30</span>
+  </div>
+</div>
+</body>
+</html>

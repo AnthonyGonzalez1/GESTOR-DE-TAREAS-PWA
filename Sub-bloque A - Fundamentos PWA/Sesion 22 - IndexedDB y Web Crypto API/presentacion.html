@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 22 · IndexedDB y Web Crypto API · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .compare-table{width:100%; border-collapse:collapse; font-size:.66em;}
+  .compare-table th,.compare-table td{border:1px solid #ddd; padding:.42em .5em; text-align:left;}
+  .compare-table th{background:#1A1A1A; color:#fff;}
+  .compare-table td:first-child{font-weight:700; background:#FFF6DC;}
+  .compare-table tr:nth-child(even) td:not(:first-child){background:#FFFDF5;}
+  .db-grid-deck{display:grid; grid-template-columns:repeat(4,1fr); gap:.7em; margin-top:.8em;}
+  .db-grid-deck.n2{grid-template-columns:repeat(2,1fr);}
+  .db-card-deck{border:1px solid var(--line); border-radius:10px; padding:.75em .8em;}
+  .db-card-deck .op-name{display:inline-block; font-size:.64em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.08em .5em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.35em;}
+  .db-card-deck p{margin:0; font-size:.68em; color:#444; line-height:1.35;}
+  .warn-callout{background:#fff8e1; border:1px solid #e0a800; border-left:6px solid #b5850a; border-radius:12px; padding:.9em 1.2em;}
+  .warn-callout b{color:#9a6b00;}
+  .key-compare{display:grid; grid-template-columns:1fr 1fr; gap:1em; margin-top:.9em;}
+  .key-card{border-radius:14px; padding:1.1em 1.2em; border:2px solid var(--line);}
+  .key-card.bad{background:#fdf2f2; border-color:#d98b8b;}
+  .key-card.good{background:#f0fbf2; border-color:#7ec48a;}
+  .key-card h3{margin:.1em 0 .5em; font-family:var(--serif); font-size:1.05em;}
+  .key-card .flow{font-family:"Cascadia Code",Consolas,monospace; font-size:.68em; background:rgba(0,0,0,.05); border-radius:8px; padding:.6em .7em; margin:.5em 0; line-height:1.5;}
+  .key-card p{font-size:.78em; color:#444; margin:.4em 0 0; line-height:1.4;}
+  .key-card .verdict{font-weight:800; font-size:.78em; margin-top:.6em;}
+  .key-card.bad .verdict{color:#a33a3a;}
+  .key-card.good .verdict{color:#2a7a3d;}
+  .hash-flow{display:flex; align-items:center; gap:.8em; margin-top:1em; flex-wrap:wrap;}
+  .hash-box{flex:1; min-width:140px; background:#fff; border:2px solid var(--gold); border-radius:12px; padding:1em; text-align:center;}
+  .hash-box b{display:block; font-size:.85em; margin-bottom:.3em;}
+  .hash-box span{font-size:.72em; color:#555;}
+  .hash-arrow{font-size:1.4em; color:var(--gold-dark); flex:0 0 auto;}
+  .hash-hex{font-family:"Cascadia Code",Consolas,monospace; font-size:.62em; word-break:break-all; color:#444; background:#f7f7f7; border-radius:6px; padding:.4em .5em;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-database" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 6v12c0 1.66 3.58 3 8 3s8-1.34 8-3V6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="ic-list" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ic-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="ic-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 12l9-9M17 6l2 2M14 9l2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+<symbol id="ic-fingerprint" viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-7 7v3c0 3 1.5 5.5 4 7M12 3a7 7 0 0 1 7 7v3c0 1.2-.2 2.3-.6 3.3M9 21c-1.2-1.6-2-3.6-2-6v-4a5 5 0 0 1 10 0v3M9 17a4 4 0 0 1-1-2.6v-3.4a4 4 0 0 1 8 0" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 8 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA</div>
+          <h1>IndexedDB y<br>Web Crypto API</h1>
+          <div class="lead">Sesión 8 de 30 — datos estructurados y consultables, versionados en el tiempo, y cifrados con una clave real que sobrevive entre sesiones.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>08 de 30 · Fundamentos PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <ellipse cx="200" cy="120" rx="80" ry="26" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M120 120 v90 c0 14 36 26 80 26 s80 -12 80 -26 v-90" fill="none" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M120 165 c0 14 36 26 80 26 s80 -12 80 -26" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="255" cy="215" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M255 205v10l7 7" stroke="#1A1A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide slide--divider" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap y bienvenida">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SESIÓN 08</div>
+            <h2>Más allá de archivos y URLs</h2>
+            <p>Las 5 estrategias ya deciden bien entre caché y red. Hoy guardamos datos de verdad — y aprendemos a protegerlos.</p>
+            <div class="tb-preview"><span>Recap Sesión 21</span><span>IndexedDB</span><span>Web Crypto API</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <line x1="40" y1="270" x2="360" y2="60" stroke="#373435" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <circle cx="40" cy="270" r="16" fill="#1A1A1A"/>
+              <text x="40" y="274" text-anchor="middle" font-size="9" font-weight="700" fill="#FFCC29">S21</text>
+              <circle cx="200" cy="165" r="22" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="200" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1A1A1A">S22</text>
+              <circle cx="360" cy="60" r="16" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="360" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#1A1A1A">S23</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recap de la Sesión 21">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Lo que ya tenemos</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>5 estrategias completas</b><span style="font-size:.78em;color:#555;">Cache Only, Network Only, Cache First, Network First, Stale-While-Revalidate.</span></div>
+            <div class="mini-card fragment"><b>Enrutado por ruta</b><span style="font-size:.78em;color:#555;">Cada tipo de recurso, con su estrategia adecuada, dentro de un mismo sw.js.</span></div>
+            <div class="mini-card fragment"><b>Hoy</b><span style="font-size:.78em;color:#555;">Datos estructurados, versionados y — cuando hace falta — cifrados.</span></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="dosdb" data-section-label="De Cache a IndexedDB" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>De Cache Storage a IndexedDB</h2>
+            <p>Ni el caché HTTP ni la Cache Storage API saben responder preguntas sobre los datos que guardan.</p>
+            <div class="tb-preview"><span>Archivos</span><span>Datos estructurados</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="60" y="90" width="130" height="150" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="210" y="90" width="130" height="150" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <text x="125" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">Cache</text>
+              <text x="275" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">IndexedDB</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="dosdb" data-section-label="De Cache a IndexedDB" data-slide-label="El problema">
+          <div class="kicker">De Cache a IndexedDB · 1.1</div>
+          <h2 class="slide-title">Una pregunta que ninguno responde</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;">"Dame todas las tareas con prioridad alta" — ni el caché HTTP ni la Cache Storage API saben responder eso sin descargar y revisar cada archivo uno por uno.</div>
+          <div class="grid-2" style="margin-top:1.2em;">
+            <div class="card fragment"><svg class="icon"><use href="#ic-list"/></svg><h3>Guardan archivos</h3><p>Pares Request → Response, o pares string → string. Se consultan por URL o clave exacta.</p></div>
+            <div class="card fragment"><svg class="icon"><use href="#ic-database"/></svg><h3>Nos falta esto</h3><p>Una base de datos: objetos, índices, consultas por campo, y un cursor para recorrer o editar resultados.</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="dosdb" data-section-label="De Cache a IndexedDB" data-slide-label="Comparación">
+          <div class="kicker">De Cache a IndexedDB · 1.2</div>
+          <h2 class="slide-title">localStorage, Cache Storage e IndexedDB</h2>
+          <hr class="rule">
+          <table class="compare-table">
+            <tr><th>Característica</th><th>localStorage</th><th>Cache Storage API</th><th>IndexedDB</th></tr>
+            <tr><td>Qué guarda</td><td>Pares string → string</td><td>Pares Request → Response</td><td>Objetos JavaScript estructurados</td></tr>
+            <tr><td>Cómo se consulta</td><td>Por clave exacta</td><td>Por URL exacta</td><td>Por clave, índice, o cursor</td></tr>
+            <tr><td>Síncrono/asíncrono</td><td>Síncrono — bloquea el hilo</td><td>Asíncrono (promesas)</td><td>Asíncrono (eventos)</td></tr>
+            <tr><td>Ideal para</td><td>Preferencias simples</td><td>El "shell" de la app</td><td>Datos dinámicos: tareas, mensajes</td></tr>
+          </table>
+          <div class="callout fragment" style="margin-top:.9em;">localStorage solo guarda texto plano y congela la interfaz en operaciones grandes — por eso no alcanza para datos estructurados.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="abrir" data-section-label="Abrir y versionar" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>Abrir y versionar una base de datos</h2>
+            <p>Tres eventos, y un patrón para migrar el esquema sin perder datos.</p>
+            <div class="tb-preview"><span>createObjectStore</span><span>event.oldVersion</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="200" cy="90" rx="90" ry="26" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+              <path d="M110 90 v100 c0 14 40 26 90 26 s90 -12 90 -26 v-100" fill="none" stroke="#1A1A1A" stroke-width="4"/>
+              <path d="M110 150 c0 14 40 26 90 26 s90 -12 90 -26" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+              <circle cx="200" cy="115" r="18" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="abrir" data-section-label="Abrir y versionar" data-slide-label="indexedDB.open()">
+          <div class="kicker">Abrir y versionar · 2.1</div>
+          <h2 class="slide-title">indexedDB.open() y sus tres eventos</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+            <pre><code><span class="tok-kw">const</span> peticion <span class="tok-punct">=</span> indexedDB.<span class="tok-fn">open</span>(<span class="tok-str">'gestor-tareas-db'</span>, <span class="tok-punct">1</span>);
+
+peticion.<span class="tok-prop">onupgradeneeded</span> <span class="tok-punct">=</span> event <span class="tok-punct">=&gt;</span> {
+  <span class="tok-kw">const</span> db <span class="tok-punct">=</span> event.target.result;
+  <span class="tok-kw">const</span> store <span class="tok-punct">=</span> db.<span class="tok-fn">createObjectStore</span>(<span class="tok-str">'tareas'</span>, { keyPath: <span class="tok-str">'id'</span>, autoIncrement: <span class="tok-kw">true</span> });
+  store.<span class="tok-fn">createIndex</span>(<span class="tok-str">'porPrioridad'</span>, <span class="tok-str">'prioridad'</span>, { unique: <span class="tok-kw">false</span> });
+};
+
+peticion.<span class="tok-prop">onsuccess</span> <span class="tok-punct">=</span> event <span class="tok-punct">=&gt;</span> { <span class="tok-kw">const</span> db <span class="tok-punct">=</span> event.target.result; };
+peticion.<span class="tok-prop">onerror</span> <span class="tok-punct">=</span> event <span class="tok-punct">=&gt;</span> console.<span class="tok-fn">error</span>(event.target.error);</code></pre>
+          </div>
+          <div class="callout" style="margin-top:1em;">onupgradeneeded es el ÚNICO lugar donde se crean object stores e índices — solo se dispara cuando la DB no existe, o sube de versión.</div>
+        </section>
+
+        <section class="slide" data-section="abrir" data-section-label="Abrir y versionar" data-slide-label="Migrar el esquema">
+          <div class="kicker">Abrir y versionar · 2.2</div>
+          <h2 class="slide-title">Migrar el esquema: qué pasa cuando sube la versión</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js (migración v1 → v2)</div>
+            <pre><code><span class="tok-kw">const</span> peticion <span class="tok-punct">=</span> indexedDB.<span class="tok-fn">open</span>(<span class="tok-str">'gestor-tareas-db'</span>, <span class="tok-punct">2</span>);  <span class="tok-com">// subimos de 1 a 2</span>
+
+peticion.<span class="tok-prop">onupgradeneeded</span> <span class="tok-punct">=</span> event <span class="tok-punct">=&gt;</span> {
+  <span class="tok-kw">const</span> db <span class="tok-punct">=</span> event.target.result;
+  <span class="tok-kw">const</span> tx <span class="tok-punct">=</span> event.target.transaction;
+  <span class="tok-kw">const</span> version <span class="tok-punct">=</span> event.<span class="tok-prop">oldVersion</span>;  <span class="tok-com">// versión desde la que se migra</span>
+
+  <span class="tok-kw">if</span> (version <span class="tok-punct">&lt;</span> <span class="tok-punct">1</span>) {
+    <span class="tok-kw">const</span> store <span class="tok-punct">=</span> db.<span class="tok-fn">createObjectStore</span>(<span class="tok-str">'tareas'</span>, { keyPath: <span class="tok-str">'id'</span>, autoIncrement: <span class="tok-kw">true</span> });
+    store.<span class="tok-fn">createIndex</span>(<span class="tok-str">'porPrioridad'</span>, <span class="tok-str">'prioridad'</span>, { unique: <span class="tok-kw">false</span> });
+  }
+  <span class="tok-kw">if</span> (version <span class="tok-punct">&lt;</span> <span class="tok-punct">2</span>) {
+    <span class="tok-kw">const</span> store <span class="tok-punct">=</span> tx.<span class="tok-fn">objectStore</span>(<span class="tok-str">'tareas'</span>);
+    store.<span class="tok-fn">createIndex</span>(<span class="tok-str">'porProyecto'</span>, <span class="tok-str">'proyectoId'</span>, { unique: <span class="tok-kw">false</span> });
+  }
+};</code></pre>
+          </div>
+          <div class="callout" style="margin-top:.8em;"><b>event.oldVersion</b> dice de dónde viene ese usuario. <code>if (version &lt; N)</code> encadenado migra sin perder datos: crear algo que ya existe lanza un error.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="crud" data-section-label="CRUD y cursores" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>Operaciones CRUD y cursores</h2>
+            <p>Transacciones, operaciones básicas, y un cursor que también edita y borra.</p>
+            <div class="tb-preview"><span>add / put / get</span><span>cursor.update()</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="90" y="90" width="220" height="140" rx="12" fill="#1A1A1A"/>
+              <circle cx="160" cy="160" r="26" fill="#FFCC29"/>
+              <circle cx="250" cy="160" r="26" fill="#EEB32D"/>
+              <path d="M186 160 h34" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="crud" data-section-label="CRUD y cursores" data-slide-label="Operaciones CRUD">
+          <div class="kicker">CRUD y cursores · 3.1</div>
+          <h2 class="slide-title">Todo ocurre dentro de una transacción</h2>
+          <hr class="rule">
+          <div class="db-grid-deck">
+            <div class="db-card-deck fragment"><span class="op-name">db.transaction()</span><p>Abre una transacción: readonly o readwrite.</p></div>
+            <div class="db-card-deck fragment"><span class="op-name">tx.objectStore()</span><p>Obtiene el store dentro de la transacción.</p></div>
+            <div class="db-card-deck fragment"><span class="op-name">store.add()</span><p>Inserta; falla si la clave ya existe.</p></div>
+            <div class="db-card-deck fragment"><span class="op-name">store.put()</span><p>Inserta o actualiza, sin fallar.</p></div>
+            <div class="db-card-deck fragment"><span class="op-name">store.get()</span><p>Recupera un registro por su clave.</p></div>
+            <div class="db-card-deck fragment"><span class="op-name">store.delete()</span><p>Elimina un registro por su clave.</p></div>
+            <div class="db-card-deck fragment"><span class="op-name">store.getAll()</span><p>Recupera todos los registros.</p></div>
+            <div class="db-card-deck fragment"><span class="op-name">store.count()</span><p>Cuenta registros sin traerlos.</p></div>
+          </div>
+          <div class="callout" style="margin-top:1em;">Ninguna de estas devuelve una Promise — devuelven un IDBRequest. Se envuelven en Promise propia para usar async/await (o se usa una librería como <code>idb</code>).</div>
+        </section>
+
+        <section class="slide" data-section="crud" data-section-label="CRUD y cursores" data-slide-label="CRUD con async/await">
+          <div class="kicker">CRUD y cursores · 3.2</div>
+          <h2 class="slide-title">Envolver IDBRequest en Promise</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+            <pre><code><span class="tok-kw">function</span> <span class="tok-fn">agregarTarea</span>(db, tarea) {
+  <span class="tok-kw">return</span> <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>((resolve, reject) <span class="tok-punct">=&gt;</span> {
+    <span class="tok-kw">const</span> tx <span class="tok-punct">=</span> db.<span class="tok-fn">transaction</span>(<span class="tok-str">'tareas'</span>, <span class="tok-str">'readwrite'</span>);
+    <span class="tok-kw">const</span> peticion <span class="tok-punct">=</span> tx.<span class="tok-fn">objectStore</span>(<span class="tok-str">'tareas'</span>).<span class="tok-fn">add</span>(tarea);
+    peticion.<span class="tok-prop">onsuccess</span> <span class="tok-punct">=</span> () <span class="tok-punct">=&gt;</span> <span class="tok-fn">resolve</span>(peticion.result);
+    peticion.<span class="tok-prop">onerror</span> <span class="tok-punct">=</span> () <span class="tok-punct">=&gt;</span> <span class="tok-fn">reject</span>(peticion.error);
+  });
+}
+
+<span class="tok-com">// Uso, ahora con await:</span>
+<span class="tok-kw">const</span> id <span class="tok-punct">=</span> <span class="tok-kw">await</span> <span class="tok-fn">agregarTarea</span>(db, { titulo: <span class="tok-str">'Estudiar IndexedDB'</span>, prioridad: <span class="tok-str">'alta'</span> });</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="crud" data-section-label="CRUD y cursores" data-slide-label="Cursor de lectura">
+          <div class="kicker">CRUD y cursores · 3.3</div>
+          <h2 class="slide-title">Recorrer resultados con un cursor</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+            <pre><code><span class="tok-kw">const</span> indice <span class="tok-punct">=</span> store.<span class="tok-fn">index</span>(<span class="tok-str">'porPrioridad'</span>);
+<span class="tok-kw">const</span> cursor <span class="tok-punct">=</span> indice.<span class="tok-fn">openCursor</span>(<span class="tok-fn">IDBKeyRange</span>.<span class="tok-fn">only</span>(<span class="tok-str">'alta'</span>));
+
+cursor.<span class="tok-prop">onsuccess</span> <span class="tok-punct">=</span> event <span class="tok-punct">=&gt;</span> {
+  <span class="tok-kw">const</span> c <span class="tok-punct">=</span> event.target.result;
+  <span class="tok-kw">if</span> (c) {
+    resultado.<span class="tok-fn">push</span>(c.value);
+    c.<span class="tok-fn">continue</span>();  <span class="tok-com">// siguiente coincidencia</span>
+  } <span class="tok-kw">else</span> {
+    <span class="tok-fn">resolve</span>(resultado);  <span class="tok-com">// no hay más</span>
+  }
+};</code></pre>
+          </div>
+          <div class="callout" style="margin-top:.9em;"><code>IDBKeyRange.only()</code> limita el cursor a coincidencias exactas; también hay <code>bound()</code>, <code>lowerBound()</code> y <code>upperBound()</code> para rangos.</div>
+        </section>
+
+        <section class="slide" data-section="crud" data-section-label="CRUD y cursores" data-slide-label="Cursor de escritura">
+          <div class="kicker">CRUD y cursores · 3.4</div>
+          <h2 class="slide-title">El cursor también edita y borra</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js — cursor en modo escritura</div>
+            <pre><code><span class="tok-kw">const</span> tx <span class="tok-punct">=</span> db.<span class="tok-fn">transaction</span>(<span class="tok-str">'tareas'</span>, <span class="tok-str">'readwrite'</span>);
+<span class="tok-kw">const</span> cursor <span class="tok-punct">=</span> tx.<span class="tok-fn">objectStore</span>(<span class="tok-str">'tareas'</span>).<span class="tok-fn">index</span>(<span class="tok-str">'porPrioridad'</span>)
+  .<span class="tok-fn">openCursor</span>(<span class="tok-fn">IDBKeyRange</span>.<span class="tok-fn">only</span>(<span class="tok-str">'baja'</span>));
+
+cursor.<span class="tok-prop">onsuccess</span> <span class="tok-punct">=</span> event <span class="tok-punct">=&gt;</span> {
+  <span class="tok-kw">const</span> c <span class="tok-punct">=</span> event.target.result;
+  <span class="tok-kw">if</span> (!c) <span class="tok-kw">return</span>;
+  <span class="tok-kw">const</span> registro <span class="tok-punct">=</span> c.value;
+  registro.hecha <span class="tok-punct">=</span> <span class="tok-kw">true</span>;
+  c.<span class="tok-fn">update</span>(registro);   <span class="tok-com">// reescribe el registro actual, sin cerrar el cursor</span>
+  <span class="tok-com">// c.delete();  también existe — borra el registro actual</span>
+  c.<span class="tok-fn">continue</span>();
+};</code></pre>
+          </div>
+          <div class="callout" style="margin-top:.7em;"><code>c.update(objeto)</code> y <code>c.delete()</code> operan sobre el registro que el cursor tiene enfocado — sin su clave por separado.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="crypto" data-section-label="Web Crypto: fundamentos" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Web Crypto API: fundamentos</h2>
+            <p>Primitivas de cifrado en el navegador, basadas en promesas, solo HTTPS.</p>
+            <div class="tb-preview"><span>crypto.subtle</span><span>SHA-256</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="140" y="150" width="120" height="90" rx="10" fill="#1A1A1A"/>
+              <path d="M160 150v-30a40 40 0 0 1 80 0v30" fill="none" stroke="#1A1A1A" stroke-width="7"/>
+              <circle cx="200" cy="195" r="12" fill="#FFCC29"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="crypto" data-section-label="Web Crypto: fundamentos" data-slide-label="crypto.subtle">
+          <div class="kicker">Web Crypto: fundamentos · 4.1</div>
+          <h2 class="slide-title">crypto.subtle: promesas, solo HTTPS</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b>crypto.subtle</b><span style="font-size:.78em;color:#555;">Generar/derivar claves, cifrar, descifrar, calcular hashes.</span></div>
+            <div class="mini-card fragment"><b>Basada en promesas</b><span style="font-size:.78em;color:#555;">A diferencia de IndexedDB: se puede usar await directo.</span></div>
+            <div class="mini-card fragment"><b>Solo HTTPS</b><span style="font-size:.78em;color:#555;">Igual que los Service Workers (o localhost). Compatible con Web Workers.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="crypto" data-section-label="Web Crypto: fundamentos" data-slide-label="SHA-256: hashing">
+          <div class="kicker">Web Crypto: fundamentos · 4.2</div>
+          <h2 class="slide-title">SHA-256: una huella digital del dato</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>crypto.js</div>
+            <pre><code><span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">calcularHash</span>(texto) {
+  <span class="tok-kw">const</span> datos <span class="tok-punct">=</span> <span class="tok-kw">new</span> <span class="tok-fn">TextEncoder</span>().<span class="tok-fn">encode</span>(texto);
+  <span class="tok-kw">const</span> buffer <span class="tok-punct">=</span> <span class="tok-kw">await</span> crypto.subtle.<span class="tok-fn">digest</span>(<span class="tok-str">'SHA-256'</span>, datos);
+  <span class="tok-kw">return</span> <span class="tok-fn">Array</span>.<span class="tok-fn">from</span>(<span class="tok-kw">new</span> <span class="tok-fn">Uint8Array</span>(buffer))
+    .<span class="tok-fn">map</span>(b <span class="tok-punct">=&gt;</span> b.<span class="tok-fn">toString</span>(<span class="tok-punct">16</span>).<span class="tok-fn">padStart</span>(<span class="tok-punct">2</span>, <span class="tok-str">'0'</span>))
+    .<span class="tok-fn">join</span>(<span class="tok-str">''</span>);  <span class="tok-com">// hash en hexadecimal</span>
+}</code></pre>
+          </div>
+          <div class="hash-flow">
+            <div class="hash-box"><b>Dato</b><span>"Estudiar IndexedDB"</span></div>
+            <div class="hash-arrow">→ SHA-256 →</div>
+            <div class="hash-box"><b>Hash (hex)</b><div class="hash-hex">3f9a2c…e71b</div></div>
+          </div>
+          <div class="callout" style="margin-top:.9em;">SHA-256 verifica integridad sin guardar el dato original: si el dato cambia un solo bit, el hash cambia por completo. AES-GCM (sección siguiente) es el algoritmo recomendado por MDN para cifrar; SHA-256, para verificar sin cifrar.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="pbkdf2" data-section-label="Derivar una clave real" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>Derivar una clave real: PBKDF2</h2>
+            <p>Una clave aleatoria se pierde al recargar. Una clave derivada de una contraseña se puede reconstruir siempre.</p>
+            <div class="tb-preview"><span>contraseña + sal</span><span>clave reproducible</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="150" cy="160" r="70" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <text x="150" y="166" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">"clave123"</text>
+              <path d="M225 160 h60" stroke="#1A1A1A" stroke-width="3" fill="none"/>
+              <path d="M270 148 l15 12 l-15 12" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="330" cy="160" r="46" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <use href="#ic-key" x="308" y="138" width="44" height="44" color="#1A1A1A"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="pbkdf2" data-section-label="Derivar una clave real" data-slide-label="Aleatoria vs. derivada">
+          <div class="kicker">Derivar una clave real · 5.1</div>
+          <h2 class="slide-title">Una clave aleatoria no sirve en la práctica</h2>
+          <hr class="rule">
+          <div class="key-compare">
+            <div class="key-card bad">
+              <h3>generateKey() — aleatoria</h3>
+              <div class="flow">crypto.subtle.generateKey(...)<br>→ CryptoKey aleatoria</div>
+              <p>Perfecta para una demo de 5 minutos. Vive solo en memoria: si no se guarda en ningún lado, se pierde en cuanto se recarga la página — y con ella, todo lo cifrado.</p>
+              <div class="verdict">✕ Inútil entre sesiones del usuario</div>
+            </div>
+            <div class="key-card good">
+              <h3>PBKDF2 — derivada de una contraseña</h3>
+              <div class="flow">contraseña + sal<br>→ deriveKey() ×100 000<br>→ CryptoKey reproducible</div>
+              <p>El usuario vuelve a escribir su contraseña en cualquier sesión futura, y — con la misma sal, guardada junto al dato cifrado — se reconstruye exactamente la misma clave.</p>
+              <div class="verdict">✓ La misma clave, cada vez que hace falta</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="pbkdf2" data-section-label="Derivar una clave real" data-slide-label="derivarClaveDesdeContrasena()">
+          <div class="kicker">Derivar una clave real · 5.2</div>
+          <h2 class="slide-title">De contraseña a CryptoKey</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>crypto.js</div>
+            <pre><code><span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">derivarClaveDesdeContrasena</span>(contrasena, sal) {
+  <span class="tok-kw">const</span> materialBase <span class="tok-punct">=</span> <span class="tok-kw">await</span> crypto.subtle.<span class="tok-fn">importKey</span>(
+    <span class="tok-str">'raw'</span>, <span class="tok-kw">new</span> <span class="tok-fn">TextEncoder</span>().<span class="tok-fn">encode</span>(contrasena),
+    <span class="tok-str">'PBKDF2'</span>, <span class="tok-kw">false</span>, [<span class="tok-str">'deriveKey'</span>]
+  );
+
+  <span class="tok-kw">return</span> crypto.subtle.<span class="tok-fn">deriveKey</span>(
+    { name: <span class="tok-str">'PBKDF2'</span>, salt: sal, iterations: <span class="tok-punct">100000</span>, hash: <span class="tok-str">'SHA-256'</span> },
+    materialBase,
+    { name: <span class="tok-str">'AES-GCM'</span>, length: <span class="tok-punct">256</span> },
+    <span class="tok-kw">false</span>,  <span class="tok-com">// no exportable: se re-deriva, no se guarda</span>
+    [<span class="tok-str">'encrypt'</span>, <span class="tok-str">'decrypt'</span>]
+  );
+}
+
+<span class="tok-kw">const</span> sal <span class="tok-punct">=</span> crypto.<span class="tok-fn">getRandomValues</span>(<span class="tok-kw">new</span> <span class="tok-fn">Uint8Array</span>(<span class="tok-punct">16</span>));</code></pre>
+          </div>
+          <div class="warn-callout" style="margin-top:.7em;"><b>100 000 iteraciones:</b> mínimo OWASP para PBKDF2-SHA256 — sube con el hardware. La sal se guarda junto al dato cifrado; la contraseña, nunca.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="aesgcm" data-section-label="Cifrar con AES-GCM" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Cifrar y descifrar con AES-GCM</h2>
+            <p>Con la clave ya derivada, falta el IV — y entender qué protege el cifrado, y qué no.</p>
+            <div class="tb-preview"><span>encrypt / decrypt</span><span>IV aleatorio</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="80" y="110" width="110" height="100" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="220" y="110" width="110" height="100" rx="10" fill="#1A1A1A"/>
+              <circle cx="275" cy="160" r="16" fill="#FFCC29"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="aesgcm" data-section-label="Cifrar con AES-GCM" data-slide-label="Cifrar y descifrar">
+          <div class="kicker">Cifrar con AES-GCM · 6.1</div>
+          <h2 class="slide-title">cifrarTexto() y descifrarTexto()</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>crypto.js</div>
+            <pre><code><span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">cifrarTexto</span>(clave, texto) {
+  <span class="tok-kw">const</span> iv <span class="tok-punct">=</span> crypto.<span class="tok-fn">getRandomValues</span>(<span class="tok-kw">new</span> <span class="tok-fn">Uint8Array</span>(<span class="tok-punct">12</span>));
+  <span class="tok-kw">const</span> datos <span class="tok-punct">=</span> <span class="tok-kw">new</span> <span class="tok-fn">TextEncoder</span>().<span class="tok-fn">encode</span>(texto);
+  <span class="tok-kw">const</span> cifrado <span class="tok-punct">=</span> <span class="tok-kw">await</span> crypto.subtle.<span class="tok-fn">encrypt</span>({ name: <span class="tok-str">'AES-GCM'</span>, iv }, clave, datos);
+  <span class="tok-kw">return</span> { cifrado, iv };
+}
+
+<span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">descifrarTexto</span>(clave, { cifrado, iv }) {
+  <span class="tok-kw">const</span> datos <span class="tok-punct">=</span> <span class="tok-kw">await</span> crypto.subtle.<span class="tok-fn">decrypt</span>({ name: <span class="tok-str">'AES-GCM'</span>, iv }, clave, cifrado);
+  <span class="tok-kw">return</span> <span class="tok-kw">new</span> <span class="tok-fn">TextDecoder</span>().<span class="tok-fn">decode</span>(datos);
+}</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em;">El IV no es secreto, pero debe ser distinto cada vez que se cifra con la misma clave. Si la clave, el IV, o el cifrado no coinciden, decrypt() rechaza la promesa — así detecta manipulación.</div>
+        </section>
+
+        <section class="slide" data-section="aesgcm" data-section-label="Cifrar con AES-GCM" data-slide-label="Qué protege el cifrado">
+          <div class="kicker">Cifrar con AES-GCM · 6.2</div>
+          <h2 class="slide-title">Sobre guardar la clave</h2>
+          <hr class="rule">
+          <div class="warn-callout"><b>Una CryptoKey no exportable</b> (como la derivada por PBKDF2) no se puede leer ni guardar directamente — solo se puede volver a derivar con la contraseña. Es intencional: cualquiera con acceso al navegador del usuario que encontrara una clave guardada podría descifrar todo sin conocer la contraseña.</div>
+          <div class="callout" style="margin-top:.9em;">El cifrado en el cliente protege contra fugas de la base de datos del servidor o de terceros que interceptan el tráfico — <b>no</b> contra alguien con acceso físico al dispositivo ya desbloqueado y a la contraseña en uso.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="casoreal" data-section-label="Caso real" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>El Gestor de tareas, con datos cifrados</h2>
+            <p>Cifrar solo lo sensible; dejar el resto plano y consultable con la clave derivada por contraseña.</p>
+            <div class="tb-preview"><span>título: plano</span><span>notaPrivada: cifrada</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="80" y="110" width="110" height="100" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="220" y="110" width="110" height="100" rx="10" fill="#1A1A1A"/>
+              <circle cx="275" cy="160" r="16" fill="#FFCC29"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="casoreal" data-section-label="Caso real" data-slide-label="guardarTareaConNota()">
+          <div class="kicker">Caso real · 7.1</div>
+          <h2 class="slide-title">Solo lo sensible se cifra</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js</div>
+            <pre><code><span class="tok-kw">async</span> <span class="tok-kw">function</span> <span class="tok-fn">guardarTareaConNota</span>(db, clave, tarea) {
+  <span class="tok-kw">const</span> { cifrado, iv } <span class="tok-punct">=</span> <span class="tok-kw">await</span> <span class="tok-fn">cifrarTexto</span>(clave, tarea.notaPrivada);
+  <span class="tok-kw">return</span> <span class="tok-fn">agregarTarea</span>(db, {
+    titulo: tarea.titulo,          <span class="tok-com">// plano: se busca y se filtra</span>
+    prioridad: tarea.prioridad,    <span class="tok-com">// plano: tiene un índice</span>
+    notaCifrada: cifrado, notaIv: iv,  <span class="tok-com">// cifrado: solo se lee de a uno</span>
+  });
+}</code></pre>
+          </div>
+          <div class="callout" style="margin-top:.9em;">El Gestor de tareas sigue filtrando por prioridad al instante con el índice de la sección 3 — la nota privada solo se descifra cuando el usuario abre esa tarea, y solo si conoce la contraseña.</div>
+          <div class="callout fragment" style="margin-top:.7em;"><b>Para verificarlo:</b> DevTools → Application → IndexedDB → tareas. El campo <code>notaCifrada</code> debe verse como un ArrayBuffer ilegible, nunca como texto plano.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="actividades" data-section-label="Actividades" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">ACTIVIDADES</div>
+            <h2>Pongamos en práctica lo aprendido</h2>
+            <p>Diseñar, implementar, derivar, y cifrar — en ese orden.</p>
+            <div class="tb-preview"><span>Diseña</span><span>Implementa</span><span>Deriva</span><span>Cifra</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="55" y="80" width="78" height="160" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="150" y="80" width="78" height="160" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="245" y="80" width="78" height="160" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="340" y="80" width="20" height="160" rx="6" fill="#FFF6DC" stroke="#EEB32D" stroke-width="2"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Las 4 actividades">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Cuatro actividades</h2>
+          <hr class="rule">
+          <div class="db-grid-deck n2" style="grid-template-columns:repeat(2,1fr); gap:1em;">
+            <div class="activity-card fragment"><div class="a-head"><div class="a-num">1</div><h4>Diseña y versiona el esquema</h4></div><div class="meta-row">INDIVIDUAL · 12 MIN</div><p>Object store, keyPath, e índices para una app de notas — y qué bloque if (version &lt; N) agregarías después.</p></div>
+            <div class="activity-card fragment"><div class="a-head"><div class="a-num">2</div><h4>Implementa CRUD y un cursor</h4></div><div class="meta-row">PAREJAS · 20 MIN</div><p>agregarTarea(), obtenerTarea(), eliminarTarea() en Promise, y un cursor con cursor.update().</p></div>
+            <div class="activity-card fragment"><div class="a-head"><div class="a-num">3</div><h4>Deriva una clave y verifica su reproducibilidad</h4></div><div class="meta-row">PAREJAS · 15 MIN</div><p>derivarClaveDesdeContrasena(), recargar la página, y confirmar que la misma contraseña reconstruye la misma clave.</p></div>
+            <div class="activity-card fragment"><div class="a-head"><div class="a-num">4</div><h4>Cifra un campo sensible</h4></div><div class="meta-row">TAREA · FUERA DE CLASE · 25 MIN</div><p>Agrega notaPrivada cifrada con AES-GCM al Gestor de tareas, con una clave derivada por contraseña.</p></div>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">CIERRE</div>
+            <h2>Datos de verdad, versionados y protegidos</h2>
+            <p>IndexedDB para estructura, PBKDF2 y AES-GCM para lo sensible.</p>
+            <div class="tb-preview"><span>Resumen</span><span>Próxima sesión</span><span>Referencias</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="90" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-dasharray="6 6"/>
+              <circle cx="200" cy="160" r="40" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la sesión</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment"><b>IndexedDB</b> guarda objetos estructurados y consultables — a diferencia de Cache Storage y localStorage.</li>
+            <li class="fragment">Object stores e índices se crean solo en <code>onupgradeneeded</code>; <code>event.oldVersion</code> permite migrar el esquema sin perder datos.</li>
+            <li class="fragment">Un cursor recorre, actualiza (<code>update()</code>) o borra (<code>delete()</code>) registros uno a uno.</li>
+            <li class="fragment">La <b>Web Crypto API</b> calcula hashes con SHA-256 y cifra con AES-GCM — basada en promesas, solo HTTPS.</li>
+            <li class="fragment"><b>PBKDF2</b> deriva una clave real y reproducible a partir de una contraseña y una sal — muy distinto de una clave aleatoria que se pierde al recargar.</li>
+            <li class="fragment">El patrón real: cifrar solo lo sensible; el cifrado en el cliente protege de fugas de servidor o de red, no de acceso físico al dispositivo ya desbloqueado.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 23: Workbox y auditoría.</b> GenerateSW vs. InjectManifest, compatibilidad de navegadores, buenas prácticas de UX/UI, y cómo auditar todo con Lighthouse.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> MDN web docs, "IndexedDB API," MDN Web Docs.</div>
+            <div><b>[2]</b> MDN web docs, "Window: localStorage property," MDN Web Docs.</div>
+            <div><b>[3]</b> Mozilla MDN, "Web Crypto API," MDN Web Docs.</div>
+            <div><b>[4]</b> OWASP, "Password Storage Cheat Sheet" (recomendación de iteraciones para PBKDF2), OWASP Foundation.</div>
+            <div><b>[5]</b> J. Wargo, <i>Learning Progressive Web Apps</i>, Addison-Wesley/Pearson Education, 2020.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 31</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>
