@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 25 · APIs de dispositivo (2/2): sensores de movimiento · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .compare-wrap{overflow-x:auto;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:1em 1.2em; margin:1em 0; font-size:.92em;}
+  .warn-box b{color:#9a6b00;}
+  .recursos-box{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:6px; padding:1.1em 1.4em; margin:1.4em 0 0;}
+  .recursos-box h3{font-family:var(--serif); font-size:1.05em; margin:0 0 .5em; color:var(--gold-deep);}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.4em;}
+  .recursos-list a{font-weight:700; color:var(--ink);}
+  .rb-desc{display:block; font-size:.88em; color:var(--gray); margin-top:.2em; font-weight:400;}
+  .term-box{background:#1c1c1e; color:#cfcac0; border-radius:10px; padding:.9em 1.1em; font-size:.82em; font-family:"Cascadia Code",Consolas,monospace; line-height:1.55; margin:1em 0; overflow-x:auto;}
+  .term-box .prompt{color:#6ad06a;}
+  .win-box{border:2px solid #2e7d32; background:#f1f9f1; border-radius:10px; padding:1em 1.2em; margin:1.2em 0; font-size:.92em;}
+  .win-box b{color:#1b5e20;}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} }
+  .db-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.8em; margin:1.2em 0;}
+  .db-card{border:1px solid var(--line); border-radius:10px; padding:.85em 1em;}
+  .db-card .op-name{display:inline-block; font-size:.8em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .6em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .db-card p{margin:0; font-size:.84em; color:#444; line-height:1.4;}
+  @media (max-width:700px){ .db-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 11 de 30</div>
+    <h1>APIs de dispositivo (2/2): sensores de movimiento</h1>
+    <div class="lead">DeviceOrientation y DeviceMotion le dan al navegador el mismo oído interno que tiene el teléfono: cuánto está inclinado y cuánto se mueve. Hoy leemos esos sensores de verdad, los filtramos, manejamos el permiso especial de iOS, y usamos una sacudida para deshacer una eliminación — con un botón de respaldo, porque un computador no tiene sensores.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Distinguir</b> <code>DeviceOrientation</code> (cómo está inclinado el dispositivo) de <code>DeviceMotion</code> (cómo se está moviendo) e interpretar sus ejes y rangos.</span></li>
+      <li><span class="chk">✓</span><span><b>Manejar</b> el permiso especial de iOS (<code>requestPermission</code>) y detectar si el dispositivo tiene sensores de verdad.</span></li>
+      <li><span class="chk">✓</span><span><b>Implementar</b> una detección de sacudida con umbral y enfriamiento, y limitar la frecuencia de lecturas para no saturar la interfaz.</span></li>
+      <li><span class="chk">✓</span><span><b>Diseñar</b> los sensores como mejora progresiva: algo que añade, nunca la única forma de hacer una acción.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion24.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 24.</b> El Gestor de Tareas con foto y ubicación por tarea (<code>dispositivo.js</code>). Hoy le agregamos <code>sensores.js</code> y una barra con "agitar para deshacer" y un botón de respaldo.</span></li>
+      </ul>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Qué miden los sensores de movimiento</h2>
+    <div class="body-text"><p>Un teléfono lleva un acelerómetro (cuánto se acelera en cada eje), un giroscopio (cuánto rota) y, en muchos modelos, un magnetómetro (hacia dónde queda el norte magnético). El navegador no te entrega esos chips en crudo: los mezcla y expone dos eventos de <code>window</code>:</p></div>
+    <div class="db-grid">
+      <div class="db-card"><span class="op-name">deviceorientation</span><p><b>Cómo está inclinado</b> el dispositivo. Entrega tres ángulos en grados: <code>alpha</code>, <code>beta</code> y <code>gamma</code>.</p></div>
+      <div class="db-card"><span class="op-name">devicemotion</span><p><b>Cómo se está moviendo.</b> Entrega <code>acceleration</code>, <code>accelerationIncludingGravity</code> (ambas en m/s²), <code>rotationRate</code> (grados/s) e <code>interval</code> (ms entre lecturas).</p></div>
+    </div>
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em;">
+      <tr><th>Ángulo</th><th>Eje</th><th>Rango</th><th>Cómo sentirlo</th></tr>
+      <tr><td><code>alpha</code></td><td>z (perpendicular a la pantalla)</td><td>0 a 360</td><td>Girar el teléfono sobre una mesa, como una brújula</td></tr>
+      <tr><td><code>beta</code></td><td>x</td><td>−180 a 180</td><td>Inclinarlo hacia adelante o hacia atrás</td></tr>
+      <tr><td><code>gamma</code></td><td>y</td><td>−90 a 90</td><td>Inclinarlo hacia la izquierda o la derecha</td></tr>
+    </table>
+    </div>
+    <div class="fig-caption">Rangos y ejes según MDN. Existe además <code>deviceorientationabsolute</code>, referido a la Tierra en vez de a la posición de arranque; hoy no lo usamos.</div>
+    <div class="body-text" style="margin-top:1em;"><p>Una distinción importante: <code>accelerationIncludingGravity</code> <i>incluye</i> la gravedad. Con el teléfono quieto sobre la mesa, la suma de sus tres ejes da aproximadamente <b>9,81 m/s²</b> apuntando hacia abajo. Eso es lo que usaremos para detectar una sacudida: no el valor de un eje, sino cuánto se aleja el total de la gravedad.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>Permiso y contexto seguro (con una trampa de iOS)</h2>
+    <div class="body-text"><p>Los eventos de orientación solo se entregan en contexto seguro (HTTPS o localhost), igual que cámara y ubicación. Y aquí aparece la diferencia entre plataformas: <b>iOS</b> (Safari) exige pedir permiso explícito con <code>DeviceOrientationEvent.requestPermission()</code> (y <code>DeviceMotionEvent.requestPermission()</code> para movimiento). Ese método:</p></div>
+    <ul class="clean">
+      <li>solo existe en los navegadores que lo exigen — en Chrome para escritorio, <code>typeof DeviceOrientationEvent.requestPermission</code> vale <code>"undefined"</code> (lo medí), así que hay que comprobar antes de llamarlo;</li>
+      <li>requiere un <b>gesto del usuario</b> (un clic); sin él, la promesa se rechaza con <code>NotAllowedError</code>;</li>
+      <li>devuelve <code>"granted"</code> o <code>"denied"</code>;</li>
+      <li>MDN lo marca como de disponibilidad limitada: no es universal.</li>
+    </ul>
+    <div class="code-block" style="margin-top:.8em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+      <pre><code>export async function pedirPermisoSensores() {
+  if (!("DeviceMotionEvent" in window)) return "no-soportado";
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    try {
+      return await DeviceMotionEvent.requestPermission();   // "granted" | "denied"
+    } catch {
+      return "denied";           // p. ej. NotAllowedError por no venir de un clic
+    }
+  }
+  return "no-necesario";         // Android/Chromium: el permiso es implícito
+}</code></pre>
+    </div>
+    <div class="warn-box"><b>Lo que no pude verificar aquí:</b> la rama de iOS. Este entorno no tiene un iPhone, así que <code>requestPermission</code> está escrito según la documentación de MDN, no probado. La Actividad 4 te pide probarlo en un iPhone o un iPad si tienes acceso, y reportar qué pasó.</div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>¿Hay sensores de verdad?</h2>
+    <div class="body-text"><p>Un computador de escritorio tiene <code>DeviceOrientationEvent</code> (el objeto existe), pero no tiene sensores. Lo que hace Chromium en ese caso, medido en esta sesión: dispara <b>un solo evento</b> con <code>alpha</code>, <code>beta</code> y <code>gamma</code> en <code>null</code> y <code>accelerationIncludingGravity.x</code> en <code>null</code>, y después silencio. Por eso preguntar "¿existe la API?" no sirve: hay que esperar una lectura con valores reales, con un tiempo máximo:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+      <pre><code>export function hayLecturasReales(timeoutMs = 1000) {
+  return new Promise((resolve) => {
+    const alRecibir = (e) => {
+      const a = e.accelerationIncludingGravity;
+      if (a &amp;&amp; a.x !== null) { limpiar(); resolve(true); }
+    };
+    const limpiar = () => {
+      window.removeEventListener("devicemotion", alRecibir);
+      clearTimeout(t);
+    };
+    const t = setTimeout(() => { limpiar(); resolve(false); }, timeoutMs);
+    window.addEventListener("devicemotion", alRecibir);
+  });
+}</code></pre>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Leer la orientación sin saturar la interfaz</h2>
+    <div class="body-text"><p>Un sensor real dispara decenas de eventos por segundo. Si cada uno repinta algo, la interfaz se arrastra. La solución habitual es limitar la frecuencia con la hora de la última lectura aceptada: aquí, como máximo 10 avisos por segundo (cada 100 ms). Y se devuelve una función para <b>dejar de escuchar</b>: un sensor activo gasta batería, así que hay que poder apagarlo.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+      <pre><code>export function escucharOrientacion(callback, intervaloMs = 100) {
+  let ultimo = 0;
+  const manejador = (e) => {
+    const ahora = performance.now();
+    if (ahora - ultimo &lt; intervaloMs) return;
+    ultimo = ahora;
+    if (e.beta === null) return;                       // sin sensor
+    callback({ alfa: e.alpha, beta: e.beta, gamma: e.gamma });
+  };
+  window.addEventListener("deviceorientation", manejador);
+  return () => window.removeEventListener("deviceorientation", manejador);
+}</code></pre>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>Detectar una sacudida</h2>
+    <div class="body-text"><p>Una sacudida es una aceleración fuerte y breve. Con el teléfono quieto, la magnitud <code>Math.hypot(x, y, z)</code> de <code>accelerationIncludingGravity</code> ronda 9,81; al sacudirlo se dispara muy por encima (o por debajo, en el instante de frenar). Así que miramos cuánto <b>se aleja</b> de la gravedad: la desviación. Tres decisiones de diseño:</p></div>
+    <ul class="clean">
+      <li><b>Umbral:</b> a partir de qué desviación cuenta como sacudida. Con 12 m/s², caminar o dejar caer el teléfono suavemente no dispara; sacudirlo con ganas sí. Es un punto de partida: se ajusta probando con hardware real (Actividad 2).</li>
+      <li><b>Enfriamiento:</b> una sola sacudida produce docenas de lecturas por encima del umbral. Sin una pausa (aquí 1 segundo) se dispararía la acción veinte veces.</li>
+      <li><b>Devolver cuánto:</b> el callback recibe la desviación medida, útil para depurar y calibrar.</li>
+    </ul>
+    <div class="code-block" style="margin-top:.8em;">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+      <pre><code>export function detectarSacudida(onSacudida, { umbral = 12, enfriamientoMs = 1000 } = {}) {
+  const GRAVEDAD = 9.81;
+  let ultimaSacudida = 0;
+  const manejador = (e) => {
+    const a = e.accelerationIncludingGravity;
+    if (!a || a.x === null) return;
+    const magnitud = Math.hypot(a.x, a.y, a.z);
+    const desviacion = Math.abs(magnitud - GRAVEDAD);
+    const ahora = performance.now();
+    if (desviacion &gt; umbral &amp;&amp; ahora - ultimaSacudida &gt; enfriamientoMs) {
+      ultimaSacudida = ahora;
+      onSacudida(Math.round(desviacion * 10) / 10);
+    }
+  };
+  window.addEventListener("devicemotion", manejador);
+  return () =&gt; window.removeEventListener("devicemotion", manejador);
+}</code></pre>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Mejora progresiva: nunca la única forma</h2>
+    <div class="body-text"><p>Un computador no se puede sacudir, y alguien con movilidad reducida puede no querer hacerlo. Por eso el caso de hoy ofrece <b>dos caminos</b> para la misma acción: un botón visible "↩ Deshacer eliminación" que funciona en cualquier dispositivo, y los sensores como atajo adicional. El flujo del botón "📳 Activar agitar para deshacer" es:</p></div>
+    <ol style="margin:.4em 0 1em 1.4em; line-height:1.55;">
+      <li>El usuario pulsa el botón (así el permiso de iOS se pide dentro de un clic).</li>
+      <li>Si el permiso es <code>denied</code> → mensaje claro, y el botón "Deshacer" sigue ahí.</li>
+      <li>Si no hay lecturas reales (portátil) → mensaje claro, y el botón "Deshacer" sigue ahí.</li>
+      <li>Si todo va bien → se escucha la sacudida y la orientación (para mostrar la inclinación en pantalla), y un segundo clic <b>apaga</b> los sensores.</li>
+    </ol>
+    <div class="body-text"><p>La acción en sí es la misma venga del botón o de la sacudida: al eliminar una tarea se guarda copia en <code>ultimaEliminada</code>, y <code>deshacerEliminacion()</code> la vuelve a insertar en IndexedDB (que le asigna un <code>id</code> nuevo — por eso se descarta el <code>id</code> viejo). Un detalle que importa: el índice <code>porTitulo</code> de la Sesión 22 es único, así que reinsertar un título que otra tarea ya ocupa fallaría; en este flujo no ocurre porque se restaura la <i>última</i> eliminada antes de cualquier otra operación, pero es un buen caso límite para probar (Actividad 3).</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Probar sin un teléfono</h2>
+    <div class="body-text"><p>No siempre tendrás un teléfono a mano, y debuggear sacudiendo un cable USB es un mal plan. Chrome DevTools trae un panel para esto: <b>Sensors</b> (se abre con Ctrl+Shift+P → "Show Sensors"). Ahí puedes fijar una orientación a mano — alpha, beta, gamma, o poses predefinidas — y la página recibe eventos <code>deviceorientation</code> como si el teléfono estuviera en esa posición.</p></div>
+    <div class="body-text" style="margin-top:.8em;"><p>Para verificar el checkpoint de hoy automáticamente usé el mismo mecanismo desde Playwright (el protocolo de DevTools permite simular los sensores). Lo que sigue es la salida real de esa prueba: sin sensores (un portátil), con una inclinación simulada de 30° y con una sacudida simulada de 25, 10 y 9,81 m/s² en los ejes x, y, z:</p></div>
+    <div class="term-box"><span class="prompt">$</span> node test_s25.js<br>
+SIN SENSORES -&gt; Este dispositivo no tiene sensores de movimiento. Usa el botón «Deshacer eliminación».<br>
+tras eliminar: tareas = 0 | deshacer habilitado = true<br>
+tras deshacer (boton): tareas = 1 | Se restauró «Aprender el Bloque 3: PWA».<br>
+boton: 📳 Agitar para deshacer: ACTIVO | aviso: ""<br>
+lectura inclinacion: inclinación β 30° · γ 0°<br>
+eliminada: tareas = 0<br>
+tras sacudida: tareas = 1 | Se restauró «Aprender el Bloque 3: PWA».<br>
+pageerrors: []</div>
+    <div class="win-box"><b>Qué demuestra:</b> (1) sin sensores, la app lo detecta y manda al botón de respaldo, que funciona; (2) con una orientación simulada de 30°, el indicador muestra β 30°; (3) una aceleración simulada de (25, 10, 9,81) tiene magnitud ≈ 28,7 m/s², una desviación de ≈ 18,9 sobre la gravedad — por encima del umbral de 12 —, y la tarea eliminada reaparece. Cero errores en consola.</div>
+    <div class="warn-box"><b>Límites honestos:</b> son sensores <i>simulados</i>, sin ruido ni deriva. El umbral de 12 m/s² salió de la teoría y de esta simulación, no de un teléfono real; la forma de comprobar que sirve es la Actividad 2. Tampoco se probó la rama de iOS (sección 2).</div>
+
+    <h2 class="section-title"><span class="num-badge">8</span>Actividades</h2>
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">1</div><h4>El panel Sensors de DevTools</h4></div>
+      <div class="meta-row">INDIVIDUAL · 15 MIN</div>
+      <p>Con el checkpoint corriendo, abre DevTools → Sensors → Orientation y recorre al menos tres poses (por ejemplo "Portrait", "Landscape left", "Displayed up"). Para cada una, anota los tres ángulos que muestra el indicador de la app y explica con una frase por qué <code>beta</code> o <code>gamma</code> cambian como cambian.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> tabla de tres filas (pose, alpha/beta/gamma, explicación).</p>
+    </div>
+    <div class="activity-card" style="margin-top:1em;">
+      <div class="a-head"><div class="a-num">2</div><h4>Calibra el umbral con un teléfono real</h4></div>
+      <div class="meta-row">PAREJAS · 25 MIN</div>
+      <p>Sirve tu proyecto por HTTPS (Sesión 24, sección 9) y haz que el callback de <code>detectarSacudida</code> imprima la desviación con <code>console.log</code> (o muéstrala en pantalla). Con <code>umbral: 0</code> y <code>enfriamientoMs: 0</code> temporalmente, registra la desviación máxima en: teléfono quieto, caminando con él en la mano, una sacudida suave y una sacudida fuerte.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> tus cuatro mediciones y el umbral que elegirías — con una frase de justificación. ¿Sirve 12 en tu teléfono?</p>
+    </div>
+    <div class="activity-card" style="margin-top:1em;">
+      <div class="a-head"><div class="a-num">3</div><h4>Rompe el deshacer (y arréglalo)</h4></div>
+      <div class="meta-row">INDIVIDUAL · 20 MIN</div>
+      <p>Elimina una tarea, crea otra con el <b>mismo título</b>, y entonces pulsa "Deshacer". ¿Qué ocurre con el índice único <code>porTitulo</code>? Captura el error real de la consola, y propón (e implementa) una solución: por ejemplo, avisar al usuario y dejar la tarea eliminada en <code>ultimaEliminada</code> en vez de perderla.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> el error literal, y el código de tu solución.</p>
+    </div>
+    <div class="activity-card" style="margin-top:1em;">
+      <div class="a-head"><div class="a-num">4</div><h4>Prueba la rama de iOS (si tienes acceso)</h4></div>
+      <div class="meta-row">OPCIONAL · FUERA DE CLASE · 20 MIN</div>
+      <p>En un iPhone o iPad, abre el proyecto servido por HTTPS, pulsa el botón de sensores y observa si Safari muestra su aviso de permiso. Prueba también <b>denegarlo</b> y confirma que el botón "Deshacer" sigue funcionando. Si no tienes un dispositivo Apple, pregunta a un compañero que sí.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> una captura del aviso y una frase: ¿tu código se comportó como esperabas?</p>
+    </div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li><code>deviceorientation</code> entrega la inclinación en tres ángulos (<code>alpha</code> 0–360, <code>beta</code> −180–180, <code>gamma</code> −90–90); <code>devicemotion</code> entrega aceleración (con y sin gravedad) y velocidad de rotación.</li>
+      <li>Hace falta contexto seguro; en iOS, además, un <code>requestPermission()</code> dentro de un clic, que no existe en otros navegadores y por eso se comprueba antes de llamar.</li>
+      <li>Un computador dispara un evento con todo en <code>null</code>: se detectan sensores reales esperando una lectura con valores, con un tiempo máximo.</li>
+      <li>Se limita la frecuencia de lectura y se devuelve una función para apagar el sensor.</li>
+      <li>La sacudida se detecta por la desviación de la magnitud respecto a 9,81 m/s², con umbral y enfriamiento; el umbral correcto sale de medir, no de suponer.</li>
+      <li>Los sensores son mejora progresiva: siempre hay un botón que hace lo mismo.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Próxima sesión</h3>
+    <div class="callout"><b>Sesión 26: Notificaciones push y sincronización en segundo plano.</b> Notification API, Push API y Background Sync — y, con ellas, el cierre del Sub-bloque A. Ahí volvemos a <code>InjectManifest</code> de Workbox para escribir lógica propia dentro del Service Worker.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> MDN Web Docs, "DeviceOrientationEvent," developer.mozilla.org.</div>
+      <div><b>[2]</b> MDN Web Docs, "DeviceOrientationEvent: requestPermission() static method," developer.mozilla.org.</div>
+      <div><b>[3]</b> MDN Web Docs, "DeviceMotionEvent," developer.mozilla.org.</div>
+      <div><b>[4]</b> W3C, "Device Orientation and Motion," w3.org/TR/orientation-event.</div>
+      <div><b>[5]</b> Google, "Emulate device sensors," Chrome DevTools, developer.chrome.com.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 11 de 30</span>
+  </div>
+</div>
+</body>
+</html>

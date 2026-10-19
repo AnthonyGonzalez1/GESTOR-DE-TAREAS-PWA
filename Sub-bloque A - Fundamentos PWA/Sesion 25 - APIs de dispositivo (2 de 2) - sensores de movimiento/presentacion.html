@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 25 · Sensores de movimiento · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .recap-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:.7em; margin-top:.6em;}
+  .recap-card{border:1px solid var(--line); border-radius:10px; padding:.75em .85em; background:#fbfaf5;}
+  .recap-card .rn{font-size:.62em; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--gold-deep);}
+  .recap-card h4{font-family:var(--serif); font-size:.92em; margin:.2em 0 .25em; color:var(--ink);}
+  .recap-card p{font-size:.68em; color:#444; margin:0; line-height:1.35;}
+  .module-list{display:grid; gap:.55em; margin-top:.6em;}
+  .module-row{border:1px solid var(--line); border-radius:10px; padding:.65em .9em;}
+  .module-row .mtag{display:inline-block; font-size:.68em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .55em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.3em;}
+  .module-row p{margin:0; font-size:.74em; color:#444; line-height:1.35;}
+  .term-box{background:#1c1c1e; color:#cfcac0; border-radius:10px; padding:.85em 1.05em; font-size:.74em; font-family:"Cascadia Code",Consolas,monospace; line-height:1.55; margin-top:.6em; overflow-x:auto;}
+  .term-box .prompt{color:#6ad06a;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:.8em 1.05em; font-size:.78em; line-height:1.4;}
+  .warn-box b{color:#9a6b00;}
+  .recursos-box-slide{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:12px; padding:1.1em 1.3em;}
+  .recursos-box-slide h4{font-family:var(--serif); font-size:1.05em; margin:0 0 .4em; color:var(--gold-deep);}
+  .recursos-box-slide a{font-weight:700; color:var(--ink);}
+  .recursos-box-slide .rb-desc{display:block; font-size:.84em; color:#444; margin-top:.35em; font-weight:400; line-height:1.4;}
+  .hash-table{font-size:.72em;}
+  .win-box{border:2px solid #2e7d32; background:#f1f9f1; border-radius:10px; padding:.8em 1.05em; font-size:.8em; line-height:1.45;}
+  .win-box b{color:#1b5e20;}
+  ol.steps{margin:.2em 0 0; padding-left:1.3em; font-size:.88em; line-height:1.45;}
+  ol.steps li{margin-bottom:.35em;}
+  @media (max-width:800px){ .recap-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>PWA · Sesión 11 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA · Sesión 11 de 30</div>
+          <h1>Sensores de<br>movimiento</h1>
+          <div class="lead">APIs de dispositivo (2/2) — DeviceOrientation y DeviceMotion le dan al navegador el mismo oído interno que tiene el teléfono: cuánto está inclinado y cuánto se mueve.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>11 de 30 · Bloque PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="160" r="150" fill="#FFF6DC"/>
+              <rect x="160" y="70" width="80" height="160" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="3.5" transform="rotate(-14 200 150)"/>
+              <circle cx="200" cy="205" r="5" fill="#1A1A1A" transform="rotate(-14 200 150)"/>
+              <path d="M95 110 C120 60 170 40 215 42" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+              <path d="M290 240 q40 -30 20 -80" fill="none" stroke="#FFCC29" stroke-width="5" stroke-linecap="round"/>
+              <path d="M300 168 l10 -12 l12 12" fill="none" stroke="#FFCC29" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="270" cy="250" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="270" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#1A1A1A">β γ</text>
+            </svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Objetivos de aprendizaje">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Objetivos de aprendizaje</h2>
+          <hr class="rule">
+          <ul class="clean">
+            <li class="fragment"><b>Distinguir</b> <code>DeviceOrientation</code> (cómo está inclinado el dispositivo) de <code>DeviceMotion</code> (cómo se está moviendo) e interpretar sus ejes y rangos.</li>
+            <li class="fragment"><b>Manejar</b> el permiso especial de iOS (<code>requestPermission</code>) y detectar si el dispositivo tiene sensores de verdad.</li>
+            <li class="fragment"><b>Implementar</b> una detección de sacudida con umbral y enfriamiento, y limitar la frecuencia de lecturas para no saturar la interfaz.</li>
+            <li class="fragment"><b>Diseñar</b> los sensores como mejora progresiva: algo que añade, nunca la única forma de hacer una acción.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recursos de la sesión">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Recursos de esta sesión</h2>
+          <hr class="rule">
+          <div class="recursos-box-slide">
+            <h4>Descargar .zip — Checkpoint, cierre de la Sesión 24</h4>
+            <a href="recursos/gestor-de-tareas-sesion24.zip">gestor-de-tareas-sesion24.zip</a>
+            <span class="rb-desc">El Gestor de Tareas con foto y ubicación por tarea (<code>dispositivo.js</code>). Hoy le agregamos <code>sensores.js</code> y una barra con "agitar para deshacer" y un botón de respaldo.</span>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s1" data-section-label="Qué miden los sensores" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>Qué miden los sensores de movimiento</h2>
+            <p>El navegador no te entrega los chips en crudo: los mezcla y expone dos eventos de <code>window</code>.</p>
+            <div class="tb-preview"><span>deviceorientation</span><span>devicemotion</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="150" y="60" width="100" height="190" rx="16" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <circle cx="200" cy="232" r="6" fill="#1A1A1A"/>
+              <path d="M200 155 L330 155" stroke="#FFCC29" stroke-width="4" stroke-linecap="round"/>
+              <path d="M320 147 l12 8 l-12 8" stroke="#FFCC29" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M200 155 L200 25" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 9"/>
+              <circle cx="200" cy="155" r="9" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s1" data-section-label="Qué miden los sensores" data-slide-label="Dos eventos">
+          <div class="kicker">Sensores · 1.1</div>
+          <h2 class="slide-title">Dos eventos: inclinación y movimiento</h2>
+          <hr class="rule">
+          <p style="font-size:.88em; margin:0 0 .6em; line-height:1.45;">Un teléfono lleva un acelerómetro (cuánto se acelera en cada eje), un giroscopio (cuánto rota) y, en muchos modelos, un magnetómetro (hacia dónde queda el norte magnético).</p>
+          <div class="grid-2">
+            <div class="card fragment"><h3><code>deviceorientation</code></h3><p><b>Cómo está inclinado</b> el dispositivo. Entrega tres ángulos en grados: <code>alpha</code>, <code>beta</code> y <code>gamma</code>.</p></div>
+            <div class="card fragment"><h3><code>devicemotion</code></h3><p><b>Cómo se está moviendo.</b> Entrega <code>acceleration</code>, <code>accelerationIncludingGravity</code> (ambas en m/s²), <code>rotationRate</code> (grados/s) e <code>interval</code> (ms entre lecturas).</p></div>
+          </div>
+          <div class="callout fragment" style="margin-top:.8em; font-size:.88em;"><code>accelerationIncludingGravity</code> <i>incluye</i> la gravedad. Con el teléfono quieto sobre la mesa, la suma de sus tres ejes da aproximadamente <b>9,81 m/s²</b> apuntando hacia abajo. Eso es lo que usaremos para detectar una sacudida: no el valor de un eje, sino cuánto se aleja el total de la gravedad.</div>
+        </section>
+
+        <section class="slide" data-section="s1" data-section-label="Qué miden los sensores" data-slide-label="Ángulos, ejes y rangos">
+          <div class="kicker">Sensores · 1.2</div>
+          <h2 class="slide-title">alpha, beta y gamma: ejes y rangos</h2>
+          <hr class="rule">
+          <table class="uptc" style="font-size:.95em;">
+            <tr><th>Ángulo</th><th>Eje</th><th>Rango</th><th>Cómo sentirlo</th></tr>
+            <tr><td><code>alpha</code></td><td>z (perpendicular a la pantalla)</td><td>0 a 360</td><td>Girar el teléfono sobre una mesa, como una brújula</td></tr>
+            <tr><td><code>beta</code></td><td>x</td><td>−180 a 180</td><td>Inclinarlo hacia adelante o hacia atrás</td></tr>
+            <tr><td><code>gamma</code></td><td>y</td><td>−90 a 90</td><td>Inclinarlo hacia la izquierda o la derecha</td></tr>
+          </table>
+          <p class="fragment" style="font-size:.74em; color:var(--gray); font-style:italic; margin:.6em 0 0;">Rangos y ejes según MDN. Existe además <code>deviceorientationabsolute</code>, referido a la Tierra en vez de a la posición de arranque; hoy no lo usamos.</p>
+        </section>
+
+        <section class="slide slide--divider" data-section="s2" data-section-label="Permiso y contexto seguro" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>Permiso y contexto seguro (con una trampa de iOS)</h2>
+            <p>Los eventos de orientación solo se entregan en contexto seguro (HTTPS o localhost), igual que cámara y ubicación.</p>
+            <div class="tb-preview"><span>HTTPS o localhost</span><span>requestPermission</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="140" y="140" width="120" height="100" rx="14" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M165 140 v-30 a35 35 0 0 1 70 0 v30" fill="none" stroke="#1A1A1A" stroke-width="4"/>
+              <circle cx="200" cy="185" r="10" fill="#1A1A1A"/>
+              <path d="M200 192 v22" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s2" data-section-label="Permiso y contexto seguro" data-slide-label="requestPermission en iOS">
+          <div class="kicker">Permiso · 2.1</div>
+          <h2 class="slide-title">iOS exige pedir permiso explícito</h2>
+          <hr class="rule">
+          <p style="font-size:.92em; margin:0 0 .6em; line-height:1.45;"><b>iOS</b> (Safari) exige pedir permiso explícito con <code>DeviceOrientationEvent.requestPermission()</code> (y <code>DeviceMotionEvent.requestPermission()</code> para movimiento). Ese método:</p>
+          <ul class="clean" style="font-size:1.05em;">
+            <li class="fragment">solo existe en los navegadores que lo exigen — en Chrome para escritorio, <code>typeof DeviceOrientationEvent.requestPermission</code> vale <code>"undefined"</code> (lo medí), así que hay que comprobar antes de llamarlo;</li>
+            <li class="fragment">requiere un <b>gesto del usuario</b> (un clic); sin él, la promesa se rechaza con <code>NotAllowedError</code>;</li>
+            <li class="fragment">devuelve <code>"granted"</code> o <code>"denied"</code>;</li>
+            <li class="fragment">MDN lo marca como de disponibilidad limitada: no es universal.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="s2" data-section-label="Permiso y contexto seguro" data-slide-label="pedirPermisoSensores()">
+          <div class="kicker">Permiso · 2.2</div>
+          <h2 class="slide-title">Comprobar antes de llamar</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+            <pre><code>export async function pedirPermisoSensores() {
+  if (!("DeviceMotionEvent" in window)) return "no-soportado";
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    try {
+      return await DeviceMotionEvent.requestPermission();   // "granted" | "denied"
+    } catch {
+      return "denied";           // p. ej. NotAllowedError por no venir de un clic
+    }
+  }
+  return "no-necesario";         // Android/Chromium: el permiso es implícito
+}</code></pre>
+          </div>
+          <div class="warn-box fragment" style="margin-top:.7em;"><b>Lo que no pude verificar aquí:</b> la rama de iOS. Este entorno no tiene un iPhone, así que <code>requestPermission</code> está escrito según la documentación de MDN, no probado. La Actividad 4 te pide probarlo en un iPhone o un iPad si tienes acceso, y reportar qué pasó.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s3" data-section-label="¿Hay sensores de verdad?" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>¿Hay sensores de verdad?</h2>
+            <p>Un computador de escritorio tiene <code>DeviceOrientationEvent</code> (el objeto existe), pero no tiene sensores.</p>
+            <div class="tb-preview"><span>Un evento con null</span><span>Tiempo máximo</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="120" y="70" width="160" height="180" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <path d="M150 110h100M150 140h100M150 170h60" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+              <circle cx="262" cy="232" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="262" y="239" text-anchor="middle" font-size="20" font-weight="700" fill="#1A1A1A">?</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s3" data-section-label="¿Hay sensores de verdad?" data-slide-label="hayLecturasReales()">
+          <div class="kicker">Sensores reales · 3.1</div>
+          <h2 class="slide-title">Esperar una lectura con valores reales</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:.84em;">Lo que hace Chromium de escritorio, medido en esta sesión: dispara <b>un solo evento</b> con <code>alpha</code>, <code>beta</code> y <code>gamma</code> en <code>null</code> y <code>accelerationIncludingGravity.x</code> en <code>null</code>, y después silencio. Por eso preguntar "¿existe la API?" no sirve: hay que esperar una lectura con valores reales, con un tiempo máximo.</div>
+          <div class="code-block compact" style="margin-top:.7em;">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+            <pre><code>export function hayLecturasReales(timeoutMs = 1000) {
+  return new Promise((resolve) =&gt; {
+    const alRecibir = (e) =&gt; {
+      const a = e.accelerationIncludingGravity;
+      if (a &amp;&amp; a.x !== null) { limpiar(); resolve(true); }
+    };
+    const limpiar = () =&gt; {
+      window.removeEventListener("devicemotion", alRecibir);
+      clearTimeout(t);
+    };
+    const t = setTimeout(() =&gt; { limpiar(); resolve(false); }, timeoutMs);
+    window.addEventListener("devicemotion", alRecibir);
+  });
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s4" data-section-label="Leer sin saturar" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Leer la orientación sin saturar la interfaz</h2>
+            <p>Un sensor real dispara decenas de eventos por segundo. Si cada uno repinta algo, la interfaz se arrastra.</p>
+            <div class="tb-preview"><span>Frecuencia limitada</span><span>Función para apagar</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40 170 C70 60 100 280 130 170 S190 60 220 170 S280 280 310 170 S350 90 365 170" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M70 60v200M170 60v200M270 60v200M360 60v200" stroke="#FFCC29" stroke-width="3" stroke-dasharray="3 8"/>
+              <circle cx="70" cy="110" r="7" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="170" cy="110" r="7" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+              <circle cx="270" cy="230" r="7" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Leer sin saturar" data-slide-label="escucharOrientacion()">
+          <div class="kicker">Orientación · 4.1</div>
+          <h2 class="slide-title">Como máximo 10 avisos por segundo</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+            <pre><code>export function escucharOrientacion(callback, intervaloMs = 100) {
+  let ultimo = 0;
+  const manejador = (e) =&gt; {
+    const ahora = performance.now();
+    if (ahora - ultimo &lt; intervaloMs) return;
+    ultimo = ahora;
+    if (e.beta === null) return;                       // sin sensor
+    callback({ alfa: e.alpha, beta: e.beta, gamma: e.gamma });
+  };
+  window.addEventListener("deviceorientation", manejador);
+  return () =&gt; window.removeEventListener("deviceorientation", manejador);
+}</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.7em; font-size:.84em;">La solución habitual es limitar la frecuencia con la hora de la última lectura aceptada: aquí, como máximo 10 avisos por segundo (cada 100 ms). Y se devuelve una función para <b>dejar de escuchar</b>: un sensor activo gasta batería, así que hay que poder apagarlo.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s5" data-section-label="Detectar una sacudida" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 05</div>
+            <h2>Detectar una sacudida</h2>
+            <p>Una sacudida es una aceleración fuerte y breve. Tres decisiones de diseño: umbral, enfriamiento y devolver cuánto.</p>
+            <div class="tb-preview"><span>Umbral</span><span>Enfriamiento</span><span>Desviación</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="165" y="80" width="70" height="140" rx="12" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5" transform="rotate(14 200 150)"/>
+              <path d="M110 120 l-20 15 l20 15 l-20 15" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M290 120 l20 15 l-20 15 l20 15" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s5" data-section-label="Detectar una sacudida" data-slide-label="Tres decisiones de diseño">
+          <div class="kicker">Sacudida · 5.1</div>
+          <h2 class="slide-title">Cuánto se aleja el total de la gravedad</h2>
+          <hr class="rule">
+          <p style="font-size:.86em; margin:0 0 .7em; line-height:1.45;">Con el teléfono quieto, la magnitud <code>Math.hypot(x, y, z)</code> de <code>accelerationIncludingGravity</code> ronda 9,81; al sacudirlo se dispara muy por encima (o por debajo, en el instante de frenar). Así que miramos cuánto <b>se aleja</b> de la gravedad: la desviación.</p>
+          <div class="grid-3">
+            <div class="card fragment"><h3>Umbral</h3><p>A partir de qué desviación cuenta como sacudida. Con 12 m/s², caminar o dejar caer el teléfono suavemente no dispara; sacudirlo con ganas sí. Es un punto de partida: se ajusta probando con hardware real (Actividad 2).</p></div>
+            <div class="card fragment"><h3>Enfriamiento</h3><p>Una sola sacudida produce docenas de lecturas por encima del umbral. Sin una pausa (aquí 1 segundo) se dispararía la acción veinte veces.</p></div>
+            <div class="card fragment"><h3>Devolver cuánto</h3><p>El callback recibe la desviación medida, útil para depurar y calibrar.</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s5" data-section-label="Detectar una sacudida" data-slide-label="detectarSacudida()">
+          <div class="kicker">Sacudida · 5.2</div>
+          <h2 class="slide-title">detectarSacudida: umbral y enfriamiento</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sensores.js</div>
+            <pre><code>export function detectarSacudida(onSacudida, { umbral = 12, enfriamientoMs = 1000 } = {}) {
+  const GRAVEDAD = 9.81;
+  let ultimaSacudida = 0;
+  const manejador = (e) =&gt; {
+    const a = e.accelerationIncludingGravity;
+    if (!a || a.x === null) return;
+    const magnitud = Math.hypot(a.x, a.y, a.z);
+    const desviacion = Math.abs(magnitud - GRAVEDAD);
+    const ahora = performance.now();
+    if (desviacion &gt; umbral &amp;&amp; ahora - ultimaSacudida &gt; enfriamientoMs) {
+      ultimaSacudida = ahora;
+      onSacudida(Math.round(desviacion * 10) / 10);
+    }
+  };
+  window.addEventListener("devicemotion", manejador);
+  return () =&gt; window.removeEventListener("devicemotion", manejador);
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s6" data-section-label="Mejora progresiva" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Mejora progresiva: nunca la única forma</h2>
+            <p>Un computador no se puede sacudir, y alguien con movilidad reducida puede no querer hacerlo.</p>
+            <div class="tb-preview"><span>Botón visible</span><span>Sensores como atajo</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="60" y="70" width="90" height="60" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="60" y="190" width="90" height="60" rx="10" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M155 100 C210 100 220 160 255 160 M155 220 C210 220 220 160 255 160" fill="none" stroke="#1A1A1A" stroke-width="3.5"/>
+              <circle cx="290" cy="160" r="32" fill="#1A1A1A"/>
+              <path d="M276 160l10 10 20-20" stroke="#FFCC29" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Mejora progresiva" data-slide-label="Dos caminos, un flujo">
+          <div class="kicker">Mejora progresiva · 6.1</div>
+          <h2 class="slide-title">Dos caminos para la misma acción</h2>
+          <hr class="rule">
+          <div class="grid-2">
+            <div class="card fragment"><h3>↩ Deshacer eliminación</h3><p>Un botón visible que funciona en cualquier dispositivo.</p></div>
+            <div class="card fragment"><h3>Los sensores</h3><p>Un atajo adicional: nunca la única forma.</p></div>
+          </div>
+          <p style="font-size:.88em; margin:.8em 0 .3em;">El flujo del botón "📳 Activar agitar para deshacer" es:</p>
+          <ol class="steps" style="font-size:1em;">
+            <li class="fragment">El usuario pulsa el botón (así el permiso de iOS se pide dentro de un clic).</li>
+            <li class="fragment">Si el permiso es <code>denied</code> → mensaje claro, y el botón "Deshacer" sigue ahí.</li>
+            <li class="fragment">Si no hay lecturas reales (portátil) → mensaje claro, y el botón "Deshacer" sigue ahí.</li>
+            <li class="fragment">Si todo va bien → se escucha la sacudida y la orientación (para mostrar la inclinación en pantalla), y un segundo clic <b>apaga</b> los sensores.</li>
+          </ol>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Mejora progresiva" data-slide-label="La misma acción">
+          <div class="kicker">Mejora progresiva · 6.2</div>
+          <h2 class="slide-title">La acción es la misma, venga del botón o de la sacudida</h2>
+          <hr class="rule">
+          <ul class="clean" style="font-size:1.05em;">
+            <li class="fragment">Al eliminar una tarea se guarda copia en <code>ultimaEliminada</code>.</li>
+            <li class="fragment"><code>deshacerEliminacion()</code> la vuelve a insertar en IndexedDB, que le asigna un <code>id</code> nuevo — por eso se descarta el <code>id</code> viejo.</li>
+          </ul>
+          <div class="warn-box fragment" style="margin-top:.9em; font-size:.95em;"><b>Un detalle que importa:</b> el índice <code>porTitulo</code> de la Sesión 22 es único, así que reinsertar un título que otra tarea ya ocupa fallaría. En este flujo no ocurre porque se restaura la <i>última</i> eliminada antes de cualquier otra operación, pero es un buen caso límite para probar (Actividad 3).</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s7" data-section-label="Probar sin un teléfono" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>Probar sin un teléfono</h2>
+            <p>No siempre tendrás un teléfono a mano, y debuggear sacudiendo un cable USB es un mal plan.</p>
+            <div class="tb-preview"><span>Panel Sensors</span><span>test_s25.js</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+              <rect x="70" y="70" width="260" height="180" rx="12" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/>
+              <rect x="70" y="70" width="260" height="30" rx="12" fill="#1A1A1A"/>
+              <path d="M100 150h200" stroke="#B9B5AA" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="190" cy="150" r="14" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+              <path d="M100 200h200" stroke="#B9B5AA" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="240" cy="200" r="14" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Probar sin un teléfono" data-slide-label="Panel Sensors">
+          <div class="kicker">Prueba · 7.1</div>
+          <h2 class="slide-title">Chrome DevTools: el panel Sensors</h2>
+          <hr class="rule">
+          <div class="callout"><b>Sensors</b> se abre con Ctrl+Shift+P → "Show Sensors". Ahí puedes fijar una orientación a mano — alpha, beta, gamma, o poses predefinidas — y la página recibe eventos <code>deviceorientation</code> como si el teléfono estuviera en esa posición.</div>
+          <div class="callout fragment" style="margin-top:.9em;">Para verificar el checkpoint de hoy automáticamente usé el mismo mecanismo desde Playwright (el protocolo de DevTools permite simular los sensores). La prueba cubre tres casos: sin sensores (un portátil), con una inclinación simulada de 30° y con una sacudida simulada de 25, 10 y 9,81 m/s² en los ejes x, y, z.</div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Probar sin un teléfono" data-slide-label="Salida real de la prueba">
+          <div class="kicker">Prueba · 7.2</div>
+          <h2 class="slide-title">node test_s25.js — salida real</h2>
+          <hr class="rule">
+          <div class="term-box" style="font-size:.92em;"><span class="prompt">$</span> node test_s25.js<br>
+SIN SENSORES -&gt; Este dispositivo no tiene sensores de movimiento. Usa el botón «Deshacer eliminación».<br>
+tras eliminar: tareas = 0 | deshacer habilitado = true<br>
+tras deshacer (boton): tareas = 1 | Se restauró «Aprender el Bloque 3: PWA».<br>
+boton: 📳 Agitar para deshacer: ACTIVO | aviso: ""<br>
+lectura inclinacion: inclinación β 30° · γ 0°<br>
+eliminada: tareas = 0<br>
+tras sacudida: tareas = 1 | Se restauró «Aprender el Bloque 3: PWA».<br>
+pageerrors: []</div>
+          <div class="callout fragment" style="margin-top:.8em;">Es la salida real de esa prueba: sin sensores (un portátil), con una inclinación simulada de 30° y con una sacudida simulada.</div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Probar sin un teléfono" data-slide-label="Qué demuestra y límites">
+          <div class="kicker">Prueba · 7.3</div>
+          <h2 class="slide-title">Qué demuestra — y sus límites honestos</h2>
+          <hr class="rule">
+          <div class="win-box" style="font-size:1em;"><b>Qué demuestra:</b> (1) sin sensores, la app lo detecta y manda al botón de respaldo, que funciona; (2) con una orientación simulada de 30°, el indicador muestra β 30°; (3) una aceleración simulada de (25, 10, 9,81) tiene magnitud ≈ 28,7 m/s², una desviación de ≈ 18,9 sobre la gravedad — por encima del umbral de 12 —, y la tarea eliminada reaparece. Cero errores en consola.</div>
+          <div class="warn-box fragment" style="margin-top:.9em; font-size:1em;"><b>Límites honestos:</b> son sensores <i>simulados</i>, sin ruido ni deriva. El umbral de 12 m/s² salió de la teoría y de esta simulación, no de un teléfono real; la forma de comprobar que sirve es la Actividad 2. Tampoco se probó la rama de iOS (sección 2).</div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades 1 y 2">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Actividades 1 y 2</h2>
+          <hr class="rule">
+          <div class="activity-card fragment" style="margin-bottom:.7em;">
+            <div class="a-head"><div class="a-num">1</div><h4>El panel Sensors de DevTools</h4></div>
+            <div class="meta-row">INDIVIDUAL · 15 MIN</div>
+            <p>Con el checkpoint corriendo, abre DevTools → Sensors → Orientation y recorre al menos tres poses (por ejemplo "Portrait", "Landscape left", "Displayed up"). Para cada una, anota los tres ángulos que muestra el indicador de la app y explica con una frase por qué <code>beta</code> o <code>gamma</code> cambian como cambian.</p>
+            <p style="margin-top:.4em;"><b>Entregable:</b> tabla de tres filas (pose, alpha/beta/gamma, explicación).</p>
+          </div>
+          <div class="activity-card fragment">
+            <div class="a-head"><div class="a-num">2</div><h4>Calibra el umbral con un teléfono real</h4></div>
+            <div class="meta-row">PAREJAS · 25 MIN</div>
+            <p>Sirve tu proyecto por HTTPS (Sesión 24, sección 9) y haz que el callback de <code>detectarSacudida</code> imprima la desviación con <code>console.log</code> (o muéstrala en pantalla). Con <code>umbral: 0</code> y <code>enfriamientoMs: 0</code> temporalmente, registra la desviación máxima en: teléfono quieto, caminando con él en la mano, una sacudida suave y una sacudida fuerte.</p>
+            <p style="margin-top:.4em;"><b>Entregable:</b> tus cuatro mediciones y el umbral que elegirías — con una frase de justificación. ¿Sirve 12 en tu teléfono?</p>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades 3 y 4">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Actividades 3 y 4</h2>
+          <hr class="rule">
+          <div class="activity-card fragment" style="margin-bottom:.7em;">
+            <div class="a-head"><div class="a-num">3</div><h4>Rompe el deshacer (y arréglalo)</h4></div>
+            <div class="meta-row">INDIVIDUAL · 20 MIN</div>
+            <p>Elimina una tarea, crea otra con el <b>mismo título</b>, y entonces pulsa "Deshacer". ¿Qué ocurre con el índice único <code>porTitulo</code>? Captura el error real de la consola, y propón (e implementa) una solución: por ejemplo, avisar al usuario y dejar la tarea eliminada en <code>ultimaEliminada</code> en vez de perderla.</p>
+            <p style="margin-top:.4em;"><b>Entregable:</b> el error literal, y el código de tu solución.</p>
+          </div>
+          <div class="activity-card fragment">
+            <div class="a-head"><div class="a-num">4</div><h4>Prueba la rama de iOS (si tienes acceso)</h4></div>
+            <div class="meta-row">OPCIONAL · FUERA DE CLASE · 20 MIN</div>
+            <p>En un iPhone o iPad, abre el proyecto servido por HTTPS, pulsa el botón de sensores y observa si Safari muestra su aviso de permiso. Prueba también <b>denegarlo</b> y confirma que el botón "Deshacer" sigue funcionando. Si no tienes un dispositivo Apple, pregunta a un compañero que sí.</p>
+            <p style="margin-top:.4em;"><b>Entregable:</b> una captura del aviso y una frase: ¿tu código se comportó como esperabas?</p>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la sesión</h2>
+          <hr class="rule">
+          <ul class="clean" style="font-size:.88em;">
+            <li class="fragment"><code>deviceorientation</code> entrega la inclinación en tres ángulos (<code>alpha</code> 0–360, <code>beta</code> −180–180, <code>gamma</code> −90–90); <code>devicemotion</code> entrega aceleración (con y sin gravedad) y velocidad de rotación.</li>
+            <li class="fragment">Hace falta contexto seguro; en iOS, además, un <code>requestPermission()</code> dentro de un clic, que no existe en otros navegadores y por eso se comprueba antes de llamar.</li>
+            <li class="fragment">Un computador dispara un evento con todo en <code>null</code>: se detectan sensores reales esperando una lectura con valores, con un tiempo máximo.</li>
+            <li class="fragment">Se limita la frecuencia de lectura y se devuelve una función para apagar el sensor.</li>
+            <li class="fragment">La sacudida se detecta por la desviación de la magnitud respecto a 9,81 m/s², con umbral y enfriamiento; el umbral correcto sale de medir, no de suponer.</li>
+            <li class="fragment">Los sensores son mejora progresiva: siempre hay un botón que hace lo mismo.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Próxima sesión">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Próxima sesión</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Sesión 26: Notificaciones push y sincronización en segundo plano.</b> Notification API, Push API y Background Sync — y, con ellas, el cierre del Sub-bloque A. Ahí volvemos a <code>InjectManifest</code> de Workbox para escribir lógica propia dentro del Service Worker.</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> MDN Web Docs, "DeviceOrientationEvent," developer.mozilla.org.</div>
+            <div><b>[2]</b> MDN Web Docs, "DeviceOrientationEvent: requestPermission() static method," developer.mozilla.org.</div>
+            <div><b>[3]</b> MDN Web Docs, "DeviceMotionEvent," developer.mozilla.org.</div>
+            <div><b>[4]</b> W3C, "Device Orientation and Motion," w3.org/TR/orientation-event.</div>
+            <div><b>[5]</b> Google, "Emulate device sensors," Chrome DevTools, developer.chrome.com.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 28</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>
