@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Sesión 26 · Notificaciones push y sincronización en segundo plano · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:980px; margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .guide-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .guide-header .brand-wedge{opacity:.9;}
+  .guide-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .guide-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .guide-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .guide-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .guide-header .lead{color:#d9d3b8; font-size:1em; max-width:36em; position:relative; z-index:1;}
+  .guide-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .content{padding:2.2em 2.4em 4em;}
+  .content h2.section-title{font-family:var(--serif); font-size:1.7em; margin:1.8em 0 .3em; color:var(--ink); border-top:1px solid var(--line); padding-top:1em; display:flex; align-items:center; gap:.45em;}
+  .content h2.section-title:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .content h2.section-title .num-badge{flex:0 0 auto; width:1.35em; height:1.35em; border-radius:50%; background:var(--ink); color:var(--gold); font-size:.62em; display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .content h3.sub-title{font-family:var(--serif); font-size:1.2em; margin:1.3em 0 .5em; color:var(--gold-deep);}
+  .obj-list{list-style:none; margin:1em 0 0; padding:0; display:grid; gap:.6em;}
+  .obj-list li{display:flex; gap:.7em; align-items:flex-start; font-size:.98em; line-height:1.5;}
+  .obj-list li .chk{flex:0 0 auto; width:1.5em; height:1.5em; border-radius:50%; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); display:flex; align-items:center; justify-content:center; font-size:.8em; font-weight:800;}
+  .footer-note{border-top:3px solid var(--gold); margin-top:2.5em; padding:1.6em 2.4em; font-size:.85em; color:var(--gray); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+  .guide-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .guide-nav a{color:#d9d3b8; text-decoration:none; font-weight:700; display:flex; align-items:center; gap:.4em;}
+  .guide-nav a:hover{color:var(--gold);}
+  .fig-caption{font-size:.8em; color:var(--gray); text-align:center; margin-top:.5em; font-style:italic;}
+  .compare-wrap{overflow-x:auto;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:1em 1.2em; margin:1em 0; font-size:.92em;}
+  .warn-box b{color:#9a6b00;}
+  .recursos-box{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:6px; padding:1.1em 1.4em; margin:1.4em 0 0;}
+  .recursos-box h3{font-family:var(--serif); font-size:1.05em; margin:0 0 .5em; color:var(--gold-deep);}
+  .recursos-list{list-style:none; margin:0; padding:0; display:grid; gap:.4em;}
+  .recursos-list a{font-weight:700; color:var(--ink);}
+  .rb-desc{display:block; font-size:.88em; color:var(--gray); margin-top:.2em; font-weight:400;}
+  .term-box{background:#1c1c1e; color:#cfcac0; border-radius:10px; padding:.9em 1.1em; font-size:.82em; font-family:"Cascadia Code",Consolas,monospace; line-height:1.55; margin:1em 0; overflow-x:auto;}
+  .term-box .prompt{color:#6ad06a;}
+  .win-box{border:2px solid #2e7d32; background:#f1f9f1; border-radius:10px; padding:1em 1.2em; margin:1.2em 0; font-size:.92em;}
+  .win-box b{color:#1b5e20;}
+  @media (max-width:700px){ .guide-header, .content{padding-left:1.3em; padding-right:1.3em;} }
+  .db-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.8em; margin:1.2em 0;}
+  .db-card{border:1px solid var(--line); border-radius:10px; padding:.85em 1em;}
+  .db-card .op-name{display:inline-block; font-size:.8em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .6em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .db-card p{margin:0; font-size:.84em; color:#444; line-height:1.4;}
+  @media (max-width:700px){ .db-grid{grid-template-columns:1fr;} }
+  .db-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:.8em; margin:1.2em 0;}
+  .db-card{border:1px solid var(--line); border-radius:10px; padding:.85em 1em;}
+  .db-card .op-name{display:inline-block; font-size:.8em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .6em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.4em;}
+  .db-card p{margin:0; font-size:.84em; color:#444; line-height:1.4;}
+  @media (max-width:700px){ .db-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="page">
+  <div class="guide-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="guide-nav">
+      <a href="../../00%20-%20Pagina%20del%20Bloque%203.html">← Inicio del curso</a>
+      <a href="presentacion.html">Ver presentación →</a>
+    </div>
+    <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Guía del estudiante · Bloque PWA · Sesión 12 de 30</div>
+    <h1>Notificaciones push y sincronización en segundo plano</h1>
+    <div class="lead">Hasta hoy el Gestor solo hacía algo mientras alguien miraba la pestaña. Hoy aprende a hablarle al usuario —con avisos, y con push desde un servidor— y a terminar trabajo cuando ya no hay red ni pestaña abierta. Es también la sesión en que volvemos a <code>InjectManifest</code> de Workbox para escribir lógica propia dentro del Service Worker, y en que aprendemos a distinguir lo que sí pudimos probar de lo que no.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="content">
+
+    
+
+    <h2 class="section-title" style="margin-top:0;border-top:none;padding-top:0;">Objetivos de aprendizaje</h2>
+    <ul class="obj-list">
+      <li><span class="chk">✓</span><span><b>Distinguir</b> la Notification API, la Push API y Background Sync: qué promete cada una, qué necesita y en qué navegadores existe.</span></li>
+      <li><span class="chk">✓</span><span><b>Pedir</b> el permiso de notificaciones en contexto y mostrar avisos desde el Service Worker, con su clic.</span></li>
+      <li><span class="chk">✓</span><span><b>Pasar</b> de <code>generateSW</code> a <code>InjectManifest</code> para escribir lógica propia dentro del Service Worker sin perder el precaché de Workbox.</span></li>
+      <li><span class="chk">✓</span><span><b>Construir</b> una bandeja de salida con Background Sync que sobreviva a la falta de red, a los reintentos y a los envíos duplicados.</span></li>
+      <li><span class="chk">✓</span><span><b>Explicar</b> qué parte del flujo de push se verificó aquí y cuál no se puede verificar sin un servicio de push real.</span></li>
+    </ul>
+
+    <div class="recursos-box">
+      <h3>Recursos de esta sesión</h3>
+      <ul class="recursos-list">
+        <li><a href="recursos/gestor-de-tareas-sesion25.zip">Descargar .zip</a><span class="rb-desc"><b>Checkpoint — cierre de la Sesión 25 (punto de partida).</b> El Gestor de Tareas con Service Worker generado por Workbox, cámara, ubicación y sensores de movimiento. Hoy le agregamos avisos, push y sincronización en segundo plano.</span></li>
+        <li><a href="recursos/gestor-de-tareas-sesion26.zip">Descargar .zip</a><span class="rb-desc"><b>Versión terminada de la Sesión 26 (para comparar).</b> Incluye el mini servidor Node de la carpeta <code>servidor/</code>. Intenta construirlo tú primero; úsalo para revisar tu trabajo, no para copiarlo.</span></li>
+      </ul>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">1</span>Tres APIs, tres promesas distintas</h2>
+    <div class="body-text"><p>Hasta ahora el Gestor solo hacía algo cuando el usuario tenía la pestaña abierta. Hoy se vuelve capaz de <b>hablarle</b> al usuario y de <b>terminar trabajo</b> cuando él ya no está mirando. Eso lo reparten tres APIs que se confunden con facilidad porque suelen aparecer juntas, pero que resuelven problemas distintos:</p></div>
+    <div class="compare-wrap">
+    <table class="uptc" style="margin-top:.6em;">
+      <tr><th>API</th><th>Qué hace</th><th>¿Necesita servidor?</th><th>¿Funciona con la app cerrada?</th><th>Soporte (según MDN)</th></tr>
+      <tr><td><b>Notification API</b></td><td>Muestra una notificación del sistema</td><td>No</td><td>Solo si algo la dispara (p. ej. un push)</td><td>Amplio</td></tr>
+      <tr><td><b>Push API</b></td><td>Recibe un mensaje que el <i>servidor</i> envía cuando quiere</td><td><b>Sí</b>, con claves VAPID y un servicio de push del navegador</td><td>Sí: el navegador despierta al Service Worker</td><td>Chromium y Firefox; Safari en iOS solo para apps añadidas a la pantalla de inicio (documentación de Apple, no probado aquí)</td></tr>
+      <tr><td><b>Background Sync</b></td><td>Pospone un envío hasta que haya red, aunque se cierre la pestaña</td><td>Para recibir lo que se envía, sí</td><td>Sí</td><td><b>Solo Chromium</b> (Chrome, Edge). Ni Safari ni Firefox</td></tr>
+    </table>
+    </div>
+    <div class="fig-caption">La columna de soporte resume las páginas de MDN consultadas para esta sesión; el soporte cambia con las versiones, así que antes de depender de una API de producción conviene revisar la tabla vigente.</div>
+    <div class="warn-box"><b>Qué se pudo y qué no se pudo comprobar hoy.</b> Todo el código de esta guía se ejecutó en Chromium con Playwright. Se verificó de verdad: la notificación local, el manejador de <code>push</code> del Service Worker (con un mensaje inyectado), el clic en la notificación, la bandeja de salida con Background Sync y su plan B, y —por separado— que el servidor firma con VAPID y cifra el mensaje correctamente. <b>No se pudo verificar</b> la entrega real a través del servicio de push de Google: el entorno de pruebas no tiene acceso a esos servidores. Cada sección dice con exactitud en cuál de los dos grupos está lo que se muestra.</div>
+
+    <h2 class="section-title"><span class="num-badge">2</span>Notificaciones: pedir permiso con contexto</h2>
+    <div class="body-text"><p>Una notificación es una interrupción en el dispositivo del usuario, y el navegador no la permite sin su consentimiento. <code>Notification.permission</code> devuelve <code>"default"</code> (todavía no se le preguntó), <code>"granted"</code> o <code>"denied"</code>. (La Permissions API usa el nombre <code>prompt</code> para el primer estado; son el mismo concepto con dos nombres.) Las reglas son las mismas de la Sesión 24:</p></div>
+    <ul class="clean">
+      <li><b>Nunca al cargar la página.</b> Se pide dentro del clic de un botón («🔔 Activar avisos») que explica para qué sirve.</li>
+      <li><b><code>denied</code> es casi definitivo.</b> Desde el código no se puede volver a preguntar; el usuario tiene que cambiarlo en la configuración del sitio. Por eso conviene no gastar la única oportunidad en un momento absurdo.</li>
+      <li><b>La app debe funcionar igual sin el permiso.</b> Los avisos son un añadido, no la única vía.</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+      <pre><code>/** Pedir permiso. Solo llamar desde un gesto del usuario. */
+export async function pedirPermisoNotificaciones() {
+  if (!("Notification" in window)) return "no-soportado";
+  return Notification.requestPermission();
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+      <pre><code>/** Notificación LOCAL (sin servidor): la muestra el propio SW.
+ *  Se usa registration.showNotification y no `new Notification()` porque este
+ *  último lanza TypeError en Chrome para Android. */
+export async function mostrarAvisoLocal(titulo, cuerpo, url = "/index.html") {
+  const reg = await navigator.serviceWorker.ready;
+  await reg.showNotification(titulo, {
+    body: cuerpo,
+    icon: "/icons/icon-192.png",
+    tag: "gestor-aviso",
+    data: { url },
+  });
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Dos decisiones del segundo fragmento merecen explicación. Primero, la notificación la muestra <code>registration.showNotification()</code>, <b>no</b> <code>new Notification()</code>: según MDN, el constructor lanza <code>TypeError</code> en Chrome para Android, y además solo <code>showNotification</code> funciona cuando la página está cerrada. Segundo, las opciones: <code>tag</code> hace que una notificación con la misma etiqueta <i>reemplace</i> a la anterior en lugar de apilarse, y <code>data</code> viaja con la notificación hasta el momento del clic.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (fragmento)</div>
+      <pre><code>btnAvisos.addEventListener("click", async () =&gt; {
+  // Permiso pedido AQUÍ, dentro del clic — y el usuario ya sabe para qué lo pulsó.
+  const permiso = await pedirPermisoNotificaciones();
+  if (permiso === "granted") {
+    await mostrarAvisoLocal("Avisos activados", "Así se verán las notificaciones del Gestor.");
+  } else {
+    avisar("No se activaron los avisos. La app sigue funcionando igual.");
+  }
+  await pintarEstadoAvisos();
+});</code></pre>
+    </div>
+
+    <h2 class="section-title"><span class="num-badge">3</span>De generateSW a InjectManifest</h2>
+    <div class="body-text"><p>En la Sesión 23, Workbox <i>generaba</i> el Service Worker completo a partir de una receta (<code>generateSW</code>). Eso es cómodo mientras lo que necesitas es precaché y rutas. Pero un manejador de <code>push</code>, un <code>notificationclick</code> o un <code>sync</code> son lógica tuya, y una receta de configuración no sabe escribirlos. Con <b>InjectManifest</b> el reparto se invierte: <b>tú escribes</b> el Service Worker (<code>sw-propio.js</code>) y Workbox solo hace lo que nadie quiere hacer a mano: calcular la lista de archivos con sus hashes y pegarla donde tú indiques.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>workbox-config.js</div>
+      <pre><code>module.exports = {
+  globDirectory: '.',
+  globPatterns: [
+    'index.html',
+    'manifest.json',
+    'css/*.css',
+    '*.js',
+    'icons/*.png',
+  ],
+  // sw-propio.js es el CÓDIGO FUENTE del SW: no debe precachearse a sí mismo.
+  globIgnores: ['node_modules/**/*', 'servidor/**/*', 'lib/**/*', 'workbox-config.js', 'sw.js', 'sw-propio.js', 'package*.json'],
+  swSrc: 'sw-propio.js',
+  swDest: 'sw.js',
+};</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Fíjate en <code>globIgnores</code>: incluye a <code>sw-propio.js</code>. Es el código <i>fuente</i> del Service Worker; si entrara en la lista de precaché, el SW se precachearía a sí mismo. Y el archivo que el navegador registra sigue siendo <code>sw.js</code> —el que sale del comando—, así que <code>app.js</code> no cambia.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (arranque)</div>
+      <pre><code>// Workbox cargado desde archivos LOCALES (carpeta lib/), no desde un CDN:
+// así el SW arranca igual sin conexión.
+importScripts("lib/workbox-v7.4.1/workbox-sw.js");
+workbox.setConfig({ modulePathPrefix: "lib/workbox-v7.4.1/", debug: false });
+
+// IMPORTANTE: leer TODOS los módulos aquí, en el nivel superior. Cada acceso
+// (workbox.precaching, workbox.routing…) dispara un importScripts, y
+// importScripts solo se permite mientras el SW se está instalando/evaluando.
+const { precacheAndRoute, cleanupOutdatedCaches } = workbox.precaching;
+const { registerRoute } = workbox.routing;
+const { CacheFirst, NetworkFirst } = workbox.strategies;
+const { ExpirationPlugin } = workbox.expiration;
+
+self.skipWaiting();
+workbox.core.clientsClaim();
+cleanupOutdatedCaches();
+precacheAndRoute(self.__WB_MANIFEST); // ← aquí Workbox inyecta la lista
+
+registerRoute(
+  ({ url }) =&gt; url.pathname.startsWith("/icons/"),
+  new CacheFirst({
+    cacheName: "imagenes",
+    plugins: [new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 30 })],
+  })
+);
+registerRoute(({ url }) =&gt; url.pathname.startsWith("/api/"), new NetworkFirst({ cacheName: "api-tareas" }));</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Tres detalles que costaron tiempo al construir el ejemplo, y que conviene saber de antemano:</p></div>
+    <ul class="clean">
+      <li><b>Workbox desde archivos locales, no desde un CDN.</b> El comando <code>npx workbox-cli copyLibraries lib</code> copia las bibliotecas a <code>lib/</code>. Así el Service Worker arranca igual sin conexión. (De la carpeta copiada se dejaron solo los seis módulos que se usan: pasó de 1,8 MB a unos 28 KB.)</li>
+      <li><b>Los módulos se leen en el nivel superior.</b> Cada acceso a <code>workbox.precaching</code>, <code>workbox.routing</code>… dispara un <code>importScripts</code>, y <code>importScripts</code> solo está permitido mientras el Service Worker se evalúa o instala. Si lees <code>workbox.strategies</code> dentro de un evento, falla.</li>
+      <li><b>El marcador debe aparecer una sola vez.</b> Mi primer comando falló con <code>Please ensure that your 'swSrc' file contains only one match for the following: self.__WB_MANIFEST</code>… porque yo mismo había escrito ese texto en un <i>comentario</i>. Workbox busca el texto, no entiende de comentarios.</li>
+    </ul>
+    <div class="term-box"><span class="prompt">$</span> npx workbox-cli injectManifest workbox-config.js<br>
+The service worker file was written to sw.js<br>
+<b>The service worker will precache 14 URLs, totaling 57 kB.</b></div>
+    <div class="body-text" style="margin-top:1em;"><p>La regla de oro no cambia: <b>cada vez que modifiques <code>sw-propio.js</code> o cualquier archivo precacheado, vuelve a correr el comando</b>. Si no, el navegador seguirá sirviendo el <code>sw.js</code> viejo con las sumas de verificación viejas.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">4</span>Push: cómo viaja un mensaje desde el servidor</h2>
+    <div class="body-text"><p>El navegador no deja que un servidor lo llame directamente: casi ningún teléfono tiene una dirección pública. En su lugar, cada navegador mantiene una conexión permanente con <b>su propio servicio de push</b> (Chrome usa los servidores de Google; Firefox, los de Mozilla). Tu servidor solo habla con ese intermediario:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>Flujo de un push</div>
+      <pre><code>1. La página pide permiso y llama pushManager.subscribe({ applicationServerKey: CLAVE_PÚBLICA_VAPID })
+2. El servicio de push responde con una SUSCRIPCIÓN: { endpoint, keys: { p256dh, auth } }
+3. La página envía esa suscripción a TU servidor (POST /api/suscribir) y él la guarda
+4. Cuando quiere avisar, tu servidor firma una petición con su clave PRIVADA VAPID,
+   cifra el mensaje con las claves de la suscripción y hace POST al endpoint
+5. El servicio de push entrega el mensaje al navegador, que despierta al Service Worker
+6. El evento "push" del SW muestra la notificación</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><b>VAPID</b> es la identidad de tu servidor: un par de claves. La pública se le entrega al navegador al suscribir; la privada firma cada envío para que el servicio de push sepa que el mensaje viene de quien dice. El mensaje viaja cifrado de extremo a extremo (el intermediario no puede leerlo), con un límite de unos 4 KB. La clave privada <b>nunca</b> sale del servidor ni se sube a Git.</p></div>
+    <h3 class="sub-title">En la página: suscribirse</h3>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+      <pre><code>/** La clave pública VAPID llega en base64url; PushManager la quiere en bytes. */
+export function urlBase64ABytes(base64url) {
+  const relleno = "=".repeat((4 - (base64url.length % 4)) % 4);
+  const b64 = (base64url + relleno).replace(/-/g, "+").replace(/_/g, "/");
+  const binario = atob(b64);
+  return Uint8Array.from(binario, (c) =&gt; c.charCodeAt(0));
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+      <pre><code>/** Suscribe este navegador a push y envía la suscripción al servidor. */
+export async function suscribirAPush() {
+  const reg = await navigator.serviceWorker.ready;
+  if (!("pushManager" in reg)) throw new Error("push-no-soportado");
+  const { clave } = await (await fetch("/api/clave-publica")).json();
+  const suscripcion = await reg.pushManager.subscribe({
+    userVisibleOnly: true, // obligatorio: cada push debe mostrar una notificación
+    applicationServerKey: urlBase64ABytes(clave),
+  });
+  const resp = await fetch("/api/suscribir", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(suscripcion.toJSON()),
+  });
+  if (!resp.ok) throw new Error("El servidor no guardó la suscripción (" + resp.status + ")");
+  return suscripcion;
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p><code>userVisibleOnly: true</code> es obligatorio en Chrome y es un compromiso: <i>cada</i> push que llegue debe terminar en una notificación visible. Por eso el manejador del Service Worker mete <code>showNotification</code> dentro de <code>event.waitUntil()</code>: si el SW termina sin mostrar nada, Chrome muestra por ti una notificación genérica («este sitio se actualizó en segundo plano») y, si se repite, puede revocar el permiso (comportamiento documentado por Google; no lo provoqué en la prueba).</p></div>
+    <h3 class="sub-title">En el Service Worker: recibir y mostrar</h3>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (push)</div>
+      <pre><code>// ── Push: llega un mensaje del servidor aunque la app esté cerrada ─────────
+self.addEventListener("push", (event) =&gt; {
+  let datos = { titulo: "Gestor de Tareas", cuerpo: "Tienes novedades.", url: "/index.html" };
+  try {
+    if (event.data) datos = { ...datos, ...event.data.json() };
+  } catch {
+    if (event.data) datos.cuerpo = event.data.text(); // el mensaje no era JSON
+  }
+  // userVisibleOnly:true (al suscribir) OBLIGA a mostrar una notificación en
+  // cada push; por eso va dentro de waitUntil, siempre.
+  event.waitUntil(
+    self.registration.showNotification(datos.titulo, {
+      body: datos.cuerpo,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: datos.tag ?? "gestor-aviso", // misma etiqueta = reemplaza, no apila
+      data: { url: datos.url },
+    })
+  );
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>El <code>try/catch</code> no es adorno: un push puede traer JSON, texto plano o nada. Un manejador que lanza una excepción con un mensaje inesperado termina sin notificación, y eso viola el compromiso de <code>userVisibleOnly</code>.</p></div>
+    <h3 class="sub-title">En el servidor: firmar, cifrar y enviar</h3>
+    <div class="body-text"><p>El servidor de ejemplo (carpeta <code>servidor/</code>, unas 140 líneas) usa solo el módulo <code>http</code> de Node y la biblioteca <code>web-push</code>. Hace tres cosas: servir los archivos del Gestor, gestionar suscripciones y push, y recibir las tareas del Background Sync. Es código de enseñanza: sin autenticación, sin base de datos real, sin HTTPS. Las partes de push:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>servidor/server.js (claves VAPID)</div>
+      <pre><code>// ── Claves VAPID: identifican a TU servidor ante el servicio de push ────────
+// Se generan una sola vez y se guardan. La PRIVADA no sale nunca de este
+// archivo (y no se sube a Git); la PÚBLICA sí se entrega al navegador.
+let claves;
+if (fs.existsSync(ARCHIVO_CLAVES)) {
+  claves = JSON.parse(fs.readFileSync(ARCHIVO_CLAVES, "utf8"));
+} else {
+  claves = webpush.generateVAPIDKeys();
+  fs.writeFileSync(ARCHIVO_CLAVES, JSON.stringify(claves, null, 2));
+  console.log("Claves VAPID generadas en claves-vapid.json");
+}
+// El "subject" debe ser un mailto: o una URL tuya; el servicio de push lo usa para contactarte.
+webpush.setVapidDetails("mailto:tu-correo@ejemplo.com", claves.publicKey, claves.privateKey);</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>servidor/server.js (enviar)</div>
+      <pre><code>  if (req.method === "POST" &amp;&amp; ruta === "/api/enviar-prueba") {
+    const { titulo = "Gestor de Tareas", cuerpo = "Mensaje de prueba desde el servidor", url = "/index.html" } = await leerCuerpo(req);
+    const mensaje = JSON.stringify({ titulo, cuerpo, url });
+    const resultado = { enviados: 0, fallidos: 0, eliminadas: 0 };
+    for (const sub of [...datos.suscripciones]) {
+      try {
+        await webpush.sendNotification(sub, mensaje, { TTL: 60 });
+        resultado.enviados++;
+      } catch (err) {
+        resultado.fallidos++;
+        // 404/410: la suscripción ya no existe (el usuario revocó el permiso o
+        // desinstaló). Hay que borrarla, o se acumulan suscripciones muertas.
+        if (err.statusCode === 404 || err.statusCode === 410) {
+          datos.suscripciones = datos.suscripciones.filter((s) =&gt; s.endpoint !== sub.endpoint);
+          resultado.eliminadas++;
+        } else {
+          console.error("Error al enviar push:", err.statusCode ?? "", err.message);
+        }
+      }
+    }
+    guardarDatos(datos);
+    return responder(res, 200, resultado);
+  }</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Observa el manejo de <code>404</code> y <code>410</code>: significan «esta suscripción ya no existe» (el usuario revocó el permiso, desinstaló o el navegador la caducó). Hay que borrarla, o el servidor seguirá enviando a destinatarios muertos para siempre.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">5</span>El clic en la notificación</h2>
+    <div class="body-text"><p>Una notificación que no hace nada al tocarla es una molestia. El evento <code>notificationclick</code> ocurre en el Service Worker (la página puede estar cerrada), y lo habitual es: cerrar la notificación, buscar una ventana de la app ya abierta y enfocarla, y solo si no hay ninguna, abrir una nueva.</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (clic)</div>
+      <pre><code>// ── Clic en la notificación: enfocar la app abierta, o abrirla ─────────────
+self.addEventListener("notificationclick", (event) =&gt; {
+  event.notification.close();
+  const destino = new URL(event.notification.data?.url ?? "/index.html", self.location.origin).href;
+  event.waitUntil(
+    (async () =&gt; {
+      const ventanas = await clients.matchAll({ type: "window", includeUncontrolled: true });
+      const abierta = ventanas.find((v) =&gt; new URL(v.url).origin === self.location.origin);
+      if (abierta) return abierta.focus();
+      return clients.openWindow(destino);
+    })()
+  );
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>La dirección de destino viaja en <code>data.url</code>, que se fijó al mostrar la notificación. Así un aviso de «Tareas sincronizadas» y uno de «Recordatorio» pueden llevar a lugares distintos con el mismo manejador.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">6</span>Background Sync: la bandeja de salida</h2>
+    <div class="body-text"><p>Hasta aquí el Gestor guarda todo en el dispositivo (IndexedDB), pero nunca lo envía a ninguna parte. Hoy cada tarea nueva también debe llegar a un servidor, <b>sin que la acción del usuario dependa de la red</b>. El patrón se llama <b>bandeja de salida</b> (<i>outbox</i>):</p></div>
+    <ol style="margin:.4em 0 1em 1.4em; line-height:1.55;">
+      <li>La tarea se guarda en IndexedDB como siempre y se pinta en pantalla.</li>
+      <li>Además se anota un «cambio pendiente» en un almacén nuevo, <code>outbox</code>.</li>
+      <li>Se le pide al navegador una sincronización: <code>registration.sync.register("sync-tareas")</code>.</li>
+      <li>Cuando el navegador considera que hay red, despierta al Service Worker con el evento <code>sync</code>, y este envía lo que haya en la bandeja y borra lo que se confirmó.</li>
+    </ol>
+    <h3 class="sub-title">Nueva versión de la base de datos</h3>
+    <div class="body-text"><p>El almacén <code>outbox</code> no existe en la base de la Sesión 22. Agregarlo exige subir <code>VERSION_DB</code> a 2 y escribir la migración <b>por tramos</b>, de modo que quien ya tenía la versión 1 conserve sus tareas y quien instala por primera vez ejecute ambos tramos:</p></div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js (migración)</div>
+      <pre><code>    peticion.onupgradeneeded = (event) =&gt; {
+      const db = event.target.result;
+      // Las migraciones se escriben por TRAMOS según la versión de la que se
+      // viene (Sesión 22): quien ya tenía la v1 conserva sus tareas y solo
+      // recibe lo nuevo; quien instala por primera vez ejecuta ambos tramos.
+      if (event.oldVersion &lt; 1) {
+        const store = db.createObjectStore("tareas", { keyPath: "id", autoIncrement: true });
+        store.createIndex("porPrioridad", "prioridad", { unique: false });
+        store.createIndex("porTitulo", "titulo", { unique: true });
+      }
+      if (event.oldVersion &lt; 2) {
+        // La clave es un UUID que genera la app (no autoIncrement): el servidor
+        // lo usa para no duplicar un cambio si el envío se reintenta.
+        db.createObjectStore("outbox", { keyPath: "idCambio" });
+      }
+    };</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>La clave del almacén es un UUID que genera la app (<code>keyPath: "idCambio"</code>), no un número automático. Se verá enseguida por qué.</p></div>
+    <h3 class="sub-title">En la página: anotar y pedir la sincronización</h3>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sync.js (fragmento)</div>
+      <pre><code>/** Anota un cambio pendiente. Devuelve el idCambio (UUID). */
+export function encolarCambio(db, tipo, datos) {
+  const cambio = { idCambio: crypto.randomUUID(), tipo, datos, creadoEn: Date.now() };
+  return new Promise((resolve, reject) =&gt; {
+    const tx = db.transaction("outbox", "readwrite");
+    tx.objectStore("outbox").add(cambio);
+    tx.oncomplete = () =&gt; resolve(cambio.idCambio);
+    tx.onerror = () =&gt; reject(tx.error);
+  });
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sync.js (fragmento)</div>
+      <pre><code>/** Pide la sincronización. Devuelve "segundo-plano" si el navegador se encargará
+ *  (aunque cierres la pestaña) o "desde-la-pagina" si hubo que enviarla aquí
+ *  (puede lanzar si el servidor no responde: la entrada sigue en la bandeja). */
+export async function pedirSincronizacion(db) {
+  if (haySyncEnSegundoPlano()) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      await reg.sync.register(ETIQUETA); // registrar dos veces la misma etiqueta = una sola tarea
+      return "segundo-plano";
+    } catch {
+      // Tener SyncManager no basta: register() falla (NotAllowedError) si el
+      // usuario bloqueó la sincronización en segundo plano para este sitio.
+    }
+  }
+  // Plan B (Safari, Firefox, o permiso bloqueado): solo funciona mientras la pestaña siga abierta.
+  await vaciarDesdeLaPagina(db);
+  return "desde-la-pagina";
+}</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Hay <b>dos</b> razones para caer al plan B, no una. La primera es obvia: Safari y Firefox no tienen <code>SyncManager</code>. La segunda se descubrió al probar: aun teniéndolo, <code>register()</code> lanza <code>NotAllowedError</code> si el permiso de sincronización en segundo plano está bloqueado para el sitio. El <code>catch</code> convierte ese fallo en el mismo plan B, en vez de dejar la tarea pendiente para siempre.</p></div>
+    <h3 class="sub-title">En el Service Worker: el evento sync</h3>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (sincronización)</div>
+      <pre><code>async function vaciarBandeja() {
+  const db = await abrirDB();
+  const pendientes = await pedir(db.transaction("outbox").objectStore("outbox").getAll());
+  let enviados = 0;
+  for (const cambio of pendientes) {
+    const resp = await fetch("/api/tareas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cambio),
+    });
+    // Si falla, lanzamos: el navegador reintentará (con espera creciente).
+    if (!resp.ok) throw new Error("El servidor respondió " + resp.status);
+    // Se borra cada entrada apenas se confirma, no al final: si el siguiente
+    // falla, no se reenvía lo que ya llegó.
+    await pedir(db.transaction("outbox", "readwrite").objectStore("outbox").delete(cambio.idCambio));
+    enviados++;
+  }
+  db.close();
+  return enviados;
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (evento)</div>
+      <pre><code>self.addEventListener("sync", (event) =&gt; {
+  if (event.tag === "sync-tareas") {
+    event.waitUntil(vaciarBandeja().then(avisarDeSincronizacion));
+  }
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>Cuatro decisiones de diseño, cada una con una razón:</p></div>
+    <ul class="clean">
+      <li><b>Lanzar para reintentar.</b> Si <code>fetch</code> falla o el servidor responde con error, el manejador lanza una excepción. Esa promesa rechazada es la señal para que el navegador programe otro intento más tarde, con esperas cada vez mayores. El navegador decide cuántos intentos y cuándo; no es un servicio garantizado.</li>
+      <li><b>Borrar cada entrada apenas se confirma</b>, no al final. Si la tercera falla, las dos primeras no se reenvían en el reintento.</li>
+      <li><b>Idempotencia.</b> Aun así, un envío puede llegar al servidor y que la respuesta se pierda: el SW cree que falló y reenvía. Por eso cada cambio lleva su UUID y el servidor ignora los repetidos (<code>"duplicado": true</code> en la salida de abajo). Sin esto, un reintento duplica tareas.</li>
+      <li><b>Avisar por notificación solo si nadie mira.</b> Si hay una ventana visible, basta con un mensaje en pantalla; la notificación del sistema se reserva para cuando el usuario no está en la app.</li>
+    </ul>
+    <h3 class="sub-title">Lo que ve el usuario</h3>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (al crear una tarea)</div>
+      <pre><code>  // Sesión 26: la tarea ya está guardada en el dispositivo. Ahora se anota para
+  // enviarla al servidor cuando se pueda — sin bloquear al usuario.
+  await encolarCambio(db, "crear-tarea", { titulo: tareaNueva.titulo, prioridad: tareaNueva.prioridad });
+  await actualizarEstadoSync();
+  try {
+    await pedirSincronizacion(db);
+  } catch (err) {
+    console.warn("No se pudo sincronizar todavía:", err.message);
+  }
+  await actualizarEstadoSync();
+});</code></pre>
+    </div>
+    <div class="body-text" style="margin-top:1em;"><p>La línea de estado (<code>☁ Todo sincronizado…</code> / <code>☁ 1 cambio(s) pendiente(s)…</code>) cuenta lo que hay en la bandeja. Un sistema que acepta trabajo «para después» sin mostrar qué quedó pendiente es un sistema en el que nadie confía.</p></div>
+
+    <h2 class="section-title"><span class="num-badge">7</span>Verificado en Chromium</h2>
+    <div class="body-text"><p>Cada línea de abajo es salida literal de los scripts de prueba (Playwright, Chromium, servidor Node real en el puerto 3100). Se partió de un <code>.zip</code> recién descomprimido, con <code>npm install</code> en <code>servidor/</code>.</p></div>
+    <h3 class="sub-title">Migración, Service Worker y sincronización</h3>
+    <div class="term-box"><span class="prompt">$</span> node test_s26.js<br>
+A) stores tras migrar la v1: {"version":2,"stores":["outbox","tareas"]} (la tarea de la versión 1 sigue en pantalla)<br>
+B) SW controla la página: true | cachés: precaché con 14 entradas<br>
+B) SIN CONEXIÓN → ☁ 1 cambio(s) pendiente(s) de enviar.<br>
+B) outbox: [{"tipo":"crear-tarea","titulo":"Comprar pliegos de cartulina","idCambioLen":36}]<br>
+B) 5 s después de volver la red y el servidor, ¿llegó sola la tarea? → <b>false</b><br>
+B) tras ServiceWorker.dispatchSyncEvent → true<br>
+B) estado tras sync: ☁ Todo sincronizado con el servidor. | aviso: Se sincronizaron 1 cambio(s) con el servidor.<br>
+B) reenvío del mismo idCambio → {"ok":true,<b>"duplicado":true</b>} | total en servidor: 1<br>
+B) servidor caído, red "en línea" → ☁ 1 cambio(s) pendiente(s) de enviar. | outbox: 1<br>
+B) servidor de vuelta + Sync → servidor tiene: ["Comprar pliegos de cartulina","Tarea para reintento"] | ☁ Todo sincronizado con el servidor.<br>
+C) (sin SyncManager) offline → ☁ 1 cambio(s) pendiente(s) de enviar (este navegador no tiene Background Sync…)<br>
+C) tras evento online → servidor + 1 | ☁ Todo sincronizado con el servidor.<br>
+D) permiso por defecto: default | texto: Avisos sin activar.<br>
+E) register() con background-sync denegado: NotAllowedError: Permission denied.<br>
+E) servidor + 1 | ☁ Todo sincronizado con el servidor.</div>
+    <div class="win-box"><b>Qué demuestra:</b> (1) la migración conserva los datos de la versión 1 y crea <code>outbox</code>; (2) una tarea creada sin conexión queda anotada y visible como pendiente; (3) al dispararse el evento <code>sync</code> llega al servidor y la bandeja se vacía; (4) un reenvío del mismo cambio no se duplica; (5) si el servidor está caído, la entrada <b>no se pierde</b> y llega cuando vuelve; (6) sin <code>SyncManager</code>, o con el permiso bloqueado, el plan B envía desde la página.</div>
+    <div class="warn-box"><b>Dos cosas que esta prueba no es.</b> (1) El evento <code>sync</code> se disparó con <code>ServiceWorker.dispatchSyncEvent</code>, el mismo mecanismo que usa el botón <i>Sync</i> del panel Application → Background Sync de las DevTools. Cinco segundos después de «volver la red» el navegador <b>no</b> había reintentado por su cuenta: sus reintentos automáticos se espacian en minutos y no medí cuánto. (2) «Sin conexión» se simuló apagando el servidor y activando el modo sin red en la página; no se cortó la conexión de un dispositivo real.</div>
+    <h3 class="sub-title">Notificaciones, push y clic</h3>
+    <div class="term-box"><span class="prompt">$</span> node test_s26.js (continuación)<br>
+B) permiso inicial: default | Avisos sin activar.<br>
+B) notificaciones tras activar avisos: [{"title":"Avisos activados","tag":"gestor-aviso","url":"/index.html"}]<br>
+B) tras push inyectado (JSON): + {"title":"Recordatorio","body":"Tienes 2 tareas pendientes","tag":"recordatorio","url":"/index.html?desde=push"}<br>
+B) tras push con texto plano: {"title":"Gestor de Tareas","body":"texto plano, no JSON","tag":"gestor-aviso"} <i>(reemplazó a «Avisos activados»: misma tag)</i><br>
+B) tras 2º push, misma tag «recordatorio»: body "Ahora son 3" <i>(reemplazó al anterior, no se apiló)</i><br>
+B) notificationclick → {"habia":1,"quedan":0} (la notificación se cierra)<br>
+B) sin ventanas visibles (simulado) → [{"title":"Tareas sincronizadas","body":"2 tareas llegaron al servidor."}]<br>
+B) con la ventana visible → notificaciones gestor-sync: 0</div>
+    <div class="win-box"><b>Qué demuestra:</b> el manejador de <code>push</code> muestra la notificación tanto con JSON como con texto plano; <code>tag</code> reemplaza en vez de apilar; el clic cierra la notificación; y la notificación de sincronización solo aparece cuando no hay ventana visible.</div>
+    <div class="warn-box"><b>Cómo se inyectó cada cosa, sin esconder nada.</b> El push se entregó con <code>ServiceWorker.deliverPushMessage</code> de CDP, que equivale al botón <i>Push</i> de Application → Service Workers: <b>se salta el servicio de push</b>, así que prueba nuestro manejador pero no la entrega real. El clic se simuló despachando un <code>NotificationEvent</code> dentro del Service Worker: no se tocó una notificación de verdad. Y «sin ventanas visibles» se simuló reemplazando <code>clients.matchAll</code> dentro del SW, porque Chromium sin pantalla siempre considera visible la página.</div>
+    <h3 class="sub-title">El intento de suscripción real</h3>
+    <div class="term-box">B) intento de suscripción push real → aviso: "El servicio de push del navegador no respondió (¿sin red, o navegador sin servicio de push?)."<br>
+console: Chrome currently does not support the Push API in incognito mode (https://crbug.com/401439)…</div>
+    <div class="body-text" style="margin-top:1em;"><p>Esto <b>no es un éxito</b>: el <code>subscribe()</code> real falló. El contexto de Playwright es equivalente a una ventana de incógnito, donde Chrome no soporta Push. Lo intenté también en un perfil persistente: el navegador intentó conectar con servidores de Google (<code>android.clients.google.com</code>, <code>accounts.google.com</code>), el entorno denegó esas conexiones y la prueba no llegó a terminar. Lo útil que sí deja el intento es que <code>describirErrorPush</code> tradujo el <code>AbortError</code> a un mensaje comprensible en vez de dejar la interfaz colgada.</p></div>
+    <h3 class="sub-title">El servidor, verificado por separado</h3>
+    <div class="body-text"><p>Como no hay servicio de push, se verificó la parte del servidor contra un «servicio de push» falso: un servidor HTTPS local al que apunta una suscripción fabricada con claves propias. Así se puede ver exactamente lo que Chrome o Firefox recibirían, y descifrarlo con las claves del «navegador»:</p></div>
+    <div class="term-box"><span class="prompt">$</span> node test_push_servidor.js<br>
+suscribir: {"status":201,"json":{"ok":true,"total":1}}<br>
+suscripción incompleta: {"status":400,"json":{"error":"suscripción incompleta"}}<br>
+enviar-prueba: {"status":200,"json":{"enviados":1,"fallidos":0,"eliminadas":0}}<br>
+cabeceras: {"content-encoding":"aes128gcm","ttl":"60","content-type":"application/octet-stream","authorization":"vapid t=&lt;JWT&gt;, k=&lt;clave pública&gt;"}<br>
+JWT VAPID: header {"typ":"JWT","alg":"ES256"} | claims {"aud":"https://localhost:3104","exp":…,"sub":"mailto:tu-correo@ejemplo.com"}<br>
+k == clave pública del servidor: true<br>
+firma ES256 del JWT válida: <b>true</b><br>
+cuerpo descifrado con las claves del "navegador": {"titulo":"Recordatorio","cuerpo":"Tienes 2 tareas","url":"/index.html"}<br>
+bytes en la red: 175<br>
+con endpoint que responde 410: {"status":200,"json":{"enviados":0,"fallidos":1,"eliminadas":1}}<br>
+suscripciones restantes: 0</div>
+    <div class="win-box"><b>Qué demuestra:</b> el servidor rechaza suscripciones incompletas; firma con VAPID (la firma ES256 verifica con la clave pública); cifra el mensaje con <code>aes128gcm</code> de modo que solo se lee con las claves de la suscripción; y elimina las suscripciones muertas cuando el servicio responde 410.</div>
+    <div class="warn-box"><b>La cadena completa nunca se recorrió.</b> Verificamos el manejador del SW con un push inyectado, y el servidor con un destinatario falso, pero <b>no</b> el eslabón del medio: que el servicio de push real de Google o Mozilla acepte esa petición y la entregue. Para ese eslabón, la única prueba válida es la tuya, en un navegador de escritorio normal (no incógnito) con acceso a Internet.</div>
+
+    <h2 class="section-title"><span class="num-badge">8</span>Pruébalo tú</h2>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>Terminal</div>
+      <pre><code>cd servidor
+npm install
+node server.js
+# Abre http://localhost:3000 en Chrome o Edge, en una ventana normal (no incógnito)</code></pre>
+    </div>
+    <ul class="clean">
+      <li><b>Avisos locales:</b> pulsa «🔔 Activar avisos» y acepta. Debe aparecer «Avisos activados».</li>
+      <li><b>Push real:</b> pulsa «📡 Suscribir a push» y luego «✉ Enviar push de prueba». Si la suscripción falla, lee el mensaje: casi siempre es incógnito o falta de Internet.</li>
+      <li><b>Push sin servidor:</b> DevTools → Application → Service Workers → campo <i>Push</i> → botón <i>Push</i>. Prueba tu manejador sin depender del servicio de push.</li>
+      <li><b>Sincronización:</b> DevTools → Network → <i>Offline</i>, crea una tarea (aparece «pendiente»), vuelve a <i>Online</i>. Para forzar el evento: Application → Background Sync → escribe <code>sync-tareas</code> → <i>Sync</i>.</li>
+      <li><b>En un teléfono:</b> aplican las mismas opciones HTTPS de la <a href="../../Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2024%20-%20APIs%20de%20dispositivo%20(1%20de%202)%20-%20camara%20y%20ubicacion/guia.html">Sesión 24, sección 9</a> (no probadas desde el entorno de esta guía). En iOS, según la documentación de Apple, el push solo funciona con la app añadida a la pantalla de inicio; no se probó.</li>
+    </ul>
+
+    <h2 class="section-title"><span class="num-badge">9</span>Buen trato al usuario</h2>
+    <ul class="clean">
+      <li><b>Pide el permiso cuando el usuario entienda el beneficio</b>, no en la primera visita. Una tasa baja de «Permitir» y un «Bloquear» casi irreversible son el costo de preguntar mal.</li>
+      <li><b>Pocos avisos, y que importen.</b> Cada notificación innecesaria enseña al usuario a revocar el permiso de todas.</li>
+      <li><b>No pongas datos sensibles en el cuerpo del push.</b> Viaja cifrado, pero termina en la pantalla de bloqueo, a la vista de cualquiera.</li>
+      <li><b>Ofrece cómo desactivarlo</b> dentro de la app (el botón «Cancelar suscripción push» hace <code>unsubscribe()</code> y avisa al servidor).</li>
+      <li><b>Datos personales:</b> una suscripción push identifica un dispositivo. En Colombia aplica la Ley 1581 de 2012 de protección de datos personales; esta guía solo la menciona como orientación y no es asesoría legal.</li>
+    </ul>
+
+    <h2 class="section-title"><span class="num-badge">10</span>Actividades</h2>
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">1</div><h4>Avisos con permiso en contexto</h4></div>
+      <div class="meta-row">INDIVIDUAL · 30 MIN</div>
+      <p>Parte del checkpoint de la Sesión 25. Agrega <code>notificaciones.js</code> y la barra de avisos. Comprueba: (1) al cargar, <b>no</b> aparece ningún diálogo de permiso; (2) tras pulsar el botón y aceptar, se ve la notificación local; (3) si bloqueas el permiso en el candado del navegador y recargas, el texto de estado lo dice y el resto de la app sigue funcionando.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> captura de (2) y (3), y una frase: ¿por qué <code>denied</code> es casi definitivo y qué implica para el momento en que pides el permiso?</p>
+    </div>
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">2</div><h4>De generateSW a InjectManifest</h4></div>
+      <div class="meta-row">INDIVIDUAL · 40 MIN</div>
+      <p>Crea <code>sw-propio.js</code> con el precaché y las dos rutas (iconos y API), copia las bibliotecas con <code>copyLibraries</code>, cambia <code>workbox-config.js</code> y genera <code>sw.js</code>. Comprueba con DevTools (Application → Cache Storage) que el precaché tiene las mismas entradas que antes y que la app sigue funcionando sin conexión.</p>
+      <p style="margin-top:.8em;"><b>Para pensar:</b> provoca a propósito los dos errores de la sección 3 (escribe el marcador dos veces; lee <code>workbox.strategies</code> dentro de un evento). Anota el mensaje que sale en cada caso.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> el <code>sw.js</code> generado, el listado de Cache Storage y los dos mensajes de error.</p>
+    </div>
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">3</div><h4>La bandeja de salida, de punta a punta</h4></div>
+      <div class="meta-row">INDIVIDUAL · 60 MIN</div>
+      <p>Sube la base a la versión 2 con la migración por tramos, agrega <code>sync.js</code>, el manejador <code>sync</code> y el servidor de ejemplo. Verifica: (1) crear una tarea sin conexión muestra «pendiente»; (2) al volver la conexión y disparar <i>Sync</i> desde DevTools, llega al servidor (míralo en <code>http://localhost:3000/api/tareas</code>); (3) detén el servidor, crea otra tarea, dispara <i>Sync</i> y comprueba que sigue pendiente; reinicia el servidor y dispara de nuevo.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> las tres comprobaciones con captura, más la respuesta a: ¿qué pasaría sin el <code>idCambio</code> si la respuesta del servidor se pierde justo después de guardar?</p>
+    </div>
+    <div class="activity-card">
+      <div class="a-head"><div class="a-num">4</div><h4>Tu propia prueba de push real</h4></div>
+      <div class="meta-row">INDIVIDUAL · 30 MIN</div>
+      <p>En Chrome o Edge normal y con Internet, suscríbete a push y envía el push de prueba. Si funciona, repítelo con la pestaña cerrada (deja el navegador abierto). Si no funciona, usa el mensaje de <code>describirErrorPush</code> y la consola para encontrar por qué.</p>
+      <p style="margin-top:.8em;"><b>Entregable:</b> qué ocurrió y, si falló, la causa. Este es el único eslabón que esta guía no pudo verificar: tu resultado completa la cadena.</p>
+    </div>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Cierre: actualiza tu repositorio</h3>
+    <div class="code-block">
+      <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>Terminal</div>
+      <pre><code>echo "servidor/claves-vapid.json" >> .gitignore
+echo "servidor/datos.json" >> .gitignore
+git add .
+git commit -m "Avisos, push y Background Sync con bandeja de salida (InjectManifest)"
+git push</code></pre>
+    </div>
+    <div class="warn-box"><b>Antes del <code>git push</code>:</b> comprueba que <code>claves-vapid.json</code> no quedó dentro del commit. Es la clave privada de tu servidor; si se publica, cualquiera puede enviar push en tu nombre. (La carpeta <code>servidor/</code> trae su propio <code>.gitignore</code>; esta línea es una segunda red de seguridad.)</div>
+
+    <h2 class="section-title">Resumen de la sesión</h2>
+    <ul class="clean">
+      <li>Notification, Push y Background Sync son tres promesas distintas: mostrar, recibir del servidor y enviar diferido. Solo Notification es amplia; Push exige servidor y servicio de push; Background Sync es solo de Chromium.</li>
+      <li>El permiso se pide dentro de un clic y con contexto; <code>denied</code> es casi definitivo; la app funciona igual sin él.</li>
+      <li><code>InjectManifest</code> deja el Service Worker en tus manos y a Workbox solo la lista de precaché; el marcador debe aparecer una sola vez y el comando se reejecuta tras cada cambio.</li>
+      <li>Push: VAPID identifica al servidor, la suscripción identifica al dispositivo, el mensaje viaja cifrado, y <code>userVisibleOnly</code> obliga a mostrar siempre una notificación. Se borran las suscripciones que responden 404/410.</li>
+      <li>La bandeja de salida (<code>outbox</code>) hace que la acción del usuario nunca dependa de la red; lanzar una excepción pide reintento; el UUID por cambio evita duplicados; y hay plan B para Safari, Firefox y permiso bloqueado.</li>
+      <li>Verificado: notificaciones, manejador de push (con mensaje inyectado), clic, sincronización, reintento disparado a mano, migración, y el servidor por separado (VAPID y cifrado). <b>No verificado:</b> la entrega real por el servicio de push, un teléfono real, iOS, el reintento automático del navegador y la batería.</li>
+    </ul>
+
+    <h3 class="sub-title" style="margin-top:1.6em;">Cierre del Sub-bloque A</h3>
+    <div class="callout"><b>Esta sesión cierra el Sub-bloque A (fundamentos PWA).</b> El Gestor de Tareas queda con instalación, caché sin conexión, almacenamiento local cifrado, cámara, ubicación, sensores, avisos y sincronización en segundo plano. El Sub-bloque B aplica lo mismo al Atlas 3D: el espejo de esta sesión es la <a href="../../Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2037%20-%20Avisos%20y%20descargas%20en%20segundo%20plano%20en%20el%20proyecto/guia.html">Sesión 37</a>.</div>
+
+    <h2 class="section-title">Referencias</h2>
+    <div class="ref-list">
+      <div><b>[1]</b> MDN Web Docs, "Notifications API," "ServiceWorkerRegistration: showNotification()" y "Notification: permission," developer.mozilla.org.</div>
+      <div><b>[2]</b> MDN Web Docs, "Push API" y "PushManager: subscribe()," developer.mozilla.org.</div>
+      <div><b>[3]</b> MDN Web Docs, "Background Synchronization API" y "SyncManager," developer.mozilla.org.</div>
+      <div><b>[4]</b> IETF, RFC 8030 (Web Push), RFC 8291 (cifrado de mensajes Web Push) y RFC 8292 (VAPID), rfc-editor.org.</div>
+      <div><b>[5]</b> Google Chrome for Developers, "Workbox: InjectManifest" y "workbox-cli," developer.chrome.com/docs/workbox.</div>
+      <div><b>[6]</b> web-push (biblioteca para Node), github.com/web-push-libs/web-push.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Bloque PWA · Sesión 12 de 30</span>
+  </div>
+</div>
+</body>
+</html>

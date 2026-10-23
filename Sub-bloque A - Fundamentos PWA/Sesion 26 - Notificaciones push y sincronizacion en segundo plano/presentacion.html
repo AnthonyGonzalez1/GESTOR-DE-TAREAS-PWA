@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 26 · Notificaciones push y sincronización en segundo plano · Electiva - PWA</title>
+<link rel="stylesheet" href="../../css/uptc-theme.css">
+<style>
+  .recap-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:.7em; margin-top:.6em;}
+  .recap-card{border:1px solid var(--line); border-radius:10px; padding:.75em .85em; background:#fbfaf5;}
+  .recap-card .rn{font-size:.62em; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--gold-deep);}
+  .recap-card h4{font-family:var(--serif); font-size:.92em; margin:.2em 0 .25em; color:var(--ink);}
+  .recap-card p{font-size:.68em; color:#444; margin:0; line-height:1.35;}
+  .module-list{display:grid; gap:.55em; margin-top:.6em;}
+  .module-row{border:1px solid var(--line); border-radius:10px; padding:.65em .9em;}
+  .module-row .mtag{display:inline-block; font-size:.68em; font-weight:800; background:var(--gold-tint); border:1px solid var(--gold); color:var(--gold-deep); padding:.1em .55em; border-radius:6px; font-family:"Cascadia Code",Consolas,monospace; margin-bottom:.3em;}
+  .module-row p{margin:0; font-size:.74em; color:#444; line-height:1.35;}
+  .term-box{background:#1c1c1e; color:#cfcac0; border-radius:10px; padding:.85em 1.05em; font-size:.74em; font-family:"Cascadia Code",Consolas,monospace; line-height:1.55; margin-top:.6em; overflow-x:auto;}
+  .term-box .prompt{color:#6ad06a;}
+  .warn-box{border:1px solid #e0a800; background:#fff8e1; border-radius:10px; padding:.8em 1.05em; font-size:.78em; line-height:1.4;}
+  .warn-box b{color:#9a6b00;}
+  .recursos-box-slide{background:var(--gold-tint); border:1px solid var(--gold); border-left:6px solid var(--gold-dark); border-radius:12px; padding:1.1em 1.3em;}
+  .recursos-box-slide h4{font-family:var(--serif); font-size:1.05em; margin:0 0 .4em; color:var(--gold-deep);}
+  .recursos-box-slide a{font-weight:700; color:var(--ink);}
+  .recursos-box-slide .rb-desc{display:block; font-size:.84em; color:#444; margin-top:.35em; font-weight:400; line-height:1.4;}
+  .hash-table{font-size:.72em;}
+  .win-box{border:2px solid #2e7d32; background:#f1f9f1; border-radius:10px; padding:.8em 1.05em; font-size:.8em; line-height:1.45;}
+  .win-box b{color:#1b5e20;}
+  ol.steps{margin:.2em 0 0; padding-left:1.3em; font-size:.88em; line-height:1.45;}
+  ol.steps li{margin-bottom:.35em;}
+  .code-block.mid pre{padding:.5em 1.1em; line-height:1.4;}
+  .code-block.mid code{font-size:.8em;}
+  .code-block.wrap code{white-space:pre-wrap; word-break:break-word;}
+  .code-block.tight pre{padding:.4em 1em; line-height:1.2;}
+  .code-block.tight code{font-size:.66em;}
+  .mini-card span{display:block; color:#444; line-height:1.3;}
+  .flow-wrap{width:100%;}
+  svg.flow{width:100%; height:auto; display:block;}
+  svg.flow text{font-family:var(--sans); font-size:15px; fill:#1A1A1A;}
+  svg.flow .hd text{font-weight:700; font-size:16px;}
+  svg.flow .lbl{font-size:15px;}
+  svg.flow .hd .gold{fill:#FFCC29;}
+  svg.flow .num{font-size:13px; font-weight:800; fill:#FFCC29; font-family:var(--sans);}
+  .steps-flow .step-box{flex:1 1 0; min-width:0;}
+  .steps-flow .step-box span{display:block; overflow-wrap:anywhere;}
+  .steps-flow .step-box span b{display:inline; margin:0; font-size:inherit;}
+  .steps-flow .step-box span code{font-size:.92em;}
+  @media (max-width:800px){ .recap-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5c-1.6-1.2-4-1.7-6.5-1.7v13c2.5 0 4.9.5 6.5 1.7 1.6-1.2 4-1.7 6.5-1.7v-13c-2.5 0-4.9.5-6.5 1.7Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <div class="stage" id="stage">
+
+    <aside class="sidebar" id="sidebar">
+      <a class="side-brand" href="../../00%20-%20Pagina%20del%20Bloque%203.html" title="Volver al inicio del curso">
+        <img src="../../assets/uptc-blanco.svg" onerror="this.src='../../assets/uptc-color.svg'" alt="UPTC">
+        <div class="txt"><b>Electiva - PWA</b>Bloque PWA · Sesión 12 de 30</div>
+      </a>
+      <nav id="sideNav"></nav>
+      <div class="side-foot">
+        <a class="guide-link" href="guia.html"><svg><use href="#ic-book"/></svg><span>Guía de la sesión</span></a>
+        <div class="inst">UPTC · Facultad de Ingeniería</div>
+      </div>
+    </aside>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú"><svg><use href="#ic-chevron-left"/></svg></button>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="corner-cut"></div>
+        <div class="tb-section-name" id="tbSectionName">Portada</div>
+        <div class="tb-pills" id="tbPills"></div>
+      </div>
+
+      <div class="viewport" id="viewport">
+
+        <section class="slide slide--title active" data-section="portada" data-section-label="Portada">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="eyebrow">Electiva · PWA — Bloque PWA · Sesión 12 de 30</div>
+          <h1 style="font-size:3.1em;">Notificaciones push y<br>sincronización en<br>segundo plano</h1>
+          <div class="lead">Notification, Push y Background Sync — el Gestor aprende a hablarle al usuario y a terminar trabajo cuando ya no hay red ni pestaña abierta. Cierra el Sub-bloque A.</div>
+          <div class="meta">
+            <div><span>Asignatura</span>Electiva - PWA</div>
+            <div><span>Sesión</span>12 de 30 · Bloque PWA</div>
+            <div><span>Institución</span>UPTC</div>
+          </div>
+          <div class="title-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="160" r="150" fill="#FFF6DC"/><g transform="translate(180 150) scale(1.0)"><path d="M0 -62 c-34 0 -54 26 -54 60 v44 l-18 28 h144 l-18 -28 v-44 c0 -34 -20 -60 -54 -60z" transform="translate(0 0)" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5" stroke-linejoin="round"/><circle cx="0" cy="84" r="11" fill="#1A1A1A"/></g><circle cx="268" cy="100" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/><text x="268" y="106" text-anchor="middle" font-size="16" font-weight="700" fill="#1A1A1A">1</text><g transform="translate(250 240)"><g fill="none" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M-30 0 a30 30 0 0 1 54 -14"/><path d="M20 -24 l2 -14 l12 8"/><path d="M30 0 a30 30 0 0 1 -54 14"/><path d="M-20 24 l-2 14 l-12 -8"/></g></g><path d="M70 270 q-30 -60 10 -120" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/></svg>
+          </div>
+          <div class="title-goldbar"></div>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Objetivos de aprendizaje">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Objetivos de aprendizaje</h2>
+          <hr class="rule">
+          <ul class="clean" style="font-size:.98em;">
+            <li class="fragment"><b>Distinguir</b> la Notification API, la Push API y Background Sync: qué promete cada una, qué necesita y en qué navegadores existe.</li>
+            <li class="fragment"><b>Pedir</b> el permiso de notificaciones en contexto y mostrar avisos desde el Service Worker, con su clic.</li>
+            <li class="fragment"><b>Pasar</b> de <code>generateSW</code> a <code>InjectManifest</code> para escribir lógica propia dentro del Service Worker sin perder el precaché de Workbox.</li>
+            <li class="fragment"><b>Construir</b> una bandeja de salida con Background Sync que sobreviva a la falta de red, a los reintentos y a los envíos duplicados.</li>
+            <li class="fragment"><b>Explicar</b> qué parte del flujo de push se verificó aquí y cuál no se puede verificar sin un servicio de push real.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="bienvenida" data-section-label="Bienvenida" data-slide-label="Recursos de la sesión">
+          <div class="kicker">Antes de empezar</div>
+          <h2 class="slide-title">Recursos de esta sesión</h2>
+          <hr class="rule">
+          <div class="recursos-box-slide" style="margin-bottom:.7em;">
+            <h4>Descargar .zip — Checkpoint, cierre de la Sesión 25 (punto de partida)</h4>
+            <a href="recursos/gestor-de-tareas-sesion25.zip">gestor-de-tareas-sesion25.zip</a>
+            <span class="rb-desc">El Gestor de Tareas con Service Worker generado por Workbox, cámara, ubicación y sensores de movimiento. Hoy le agregamos avisos, push y sincronización en segundo plano.</span>
+          </div>
+          <div class="recursos-box-slide">
+            <h4>Descargar .zip — Versión terminada de la Sesión 26 (para comparar)</h4>
+            <a href="recursos/gestor-de-tareas-sesion26.zip">gestor-de-tareas-sesion26.zip</a>
+            <span class="rb-desc">Incluye el mini servidor Node de la carpeta <code>servidor/</code>. Intenta construirlo tú primero; úsalo para revisar tu trabajo, no para copiarlo.</span>
+          </div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s1" data-section-label="Tres APIs" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 01</div>
+            <h2>Tres APIs, tres promesas distintas</h2>
+            <p>Suelen aparecer juntas y se confunden con facilidad, pero resuelven problemas distintos.</p>
+            <div class="tb-preview"><span>Notification API</span><span>Push API</span><span>Background Sync</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><g transform="translate(90 150) scale(0.62)"><path d="M0 -62 c-34 0 -54 26 -54 60 v44 l-18 28 h144 l-18 -28 v-44 c0 -34 -20 -60 -54 -60z" transform="translate(0 0)" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5" stroke-linejoin="round"/><circle cx="0" cy="84" r="11" fill="#1A1A1A"/></g><rect x="160" y="140" width="80" height="58" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/><path d="M160 148 L200 178 L240 148" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linejoin="round"/><path d="M200 70 v46 m-14 -14 l14 14 l14 -14" fill="none" stroke="#FFCC29" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><g fill="none" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M288 170 a30 30 0 0 1 54 -14"/><path d="M338 146 l2 -14 l12 8"/><path d="M348 170 a30 30 0 0 1 -54 14"/><path d="M298 194 l-2 14 l-12 -8"/></g><path d="M40 250 h320" stroke="#B9B5AA" stroke-width="3" stroke-dasharray="3 8"/></svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s1" data-section-label="Tres APIs" data-slide-label="Hablar y terminar trabajo">
+          <div class="kicker">Tres APIs · 1.1</div>
+          <h2 class="slide-title">Hablarle al usuario y terminar trabajo</h2>
+          <hr class="rule">
+          <p style="font-size:.9em; margin:0 0 .7em; line-height:1.45;">Hasta ahora el Gestor solo hacía algo cuando el usuario tenía la pestaña abierta. Hoy se vuelve capaz de <b>hablarle</b> al usuario y de <b>terminar trabajo</b> cuando él ya no está mirando. Lo reparten tres APIs:</p>
+          <div class="grid-3">
+            <div class="card fragment"><h3>Notification API</h3><p><b>Mostrar.</b> Muestra una notificación del sistema. No necesita servidor.</p></div>
+            <div class="card fragment"><h3>Push API</h3><p><b>Recibir.</b> Recibe un mensaje que el <i>servidor</i> envía cuando quiere, incluso con la app cerrada.</p></div>
+            <div class="card fragment"><h3>Background Sync</h3><p><b>Enviar diferido.</b> Pospone un envío hasta que haya red, aunque se cierre la pestaña.</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s1" data-section-label="Tres APIs" data-slide-label="Tabla comparativa">
+          <div class="kicker">Tres APIs · 1.2</div>
+          <h2 class="slide-title">Las tres APIs, lado a lado</h2>
+          <hr class="rule">
+          <table class="uptc" style="font-size:.74em;">
+            <tr><th>API</th><th>Qué hace</th><th>¿Necesita servidor?</th><th>¿Funciona con la app cerrada?</th><th>Soporte (según MDN)</th></tr>
+            <tr><td><b>Notification API</b></td><td>Muestra una notificación del sistema</td><td>No</td><td>Solo si algo la dispara (p. ej. un push)</td><td>Amplio</td></tr>
+            <tr><td><b>Push API</b></td><td>Recibe un mensaje que el <i>servidor</i> envía cuando quiere</td><td><b>Sí</b>, con claves VAPID y un servicio de push del navegador</td><td>Sí: el navegador despierta al Service Worker</td><td>Chromium y Firefox; Safari en iOS solo para apps añadidas a la pantalla de inicio (documentación de Apple, no probado aquí)</td></tr>
+            <tr><td><b>Background Sync</b></td><td>Pospone un envío hasta que haya red, aunque se cierre la pestaña</td><td>Para recibir lo que se envía, sí</td><td>Sí</td><td><b>Solo Chromium</b> (Chrome, Edge). Ni Safari ni Firefox</td></tr>
+          </table>
+          <p class="fragment" style="font-size:.7em; color:var(--gray); font-style:italic; margin:.7em 0 0; line-height:1.4;">La columna de soporte resume las páginas de MDN consultadas para esta sesión; el soporte cambia con las versiones, así que antes de depender de una API de producción conviene revisar la tabla vigente.</p>
+        </section>
+
+        <section class="slide" data-section="s1" data-section-label="Tres APIs" data-slide-label="Qué se pudo comprobar">
+          <div class="kicker">Tres APIs · 1.3</div>
+          <h2 class="slide-title">Qué se pudo y qué no se pudo comprobar hoy</h2>
+          <hr class="rule">
+          <p style="font-size:.9em; margin:0 0 .6em;">Todo el código de esta guía se ejecutó en Chromium con Playwright.</p>
+          <div class="win-box fragment" style="font-size:.9em; margin-bottom:.6em;"><b>Se verificó:</b> la notificación local, el manejador de <code>push</code> del Service Worker (con un mensaje inyectado), el clic en la notificación, la bandeja de salida con Background Sync y su plan B y —por separado— que el servidor firma con VAPID y cifra el mensaje correctamente.</div>
+          <div class="warn-box fragment" style="font-size:.9em; margin-bottom:.6em;"><b>No se pudo verificar</b> la entrega real a través del servicio de push de Google: el entorno de pruebas no tiene acceso a esos servidores.</div>
+          <div class="callout fragment" style="font-size:.88em;">«Verificado» no siempre significa «real»: el push se inyectó, el evento de sincronización se disparó a mano y el clic se simuló. La sección 7 dice con exactitud cómo se hizo cada cosa.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s2" data-section-label="Permiso de avisos" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 02</div>
+            <h2>Notificaciones: pedir permiso con contexto</h2>
+            <p>Una notificación es una interrupción en el dispositivo del usuario, y el navegador no la permite sin su consentimiento.</p>
+            <div class="tb-preview"><span>Notification.permission</span><span>Dentro de un clic</span><span>Aviso local</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="160" r="120" fill="#FFF6DC"/><g transform="translate(200 150) scale(1.0)"><path d="M0 -62 c-34 0 -54 26 -54 60 v44 l-18 28 h144 l-18 -28 v-44 c0 -34 -20 -60 -54 -60z" transform="translate(0 0)" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5" stroke-linejoin="round"/><circle cx="0" cy="84" r="11" fill="#1A1A1A"/></g><circle cx="272" cy="236" r="32" fill="#1A1A1A"/><path d="M256 236l12 12 22 -24" stroke="#FFCC29" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s2" data-section-label="Permiso de avisos" data-slide-label="Tres estados, tres reglas">
+          <div class="kicker">Permiso · 2.1</div>
+          <h2 class="slide-title">Tres estados y tres reglas</h2>
+          <hr class="rule">
+          <div class="grid-3">
+            <div class="mini-card fragment"><b><code>"default"</code></b><span style="font-size:.78em;">Todavía no se le preguntó</span></div>
+            <div class="mini-card fragment"><b><code>"granted"</code></b><span style="font-size:.78em;">El usuario aceptó</span></div>
+            <div class="mini-card fragment"><b><code>"denied"</code></b><span style="font-size:.78em;">El usuario bloqueó</span></div>
+          </div>
+          <p style="font-size:.74em; color:var(--gray); font-style:italic; margin:.5em 0 .8em;"><code>Notification.permission</code> devuelve uno de estos tres valores. La Permissions API usa el nombre <code>prompt</code> para el primer estado; son el mismo concepto con dos nombres.</p>
+          <p style="font-size:.86em; margin:0 0 .3em;">Las reglas son las mismas de la Sesión 24:</p>
+          <ul class="clean" style="font-size:.9em;">
+            <li class="fragment"><b>Nunca al cargar la página.</b> Se pide dentro del clic de un botón («🔔 Activar avisos») que explica para qué sirve.</li>
+            <li class="fragment"><b><code>denied</code> es casi definitivo.</b> Desde el código no se puede volver a preguntar; el usuario tiene que cambiarlo en la configuración del sitio. Por eso conviene no gastar la única oportunidad en un momento absurdo.</li>
+            <li class="fragment"><b>La app debe funcionar igual sin el permiso.</b> Los avisos son un añadido, no la única vía.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="s2" data-section-label="Permiso de avisos" data-slide-label="Pedir el permiso">
+          <div class="kicker">Permiso · 2.2</div>
+          <h2 class="slide-title">Pedir el permiso, dentro del clic</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+            <pre><code>/** Pedir permiso. Solo llamar desde un gesto del usuario. */
+export async function pedirPermisoNotificaciones() {
+  if (!("Notification" in window)) return "no-soportado";
+  return Notification.requestPermission();
+}</code></pre>
+          </div>
+          <div class="code-block compact" style="margin-top:.3em;">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (fragmento)</div>
+            <pre><code>btnAvisos.addEventListener("click", async () =&gt; {
+  // Permiso pedido AQUÍ, dentro del clic — y el usuario ya sabe para qué lo pulsó.
+  const permiso = await pedirPermisoNotificaciones();
+  if (permiso === "granted") {
+    await mostrarAvisoLocal("Avisos activados", "Así se verán las notificaciones del Gestor.");
+  } else {
+    avisar("No se activaron los avisos. La app sigue funcionando igual.");
+  }
+  await pintarEstadoAvisos();
+});</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s2" data-section-label="Permiso de avisos" data-slide-label="mostrarAvisoLocal()">
+          <div class="kicker">Permiso · 2.3</div>
+          <h2 class="slide-title">Mostrar el aviso local: dos decisiones</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+            <pre><code>/** Notificación LOCAL (sin servidor): la muestra el propio SW.
+ *  Se usa registration.showNotification y no `new Notification()` porque este
+ *  último lanza TypeError en Chrome para Android. */
+export async function mostrarAvisoLocal(titulo, cuerpo, url = "/index.html") {
+  const reg = await navigator.serviceWorker.ready;
+  await reg.showNotification(titulo, {
+    body: cuerpo,
+    icon: "/icons/icon-192.png",
+    tag: "gestor-aviso",
+    data: { url },
+  });
+}</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.7em; font-size:.86em;"><b><code>showNotification</code>, no <code>new Notification()</code>:</b> según MDN, el constructor lanza <code>TypeError</code> en Chrome para Android, y solo <code>showNotification</code> funciona con la página cerrada. <b><code>tag</code> y <code>data</code>:</b> <code>tag</code> <i>reemplaza</i> una notificación con la misma etiqueta en vez de apilar; <code>data</code> viaja con la notificación hasta el clic.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s3" data-section-label="InjectManifest" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 03</div>
+            <h2>De generateSW a InjectManifest</h2>
+            <p>Un manejador de push, un notificationclick o un sync son lógica tuya, y una receta de configuración no sabe escribirlos.</p>
+            <div class="tb-preview"><span>sw-propio.js</span><span>workbox-config.js</span><span>self.__WB_MANIFEST</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><rect x="95" y="50" width="210" height="220" rx="14" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/><rect x="95" y="50" width="210" height="34" rx="14" fill="#1A1A1A"/><text x="200" y="185" text-anchor="middle" font-size="60" font-weight="700" fill="#1A1A1A" font-family="Consolas, monospace">{ }</text><path d="M125 110h110M125 230h150" stroke="#B9B5AA" stroke-width="5" stroke-linecap="round"/><circle cx="285" cy="236" r="26" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/><text x="285" y="243" text-anchor="middle" font-size="20" font-weight="700" fill="#1A1A1A">sw</text></svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s3" data-section-label="InjectManifest" data-slide-label="Quién escribe el SW">
+          <div class="kicker">InjectManifest · 3.1</div>
+          <h2 class="slide-title">Quién escribe el Service Worker</h2>
+          <hr class="rule">
+          <div class="grid-2">
+            <div class="card fragment"><h3><code>generateSW</code> (Sesión 23)</h3><p>Workbox <i>generaba</i> el Service Worker completo a partir de una receta. Es cómodo mientras lo que necesitas es precaché y rutas.</p></div>
+            <div class="card fragment"><h3><code>InjectManifest</code></h3><p>El reparto se invierte: <b>tú escribes</b> el Service Worker (<code>sw-propio.js</code>) y Workbox solo hace lo que nadie quiere hacer a mano: calcular la lista de archivos con sus hashes y pegarla donde tú indiques.</p></div>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.92em;">Un manejador de <code>push</code>, un <code>notificationclick</code> o un <code>sync</code> son lógica tuya: una receta de configuración no sabe escribirlos.</div>
+          <div class="callout fragment" style="margin-top:.7em; font-size:.92em;">El archivo que el navegador registra sigue siendo <code>sw.js</code> —el que sale del comando—, así que <code>app.js</code> no cambia.</div>
+        </section>
+
+        <section class="slide" data-section="s3" data-section-label="InjectManifest" data-slide-label="workbox-config.js">
+          <div class="kicker">InjectManifest · 3.2</div>
+          <h2 class="slide-title">workbox-config.js: sin precachear el propio SW</h2>
+          <hr class="rule">
+          <div class="code-block tight wrap">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>workbox-config.js</div>
+            <pre><code>module.exports = {
+  globDirectory: '.',
+  globPatterns: [
+    'index.html',
+    'manifest.json',
+    'css/*.css',
+    '*.js',
+    'icons/*.png',
+  ],
+  // sw-propio.js es el CÓDIGO FUENTE del SW: no debe precachearse a sí mismo.
+  globIgnores: ['node_modules/**/*', 'servidor/**/*', 'lib/**/*', 'workbox-config.js', 'sw.js', 'sw-propio.js', 'package*.json'],
+  swSrc: 'sw-propio.js',
+  swDest: 'sw.js',
+};</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.6em; font-size:.84em;">Fíjate en <code>globIgnores</code>: incluye a <code>sw-propio.js</code>, el código <i>fuente</i> del SW; si entrara en el precaché, el SW se precachearía a sí mismo.</div>
+        </section>
+
+        <section class="slide" data-section="s3" data-section-label="InjectManifest" data-slide-label="sw-propio.js: arranque">
+          <div class="kicker">InjectManifest · 3.3</div>
+          <h2 class="slide-title">sw-propio.js (arranque)</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (arranque)</div>
+            <pre><code>// Workbox cargado desde archivos LOCALES (carpeta lib/), no desde un CDN:
+// así el SW arranca igual sin conexión.
+importScripts("lib/workbox-v7.4.1/workbox-sw.js");
+workbox.setConfig({ modulePathPrefix: "lib/workbox-v7.4.1/", debug: false });
+
+// IMPORTANTE: leer TODOS los módulos aquí, en el nivel superior. Cada acceso
+// (workbox.precaching, workbox.routing…) dispara un importScripts, y
+// importScripts solo se permite mientras el SW se está instalando/evaluando.
+const { precacheAndRoute, cleanupOutdatedCaches } = workbox.precaching;
+const { registerRoute } = workbox.routing;
+const { CacheFirst, NetworkFirst } = workbox.strategies;
+const { ExpirationPlugin } = workbox.expiration;
+
+self.skipWaiting();
+workbox.core.clientsClaim();
+cleanupOutdatedCaches();
+precacheAndRoute(self.__WB_MANIFEST); // ← aquí Workbox inyecta la lista</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s3" data-section-label="InjectManifest" data-slide-label="sw-propio.js: las dos rutas">
+          <div class="kicker">InjectManifest · 3.4</div>
+          <h2 class="slide-title">sw-propio.js: las dos rutas</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js: las dos rutas</div>
+            <pre><code>registerRoute(
+  ({ url }) =&gt; url.pathname.startsWith("/icons/"),
+  new CacheFirst({
+    cacheName: "imagenes",
+    plugins: [new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 30 })],
+  })
+);
+registerRoute(({ url }) =&gt; url.pathname.startsWith("/api/"), new NetworkFirst({ cacheName: "api-tareas" }));</code></pre>
+          </div>
+          <div class="grid-2" style="margin-top:.8em; gap:1em;">
+            <div class="card fragment"><h3>/icons/</h3><p><code>CacheFirst</code> en la caché «imagenes», con <code>ExpirationPlugin</code>: hasta 20 entradas (<code>maxEntries</code>) y 30 días (<code>maxAgeSeconds</code>).</p></div>
+            <div class="card fragment"><h3>/api/</h3><p><code>NetworkFirst</code> en la caché «api-tareas».</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s3" data-section-label="InjectManifest" data-slide-label="Tres detalles">
+          <div class="kicker">InjectManifest · 3.5</div>
+          <h2 class="slide-title">Tres detalles que costaron tiempo</h2>
+          <hr class="rule">
+          <p style="font-size:.88em; margin:0 0 .6em;">Al construir el ejemplo, y conviene saberlo de antemano:</p>
+          <div class="grid-3">
+            <div class="card fragment"><h3>Workbox desde archivos locales</h3><p><code>npx workbox-cli copyLibraries lib</code> copia las bibliotecas a <code>lib/</code>. Así el Service Worker arranca igual sin conexión. De la carpeta copiada se dejaron solo los seis módulos que se usan: pasó de 1,8 MB a unos 28 KB.</p></div>
+            <div class="card fragment"><h3>Los módulos, en el nivel superior</h3><p>Cada acceso a <code>workbox.precaching</code>, <code>workbox.routing</code>… dispara un <code>importScripts</code>, y solo está permitido mientras el SW se evalúa o instala. Si lees <code>workbox.strategies</code> dentro de un evento, falla.</p></div>
+            <div class="card fragment"><h3>El marcador, una sola vez</h3><p>Mi primer comando falló con <i>Please ensure that your 'swSrc' file contains only one match for the following: self.__WB_MANIFEST</i>… porque yo mismo había escrito ese texto en un <i>comentario</i>. Workbox busca el texto, no entiende de comentarios.</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s3" data-section-label="InjectManifest" data-slide-label="Correr el comando">
+          <div class="kicker">InjectManifest · 3.6</div>
+          <h2 class="slide-title">Generar sw.js, cada vez</h2>
+          <hr class="rule">
+          <div class="term-box" style="font-size:.8em; margin-top:0;"><span class="prompt">$</span> npx workbox-cli injectManifest workbox-config.js<br>
+The service worker file was written to sw.js<br>
+<b>The service worker will precache 14 URLs, totaling 57 kB.</b></div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.98em;"><b>La regla de oro no cambia:</b> cada vez que modifiques <code>sw-propio.js</code> o cualquier archivo precacheado, vuelve a correr el comando. Si no, el navegador seguirá sirviendo el <code>sw.js</code> viejo con las sumas de verificación viejas.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s4" data-section-label="Push" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 04</div>
+            <h2>Push: cómo viaja un mensaje desde el servidor</h2>
+            <p>El navegador no deja que un servidor lo llame directamente: casi ningún teléfono tiene una dirección pública.</p>
+            <div class="tb-preview"><span>Servicio de push</span><span>VAPID</span><span>Suscripción</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><path d="M70 150 a34 34 0 0 1 20 -62 a44 44 0 0 1 82 8 a30 30 0 0 1 4 54z" fill="#fff" stroke="#1A1A1A" stroke-width="3.5" stroke-linejoin="round"/><path d="M180 150 C230 150 235 200 280 200" fill="none" stroke="#FFCC29" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 10"/><rect x="285" y="150" width="70" height="120" rx="12" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/><rect x="297" y="176" width="46" height="30" rx="5" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.5"/><path d="M297 214h46" stroke="#B9B5AA" stroke-width="4" stroke-linecap="round"/><circle cx="320" cy="254" r="5" fill="#1A1A1A"/><rect x="100" y="210" width="86" height="56" rx="8" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/><path d="M100 218 L143 246 L186 218" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round"/></svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="El recorrido de un push">
+          <div class="kicker">Push · 4.1</div>
+          <h2 class="slide-title">Un intermediario entre tu servidor y el navegador</h2>
+          <hr class="rule">
+          <p style="font-size:.84em; margin:0 0 .4em; line-height:1.4;">Cada navegador mantiene una conexión permanente con <b>su propio servicio de push</b> (Chrome usa los servidores de Google; Firefox, los de Mozilla). Tu servidor solo habla con ese intermediario.</p>
+          <div class="flow-wrap">
+          <svg class="flow" viewBox="0 0 900 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama de flujo de un push entre la página, el servicio de push, el servidor y el Service Worker">
+            <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1A1A1A"/></marker></defs>
+            <g stroke="#B9B5AA" stroke-width="2" stroke-dasharray="4 6"><line x1="110" y1="44" x2="110" y2="286"/><line x1="340" y1="44" x2="340" y2="286"/><line x1="570" y1="44" x2="570" y2="286"/><line x1="800" y1="44" x2="800" y2="286"/></g>
+            <g class="hd"><rect x="30" y="4" width="160" height="38" rx="9" fill="#fff" stroke="#1A1A1A" stroke-width="2.6"/><text x="110" y="29" text-anchor="middle">Página</text>
+            <rect x="240" y="4" width="200" height="38" rx="9" fill="#FFCC29" stroke="#1A1A1A" stroke-width="2.6"/><text x="340" y="29" text-anchor="middle">Servicio de push</text>
+            <rect x="490" y="4" width="160" height="38" rx="9" fill="#1A1A1A"/><text x="570" y="29" text-anchor="middle" class="gold">Tu servidor</text>
+            <rect x="710" y="4" width="180" height="38" rx="9" fill="#fff" stroke="#1A1A1A" stroke-width="2.6"/><text x="800" y="29" text-anchor="middle">Service Worker</text></g>
+            <g><line x1="122" y1="80" x2="338" y2="80" stroke="#1A1A1A" stroke-width="2.6" marker-end="url(#ah)"/><circle cx="110" cy="80" r="11" fill="#1A1A1A"/><text x="110" y="85" text-anchor="middle" class="num">1</text><text x="232" y="72" text-anchor="middle" class="lbl">subscribe(clave pública VAPID)</text></g>
+            <g><line x1="328" y1="116" x2="112" y2="116" stroke="#1A1A1A" stroke-width="2.6" marker-end="url(#ah)"/><circle cx="340" cy="116" r="11" fill="#1A1A1A"/><text x="340" y="121" text-anchor="middle" class="num">2</text><text x="232" y="108" text-anchor="middle" class="lbl">suscripción { endpoint, keys }</text></g>
+            <g><line x1="122" y1="152" x2="568" y2="152" stroke="#1A1A1A" stroke-width="2.6" marker-end="url(#ah)"/><circle cx="110" cy="152" r="11" fill="#1A1A1A"/><text x="110" y="157" text-anchor="middle" class="num">3</text><text x="455" y="144" text-anchor="middle" class="lbl">POST /api/suscribir</text></g>
+            <g><line x1="558" y1="188" x2="342" y2="188" stroke="#1A1A1A" stroke-width="2.6" marker-end="url(#ah)"/><circle cx="570" cy="188" r="11" fill="#1A1A1A"/><text x="570" y="193" text-anchor="middle" class="num">4</text><text x="455" y="180" text-anchor="middle" class="lbl">firma, cifra y hace POST</text></g>
+            <g><line x1="352" y1="224" x2="798" y2="224" stroke="#1A1A1A" stroke-width="2.6" marker-end="url(#ah)"/><circle cx="340" cy="224" r="11" fill="#1A1A1A"/><text x="340" y="229" text-anchor="middle" class="num">5</text><text x="685" y="216" text-anchor="middle" class="lbl">entrega y despierta al SW</text></g>
+            <g><rect x="580" y="244" width="310" height="38" rx="9" fill="#FFF6DC" stroke="#FFCC29" stroke-width="2.6"/><circle cx="800" cy="263" r="0" fill="none"/>
+            <circle cx="602" cy="263" r="11" fill="#1A1A1A"/><text x="602" y="268" text-anchor="middle" class="num">6</text>
+            <text x="620" y="268" class="lbl" style="font-weight:700;">evento «push» → showNotification</text></g>
+          </svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="Seis pasos y VAPID">
+          <div class="kicker">Push · 4.2</div>
+          <h2 class="slide-title">Los seis pasos, y quién es VAPID</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>Flujo de un push</div>
+            <pre><code>1. La página pide permiso y llama pushManager.subscribe({ applicationServerKey: CLAVE_PÚBLICA_VAPID })
+2. El servicio de push responde con una SUSCRIPCIÓN: { endpoint, keys: { p256dh, auth } }
+3. La página envía esa suscripción a TU servidor (POST /api/suscribir) y él la guarda
+4. Cuando quiere avisar, tu servidor firma una petición con su clave PRIVADA VAPID,
+   cifra el mensaje con las claves de la suscripción y hace POST al endpoint
+5. El servicio de push entrega el mensaje al navegador, que despierta al Service Worker
+6. El evento "push" del SW muestra la notificación</code></pre>
+          </div>
+          <div class="grid-3" style="margin-top:.7em; gap:1em;">
+            <div class="card fragment"><h3>VAPID</h3><p>Es la identidad de tu servidor: un <b>par de claves</b>.</p></div>
+            <div class="card fragment"><h3>La clave pública</h3><p>Se le entrega al navegador al suscribir.</p></div>
+            <div class="card fragment"><h3>La clave privada</h3><p>Firma cada envío para que el servicio de push sepa que el mensaje viene de quien dice. <b>Nunca</b> sale del servidor ni se sube a Git.</p></div>
+          </div>
+          <div class="callout fragment" style="margin-top:.6em; font-size:.8em; padding:.55em 1em;">El mensaje viaja cifrado de extremo a extremo (el intermediario no puede leerlo), con un límite de unos 4 KB.</div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="urlBase64ABytes()">
+          <div class="kicker">Push · 4.3</div>
+          <h2 class="slide-title">En la página: la clave pública, en bytes</h2>
+          <hr class="rule">
+          <div class="code-block mid">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+            <pre><code>/** La clave pública VAPID llega en base64url; PushManager la quiere en bytes. */
+export function urlBase64ABytes(base64url) {
+  const relleno = "=".repeat((4 - (base64url.length % 4)) % 4);
+  const b64 = (base64url + relleno).replace(/-/g, "+").replace(/_/g, "/");
+  const binario = atob(b64);
+  return Uint8Array.from(binario, (c) =&gt; c.charCodeAt(0));
+}</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.92em;">El servidor entrega la clave pública VAPID en <i>base64url</i>; <code>pushManager.subscribe</code> la quiere como <i>bytes</i>. Esta función hace la conversión, y la usa <code>suscribirAPush()</code> en la lámina siguiente.</div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="suscribirAPush()">
+          <div class="kicker">Push · 4.4</div>
+          <h2 class="slide-title">En la página: suscribirse</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>notificaciones.js (fragmento)</div>
+            <pre><code>/** Suscribe este navegador a push y envía la suscripción al servidor. */
+export async function suscribirAPush() {
+  const reg = await navigator.serviceWorker.ready;
+  if (!("pushManager" in reg)) throw new Error("push-no-soportado");
+  const { clave } = await (await fetch("/api/clave-publica")).json();
+  const suscripcion = await reg.pushManager.subscribe({
+    userVisibleOnly: true, // obligatorio: cada push debe mostrar una notificación
+    applicationServerKey: urlBase64ABytes(clave),
+  });
+  const resp = await fetch("/api/suscribir", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(suscripcion.toJSON()),
+  });
+  if (!resp.ok) throw new Error("El servidor no guardó la suscripción (" + resp.status + ")");
+  return suscripcion;
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="Recibir el mensaje (1/2)">
+          <div class="kicker">Push · 4.5</div>
+          <h2 class="slide-title">En el Service Worker: recibir el mensaje (1/2)</h2>
+          <hr class="rule">
+          <div class="code-block mid">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (push, 1/2)</div>
+            <pre><code>// ── Push: llega un mensaje del servidor aunque la app esté cerrada ─────────
+self.addEventListener("push", (event) =&gt; {
+  let datos = { titulo: "Gestor de Tareas", cuerpo: "Tienes novedades.", url: "/index.html" };
+  try {
+    if (event.data) datos = { ...datos, ...event.data.json() };
+  } catch {
+    if (event.data) datos.cuerpo = event.data.text(); // el mensaje no era JSON
+  }
+  // (continúa en la lámina siguiente)</code></pre>
+          </div>
+          <div class="grid-2" style="margin-top:.9em; gap:1em;">
+            <div class="card fragment"><h3>El <code>try/catch</code> no es adorno</h3><p>Un push puede traer <b>JSON</b> (<code>event.data.json()</code>), <b>texto plano</b> (<code>event.data.text()</code>) o <b>nada</b> (se usan los valores por defecto).</p></div>
+            <div class="card fragment"><h3>Si el manejador lanza una excepción</h3><p>Con un mensaje inesperado, el Service Worker termina sin notificación, y eso viola el compromiso de <code>userVisibleOnly</code>.</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="Mostrar la notificación (2/2)">
+          <div class="kicker">Push · 4.6</div>
+          <h2 class="slide-title">En el Service Worker: mostrar la notificación (2/2)</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (push, 2/2)</div>
+            <pre><code>  // userVisibleOnly:true (al suscribir) OBLIGA a mostrar una notificación en
+  // cada push; por eso va dentro de waitUntil, siempre.
+  event.waitUntil(
+    self.registration.showNotification(datos.titulo, {
+      body: datos.cuerpo,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: datos.tag ?? "gestor-aviso", // misma etiqueta = reemplaza, no apila
+      data: { url: datos.url },
+    })
+  );
+});</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.8em; font-size:.86em;"><code>userVisibleOnly: true</code> es obligatorio en Chrome y es un <b>compromiso</b>: <i>cada</i> push que llegue debe terminar en una notificación visible. Si el SW termina sin mostrar nada, Chrome muestra por ti una notificación genérica («este sitio se actualizó en segundo plano») y, si se repite, puede revocar el permiso. <i>Comportamiento documentado por Google; no lo provoqué en la prueba.</i></div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="El servidor: claves VAPID">
+          <div class="kicker">Push · 4.7</div>
+          <h2 class="slide-title">En el servidor: las claves VAPID</h2>
+          <hr class="rule">
+          <p style="font-size:.8em; margin:0 0 .6em; line-height:1.4;">El servidor de ejemplo (carpeta <code>servidor/</code>, unas 140 líneas) usa solo el módulo <code>http</code> de Node y la biblioteca <code>web-push</code>. Sirve los archivos del Gestor, gestiona suscripciones y push, y recibe las tareas del Background Sync. Es código de enseñanza: sin autenticación, sin base de datos real, sin HTTPS.</p>
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>servidor/server.js (claves VAPID)</div>
+            <pre><code>// ── Claves VAPID: identifican a TU servidor ante el servicio de push ────────
+// Se generan una sola vez y se guardan. La PRIVADA no sale nunca de este
+// archivo (y no se sube a Git); la PÚBLICA sí se entrega al navegador.
+let claves;
+if (fs.existsSync(ARCHIVO_CLAVES)) {
+  claves = JSON.parse(fs.readFileSync(ARCHIVO_CLAVES, "utf8"));
+} else {
+  claves = webpush.generateVAPIDKeys();
+  fs.writeFileSync(ARCHIVO_CLAVES, JSON.stringify(claves, null, 2));
+  console.log("Claves VAPID generadas en claves-vapid.json");
+}
+// El "subject" debe ser un mailto: o una URL tuya; el servicio de push lo usa para contactarte.
+webpush.setVapidDetails("mailto:tu-correo@ejemplo.com", claves.publicKey, claves.privateKey);</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="El servidor: enviar (1/2)">
+          <div class="kicker">Push · 4.8</div>
+          <h2 class="slide-title">En el servidor: firmar, cifrar y enviar (1/2)</h2>
+          <hr class="rule">
+          <div class="code-block compact wrap">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>servidor/server.js (enviar, 1/2)</div>
+            <pre><code>  if (req.method === "POST" &amp;&amp; ruta === "/api/enviar-prueba") {
+    const { titulo = "Gestor de Tareas", cuerpo = "Mensaje de prueba desde el servidor", url = "/index.html" } = await leerCuerpo(req);
+    const mensaje = JSON.stringify({ titulo, cuerpo, url });
+    const resultado = { enviados: 0, fallidos: 0, eliminadas: 0 };
+    for (const sub of [...datos.suscripciones]) {
+      try {
+        await webpush.sendNotification(sub, mensaje, { TTL: 60 });
+        resultado.enviados++;
+      } catch (err) {
+        resultado.fallidos++;
+        // (continúa en la lámina siguiente)</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.88em;">Se arma el mensaje en JSON y se recorre cada suscripción guardada. <code>webpush.sendNotification</code> firma con la clave privada VAPID, cifra con las claves de la suscripción y hace el POST al <i>endpoint</i>. El <code>resultado</code> cuenta tres cosas: <code>enviados</code>, <code>fallidos</code> y <code>eliminadas</code>.</div>
+        </section>
+
+        <section class="slide" data-section="s4" data-section-label="Push" data-slide-label="404 y 410">
+          <div class="kicker">Push · 4.9</div>
+          <h2 class="slide-title">En el servidor: 404 y 410 (2/2)</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>servidor/server.js (enviar, 2/2)</div>
+            <pre><code>        // 404/410: la suscripción ya no existe (el usuario revocó el permiso o
+        // desinstaló). Hay que borrarla, o se acumulan suscripciones muertas.
+        if (err.statusCode === 404 || err.statusCode === 410) {
+          datos.suscripciones = datos.suscripciones.filter((s) =&gt; s.endpoint !== sub.endpoint);
+          resultado.eliminadas++;
+        } else {
+          console.error("Error al enviar push:", err.statusCode ?? "", err.message);
+        }
+      }
+    }
+    guardarDatos(datos);
+    return responder(res, 200, resultado);
+  }</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.8em; font-size:.88em;"><b>404</b> y <b>410</b> significan «esta suscripción ya no existe»: el usuario revocó el permiso, desinstaló o el navegador la caducó. Hay que borrarla, o el servidor seguirá enviando a destinatarios muertos para siempre.</div>
+        </section>
+
+        <section class="slide" data-section="s5" data-section-label="El clic" data-slide-label="Tres pasos habituales">
+          <div class="kicker">Clic · 5.1</div>
+          <h2 class="slide-title">El clic en la notificación</h2>
+          <hr class="rule">
+          <p style="font-size:.9em; margin:0 0 .8em; line-height:1.45;">Una notificación que no hace nada al tocarla es una molestia. El evento <code>notificationclick</code> ocurre en el Service Worker (la página puede estar cerrada), y lo habitual es:</p>
+          <div class="steps-flow">
+            <div class="step-box fragment"><div class="n">1</div><b>Cerrar</b><span>Se cierra la notificación.</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">2</div><b>Enfocar</b><span>Se busca una ventana de la app ya abierta y se enfoca.</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">3</div><b>Abrir</b><span>Solo si no hay ninguna, se abre una nueva.</span></div>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.88em;">La dirección de destino viaja en <code>data.url</code>, que se fijó al mostrar la notificación. Así un aviso de «Tareas sincronizadas» y uno de «Recordatorio» pueden llevar a lugares distintos con el mismo manejador.</div>
+        </section>
+
+        <section class="slide" data-section="s5" data-section-label="El clic" data-slide-label="notificationclick (código)">
+          <div class="kicker">Clic · 5.2</div>
+          <h2 class="slide-title">sw-propio.js (clic)</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (clic)</div>
+            <pre><code>// ── Clic en la notificación: enfocar la app abierta, o abrirla ─────────────
+self.addEventListener("notificationclick", (event) =&gt; {
+  event.notification.close();
+  const destino = new URL(event.notification.data?.url ?? "/index.html", self.location.origin).href;
+  event.waitUntil(
+    (async () =&gt; {
+      const ventanas = await clients.matchAll({ type: "window", includeUncontrolled: true });
+      const abierta = ventanas.find((v) =&gt; new URL(v.url).origin === self.location.origin);
+      if (abierta) return abierta.focus();
+      return clients.openWindow(destino);
+    })()
+  );
+});</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.8em; font-size:.9em;"><code>clients.matchAll</code> busca las ventanas; si hay una del mismo origen, se enfoca (<code>focus()</code>); si no, <code>clients.openWindow(destino)</code> abre una nueva.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s6" data-section-label="Background Sync" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 06</div>
+            <h2>Background Sync: la bandeja de salida</h2>
+            <p>Hoy cada tarea nueva también debe llegar a un servidor, sin que la acción del usuario dependa de la red.</p>
+            <div class="tb-preview"><span>outbox</span><span>sync-tareas</span><span>idCambio</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><path d="M95 190 h210 l-26 56 h-158 z" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3.5" stroke-linejoin="round"/><rect x="150" y="120" width="100" height="58" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/><path d="M150 128 L200 160 L250 128" fill="none" stroke="#1A1A1A" stroke-width="3.5" stroke-linejoin="round"/><path d="M200 50 v52 m-14 -14 l14 14 l14 -14" fill="none" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 9"/><g fill="none" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M306 110 a24 24 0 0 1 42 -14"/><path d="M344 86 l2 -14 l12 8"/><path d="M354 110 a24 24 0 0 1 -42 14"/><path d="M316 134 l-2 14 l-12 -8"/></g></svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="El patrón outbox">
+          <div class="kicker">Sync · 6.1</div>
+          <h2 class="slide-title">La bandeja de salida: cuatro pasos</h2>
+          <hr class="rule">
+          <p style="font-size:.88em; margin:0 0 .8em; line-height:1.45;">Hasta aquí el Gestor guarda todo en el dispositivo (IndexedDB), pero nunca lo envía a ninguna parte. El patrón se llama <b>bandeja de salida</b> (<i>outbox</i>):</p>
+          <div class="steps-flow">
+            <div class="step-box fragment"><div class="n">1</div><b>Guardar</b><span>La tarea se guarda en IndexedDB como siempre y se pinta en pantalla.</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">2</div><b>Anotar</b><span>Se anota un «cambio pendiente» en un almacén nuevo, <code>outbox</code>.</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">3</div><b>Pedir</b><span>Se le pide al navegador una sincronización: <code>registration.sync.register("sync-tareas")</code>.</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment"><div class="n">4</div><b>Enviar</b><span>Cuando el navegador considera que hay red, despierta al SW con el evento <code>sync</code>, que envía lo que haya en la bandeja y borra lo que se confirmó.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="Migración de la base">
+          <div class="kicker">Sync · 6.2</div>
+          <h2 class="slide-title">Nueva versión de la base de datos</h2>
+          <hr class="rule">
+          <p style="font-size:.8em; margin:0 0 .5em; line-height:1.4;">El almacén <code>outbox</code> no existe en la base de la Sesión 22: hay que subir <code>VERSION_DB</code> a 2 y migrar <b>por tramos</b>.</p>
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>db.js (migración)</div>
+            <pre><code>    peticion.onupgradeneeded = (event) =&gt; {
+      const db = event.target.result;
+      // Las migraciones se escriben por TRAMOS según la versión de la que se
+      // viene (Sesión 22): quien ya tenía la v1 conserva sus tareas y solo
+      // recibe lo nuevo; quien instala por primera vez ejecuta ambos tramos.
+      if (event.oldVersion &lt; 1) {
+        const store = db.createObjectStore("tareas", { keyPath: "id", autoIncrement: true });
+        store.createIndex("porPrioridad", "prioridad", { unique: false });
+        store.createIndex("porTitulo", "titulo", { unique: true });
+      }
+      if (event.oldVersion &lt; 2) {
+        // La clave es un UUID que genera la app (no autoIncrement): el servidor
+        // lo usa para no duplicar un cambio si el envío se reintenta.
+        db.createObjectStore("outbox", { keyPath: "idCambio" });
+      }
+    };</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="encolarCambio()">
+          <div class="kicker">Sync · 6.3</div>
+          <h2 class="slide-title">En la página: anotar el cambio</h2>
+          <hr class="rule">
+          <div class="code-block mid">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sync.js (fragmento)</div>
+            <pre><code>/** Anota un cambio pendiente. Devuelve el idCambio (UUID). */
+export function encolarCambio(db, tipo, datos) {
+  const cambio = { idCambio: crypto.randomUUID(), tipo, datos, creadoEn: Date.now() };
+  return new Promise((resolve, reject) =&gt; {
+    const tx = db.transaction("outbox", "readwrite");
+    tx.objectStore("outbox").add(cambio);
+    tx.oncomplete = () =&gt; resolve(cambio.idCambio);
+    tx.onerror = () =&gt; reject(tx.error);
+  });
+}</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.92em;">Cada cambio lleva su <b>UUID</b> (<code>crypto.randomUUID()</code>), generado en el dispositivo. Más adelante, el servidor lo usa para ignorar los envíos repetidos.</div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="pedirSincronizacion()">
+          <div class="kicker">Sync · 6.4</div>
+          <h2 class="slide-title">En la página: pedir la sincronización</h2>
+          <hr class="rule">
+          <div class="code-block tight">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sync.js (fragmento)</div>
+            <pre><code>/** Pide la sincronización. Devuelve "segundo-plano" si el navegador se encargará
+ *  (aunque cierres la pestaña) o "desde-la-pagina" si hubo que enviarla aquí
+ *  (puede lanzar si el servidor no responde: la entrada sigue en la bandeja). */
+export async function pedirSincronizacion(db) {
+  if (haySyncEnSegundoPlano()) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      await reg.sync.register(ETIQUETA); // registrar dos veces la misma etiqueta = una sola tarea
+      return "segundo-plano";
+    } catch {
+      // Tener SyncManager no basta: register() falla (NotAllowedError) si el
+      // usuario bloqueó la sincronización en segundo plano para este sitio.
+    }
+  }
+  // Plan B (Safari, Firefox, o permiso bloqueado): solo funciona mientras la pestaña siga abierta.
+  await vaciarDesdeLaPagina(db);
+  return "desde-la-pagina";
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="Dos razones para el plan B">
+          <div class="kicker">Sync · 6.5</div>
+          <h2 class="slide-title">Hay dos razones para caer al plan B, no una</h2>
+          <hr class="rule">
+          <div class="grid-2" style="gap:1em; margin-bottom:.9em;">
+            <div class="card fragment"><h3>1. No existe <code>SyncManager</code></h3><p>Es la razón obvia: <b>Safari y Firefox</b> no tienen <code>SyncManager</code>.</p></div>
+            <div class="card fragment"><h3>2. El permiso está bloqueado</h3><p>Se descubrió al probar: aun teniendo <code>SyncManager</code>, <code>register()</code> lanza <code>NotAllowedError</code> si el permiso de sincronización en segundo plano está bloqueado para el sitio.</p></div>
+          </div>
+          <div class="callout fragment" style="font-size:.95em;">El <code>catch</code> convierte ese segundo fallo en el mismo plan B, en vez de dejar la tarea <b>pendiente para siempre</b>. El plan B solo funciona mientras la pestaña siga abierta.</div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="vaciarBandeja() (1/2)">
+          <div class="kicker">Sync · 6.6</div>
+          <h2 class="slide-title">En el Service Worker: vaciar la bandeja (1/2)</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (sincronización, 1/2)</div>
+            <pre><code>async function vaciarBandeja() {
+  const db = await abrirDB();
+  const pendientes = await pedir(db.transaction("outbox").objectStore("outbox").getAll());
+  let enviados = 0;
+  for (const cambio of pendientes) {
+    const resp = await fetch("/api/tareas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cambio),
+    });
+    // Si falla, lanzamos: el navegador reintentará (con espera creciente).
+    if (!resp.ok) throw new Error("El servidor respondió " + resp.status);
+    // (continúa en la lámina siguiente)</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.8em; font-size:.9em;"><b>Lanzar para reintentar.</b> Si <code>fetch</code> falla o el servidor responde con error, el manejador lanza una excepción: esa promesa rechazada es la señal para que el navegador programe otro intento.</div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="vaciarBandeja() (2/2)">
+          <div class="kicker">Sync · 6.7</div>
+          <h2 class="slide-title">En el Service Worker: vaciar la bandeja (2/2)</h2>
+          <hr class="rule">
+          <div class="code-block mid">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (sincronización, 2/2)</div>
+            <pre><code>    // Se borra cada entrada apenas se confirma, no al final: si el siguiente
+    // falla, no se reenvía lo que ya llegó.
+    await pedir(db.transaction("outbox", "readwrite").objectStore("outbox").delete(cambio.idCambio));
+    enviados++;
+  }
+  db.close();
+  return enviados;
+}</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.92em;"><b>Borrar apenas se confirma</b>, no al final. Si la tercera falla, las dos primeras no se reenvían en el reintento. Al terminar se cierra la base y se devuelve cuántos cambios se enviaron.</div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="El evento sync">
+          <div class="kicker">Sync · 6.7</div>
+          <h2 class="slide-title">El evento sync</h2>
+          <hr class="rule">
+          <div class="code-block mid">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>sw-propio.js (evento)</div>
+            <pre><code>self.addEventListener("sync", (event) =&gt; {
+  if (event.tag === "sync-tareas") {
+    event.waitUntil(vaciarBandeja().then(avisarDeSincronizacion));
+  }
+});</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.9em; font-size:.92em;">Si <code>vaciarBandeja()</code> lanza una excepción, la promesa que recibe <code>event.waitUntil</code> se rechaza. <b>Esa promesa rechazada es la señal</b> para que el navegador programe otro intento más tarde, con esperas cada vez mayores. El navegador decide cuántos intentos y cuándo; no es un servicio garantizado.</div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="Cuatro decisiones">
+          <div class="kicker">Sync · 6.8</div>
+          <h2 class="slide-title">Cuatro decisiones de diseño, cada una con su razón</h2>
+          <hr class="rule">
+          <div class="grid-2" style="gap:.8em;">
+            <div class="card fragment"><h3>1. Lanzar para reintentar</h3><p>Si <code>fetch</code> falla o el servidor responde con error, el manejador lanza una excepción. Esa promesa rechazada es la señal para que el navegador programe otro intento.</p></div>
+            <div class="card fragment"><h3>2. Borrar apenas se confirma</h3><p>No al final. Si la tercera falla, las dos primeras no se reenvían en el reintento.</p></div>
+            <div class="card fragment"><h3>3. Idempotencia</h3><p>Un envío puede llegar y que la respuesta se pierda: el SW cree que falló y reenvía. Por eso cada cambio lleva su UUID y el servidor ignora los repetidos (<code>"duplicado": true</code>). Sin esto, un reintento duplica tareas.</p></div>
+            <div class="card fragment"><h3>4. Avisar solo si nadie mira</h3><p>Si hay una ventana visible, basta con un mensaje en pantalla; la notificación del sistema se reserva para cuando el usuario no está en la app.</p></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s6" data-section-label="Background Sync" data-slide-label="Lo que ve el usuario">
+          <div class="kicker">Sync · 6.9</div>
+          <h2 class="slide-title">Lo que ve el usuario</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>app.js (al crear una tarea)</div>
+            <pre><code>  // Sesión 26: la tarea ya está guardada en el dispositivo. Ahora se anota para
+  // enviarla al servidor cuando se pueda — sin bloquear al usuario.
+  await encolarCambio(db, "crear-tarea", { titulo: tareaNueva.titulo, prioridad: tareaNueva.prioridad });
+  await actualizarEstadoSync();
+  try {
+    await pedirSincronizacion(db);
+  } catch (err) {
+    console.warn("No se pudo sincronizar todavía:", err.message);
+  }
+  await actualizarEstadoSync();
+});</code></pre>
+          </div>
+          <div class="callout fragment" style="margin-top:.8em; font-size:.9em;">La línea de estado (<code>☁ Todo sincronizado…</code> / <code>☁ 1 cambio(s) pendiente(s)…</code>) cuenta lo que hay en la bandeja. Un sistema que acepta trabajo «para después» sin mostrar qué quedó pendiente es un sistema en el que nadie confía.</div>
+        </section>
+
+        <section class="slide slide--divider" data-section="s7" data-section-label="Verificado" data-slide-label="Introducción">
+          <div class="brand-wedge"><div class="gold-slab"></div></div>
+          <div class="divider-panel">
+            <div class="num">SECCIÓN 07</div>
+            <h2>Verificado en Chromium</h2>
+            <p>Cada línea de abajo es salida literal de los scripts de prueba: Playwright, Chromium y un servidor Node real en el puerto 3100.</p>
+            <div class="tb-preview"><span>Playwright</span><span>Salida literal</span><span>Límites honestos</span></div>
+          </div>
+          <div class="divider-illustration">
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><rect x="70" y="60" width="260" height="190" rx="12" fill="#fff" stroke="#1A1A1A" stroke-width="3.5"/><rect x="70" y="60" width="260" height="30" rx="12" fill="#1A1A1A"/><path d="M100 125h120M100 155h160M100 185h90" stroke="#B9B5AA" stroke-width="5" stroke-linecap="round"/><circle cx="290" cy="215" r="32" fill="#FFCC29" stroke="#1A1A1A" stroke-width="3"/><path d="M275 215l11 11 21-24" stroke="#1A1A1A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Verificado" data-slide-label="Migración, SW y sync (salida)">
+          <div class="kicker">Verificado · 7.1</div>
+          <h2 class="slide-title">node test_s26.js: migración, Service Worker y sincronización</h2>
+          <hr class="rule">
+          <div class="term-box" style="font-size:.78em; margin-top:0;"><span class="prompt">$</span> node test_s26.js<br>
+A) stores tras migrar la v1: {"version":2,"stores":["outbox","tareas"]} (la tarea de la versión 1 sigue en pantalla)<br>
+B) SW controla la página: true | cachés: precaché con 14 entradas<br>
+B) SIN CONEXIÓN → ☁ 1 cambio(s) pendiente(s) de enviar.<br>
+B) outbox: [{"tipo":"crear-tarea","titulo":"Comprar pliegos de cartulina","idCambioLen":36}]<br>
+B) 5 s después de volver la red y el servidor, ¿llegó sola la tarea? → <b>false</b><br>
+B) tras ServiceWorker.dispatchSyncEvent → true<br>
+B) estado tras sync: ☁ Todo sincronizado con el servidor. | aviso: Se sincronizaron 1 cambio(s) con el servidor.<br>
+B) reenvío del mismo idCambio → {"ok":true,<b>"duplicado":true</b>} | total en servidor: 1<br>
+B) servidor caído, red "en línea" → ☁ 1 cambio(s) pendiente(s) de enviar. | outbox: 1<br>
+B) servidor de vuelta + Sync → servidor tiene: ["Comprar pliegos de cartulina","Tarea para reintento"] | ☁ Todo sincronizado con el servidor.<br>
+C) (sin SyncManager) offline → ☁ 1 cambio(s) pendiente(s) de enviar (este navegador no tiene Background Sync…)<br>
+C) tras evento online → servidor + 1 | ☁ Todo sincronizado con el servidor.<br>
+D) permiso por defecto: default | texto: Avisos sin activar.<br>
+E) register() con background-sync denegado: NotAllowedError: Permission denied.<br>
+E) servidor + 1 | ☁ Todo sincronizado con el servidor.</div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Verificado" data-slide-label="Qué demuestra y qué no es">
+          <div class="kicker">Verificado · 7.2</div>
+          <h2 class="slide-title">Qué demuestra — y dos cosas que esta prueba no es</h2>
+          <hr class="rule">
+          <div class="win-box" style="font-size:.84em;"><b>Qué demuestra:</b> (1) la migración conserva los datos de la versión 1 y crea <code>outbox</code>; (2) una tarea creada sin conexión queda anotada y visible como pendiente; (3) al dispararse el evento <code>sync</code> llega al servidor y la bandeja se vacía; (4) un reenvío del mismo cambio no se duplica; (5) si el servidor está caído, la entrada <b>no se pierde</b> y llega cuando vuelve; (6) sin <code>SyncManager</code>, o con el permiso bloqueado, el plan B envía desde la página.</div>
+          <div class="warn-box fragment" style="font-size:.84em; margin-top:.8em;"><b>Dos cosas que esta prueba no es.</b> (1) El evento <code>sync</code> se disparó con <code>ServiceWorker.dispatchSyncEvent</code>, el mismo mecanismo que usa el botón <i>Sync</i> del panel Application → Background Sync de las DevTools. Cinco segundos después de «volver la red» el navegador <b>no</b> había reintentado por su cuenta: sus reintentos automáticos se espacian en minutos y no medí cuánto. (2) «Sin conexión» se simuló apagando el servidor y activando el modo sin red en la página; no se cortó la conexión de un dispositivo real.</div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Verificado" data-slide-label="Notificaciones, push y clic (salida)">
+          <div class="kicker">Verificado · 7.3</div>
+          <h2 class="slide-title">Notificaciones, push y clic: la salida</h2>
+          <hr class="rule">
+          <div class="term-box" style="font-size:.8em; margin-top:0;"><span class="prompt">$</span> node test_s26.js (continuación)<br>
+B) permiso inicial: default | Avisos sin activar.<br>
+B) notificaciones tras activar avisos: [{"title":"Avisos activados","tag":"gestor-aviso","url":"/index.html"}]<br>
+B) tras push inyectado (JSON): + {"title":"Recordatorio","body":"Tienes 2 tareas pendientes","tag":"recordatorio","url":"/index.html?desde=push"}<br>
+B) tras push con texto plano: {"title":"Gestor de Tareas","body":"texto plano, no JSON","tag":"gestor-aviso"} <i>(reemplazó a «Avisos activados»: misma tag)</i><br>
+B) tras 2º push, misma tag «recordatorio»: body "Ahora son 3" <i>(reemplazó al anterior, no se apiló)</i><br>
+B) notificationclick → {"habia":1,"quedan":0} (la notificación se cierra)<br>
+B) sin ventanas visibles (simulado) → [{"title":"Tareas sincronizadas","body":"2 tareas llegaron al servidor."}]<br>
+B) con la ventana visible → notificaciones gestor-sync: 0</div>
+          <div class="win-box fragment" style="font-size:.8em; margin-top:.7em;"><b>Qué demuestra:</b> el manejador de <code>push</code> muestra la notificación tanto con JSON como con texto plano; <code>tag</code> reemplaza en vez de apilar; el clic cierra la notificación; y la notificación de sincronización solo aparece cuando no hay ventana visible.</div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Verificado" data-slide-label="Cómo se inyectó y el intento real">
+          <div class="kicker">Verificado · 7.4</div>
+          <h2 class="slide-title">Cómo se inyectó cada cosa, y el intento real</h2>
+          <hr class="rule">
+          <div class="warn-box" style="font-size:.8em; margin-bottom:.6em;"><b>Sin esconder nada.</b> El push se entregó con <code>ServiceWorker.deliverPushMessage</code> de CDP, que equivale al botón <i>Push</i> de Application → Service Workers: <b>se salta el servicio de push</b>, así que prueba nuestro manejador pero no la entrega real. El clic se simuló despachando un <code>NotificationEvent</code> dentro del Service Worker: no se tocó una notificación de verdad. Y «sin ventanas visibles» se simuló reemplazando <code>clients.matchAll</code> dentro del SW, porque Chromium sin pantalla siempre considera visible la página.</div>
+          <div class="term-box" style="font-size:.74em; margin-top:0;">B) intento de suscripción push real → aviso: "El servicio de push del navegador no respondió (¿sin red, o navegador sin servicio de push?)."<br>
+console: Chrome currently does not support the Push API in incognito mode (https://crbug.com/401439)…</div>
+          <p class="fragment" style="font-size:.78em; margin:.6em 0 0; line-height:1.4;">Esto <b>no es un éxito</b>: el <code>subscribe()</code> real falló. El contexto de Playwright es equivalente a una ventana de incógnito, donde Chrome no soporta Push. También en un perfil persistente: el navegador intentó conectar con servidores de Google (<code>android.clients.google.com</code>, <code>accounts.google.com</code>), el entorno denegó esas conexiones y la prueba no llegó a terminar. Lo útil que deja el intento: <code>describirErrorPush</code> tradujo el <code>AbortError</code> a un mensaje comprensible en vez de dejar la interfaz colgada.</p>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Verificado" data-slide-label="El servidor por separado">
+          <div class="kicker">Verificado · 7.5</div>
+          <h2 class="slide-title">El servidor, verificado por separado</h2>
+          <hr class="rule">
+          <p style="font-size:.74em; margin:0 0 .5em; line-height:1.4;">Como no hay servicio de push, el servidor se verificó contra uno falso: un servidor HTTPS local al que apunta una suscripción fabricada con claves propias. Así se ve exactamente lo que Chrome o Firefox recibirían, y se descifra con las claves del «navegador».</p>
+          <div class="term-box" style="font-size:.72em; margin-top:0;"><span class="prompt">$</span> node test_push_servidor.js<br>
+suscribir: {"status":201,"json":{"ok":true,"total":1}}<br>
+suscripción incompleta: {"status":400,"json":{"error":"suscripción incompleta"}}<br>
+enviar-prueba: {"status":200,"json":{"enviados":1,"fallidos":0,"eliminadas":0}}<br>
+cabeceras: {"content-encoding":"aes128gcm","ttl":"60","content-type":"application/octet-stream","authorization":"vapid t=&lt;JWT&gt;, k=&lt;clave pública&gt;"}<br>
+JWT VAPID: header {"typ":"JWT","alg":"ES256"} | claims {"aud":"https://localhost:3104","exp":…,"sub":"mailto:tu-correo@ejemplo.com"}<br>
+k == clave pública del servidor: true<br>
+firma ES256 del JWT válida: <b>true</b><br>
+cuerpo descifrado con las claves del "navegador": {"titulo":"Recordatorio","cuerpo":"Tienes 2 tareas","url":"/index.html"}<br>
+bytes en la red: 175<br>
+con endpoint que responde 410: {"status":200,"json":{"enviados":0,"fallidos":1,"eliminadas":1}}<br>
+suscripciones restantes: 0</div>
+          <div class="win-box fragment" style="font-size:.72em; margin-top:.6em; padding:.6em 1em;"><b>Qué demuestra:</b> el servidor rechaza suscripciones incompletas; firma con VAPID (la firma ES256 verifica con la clave pública); cifra el mensaje con <code>aes128gcm</code> de modo que solo se lee con las claves de la suscripción; y elimina las suscripciones muertas cuando el servicio responde 410.</div>
+        </section>
+
+        <section class="slide" data-section="s7" data-section-label="Verificado" data-slide-label="La cadena nunca se recorrió">
+          <div class="kicker">Verificado · 7.6</div>
+          <h2 class="slide-title">La cadena completa nunca se recorrió</h2>
+          <hr class="rule">
+          <div class="steps-flow" style="margin-bottom:.8em;">
+            <div class="step-box fragment" style="border-color:#2e7d32; background:#f1f9f1;"><div class="n" style="background:#2e7d32; color:#fff;">✓</div><b>Manejador del SW</b><span>Verificado con un push <b>inyectado</b>.</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment" style="border-color:#e0a800; background:#fff8e1;"><div class="n" style="background:#e0a800; color:#fff;">?</div><b>Servicio de push real</b><span><b>No verificado.</b> Que Google o Mozilla acepte la petición y la entregue.</span></div>
+            <div class="step-arrow">→</div>
+            <div class="step-box fragment" style="border-color:#2e7d32; background:#f1f9f1;"><div class="n" style="background:#2e7d32; color:#fff;">✓</div><b>Servidor</b><span>Verificado con un destinatario <b>falso</b>.</span></div>
+          </div>
+          <div class="warn-box fragment" style="font-size:.88em;"><b>La cadena completa nunca se recorrió.</b> Verificamos el manejador del SW con un push inyectado, y el servidor con un destinatario falso, pero <b>no</b> el eslabón del medio: que el servicio de push real de Google o Mozilla acepte esa petición y la entregue. Para ese eslabón, la única prueba válida es la tuya, en un navegador de escritorio normal (no incógnito) con acceso a Internet.</div>
+        </section>
+
+        <section class="slide" data-section="s8" data-section-label="Pruébalo y buen trato" data-slide-label="Pruébalo tú">
+          <div class="kicker">Pruébalo</div>
+          <h2 class="slide-title">Pruébalo tú</h2>
+          <hr class="rule">
+          <div class="code-block compact">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>Terminal</div>
+            <pre><code>cd servidor
+npm install
+node server.js
+# Abre http://localhost:3000 en Chrome o Edge, en una ventana normal (no incógnito)</code></pre>
+          </div>
+          <ul class="clean" style="font-size:.9em; margin-top:.7em;">
+            <li class="fragment"><b>Avisos locales:</b> pulsa «🔔 Activar avisos» y acepta. Debe aparecer «Avisos activados».</li>
+            <li class="fragment"><b>Push real:</b> pulsa «📡 Suscribir a push» y luego «✉ Enviar push de prueba». Si la suscripción falla, lee el mensaje: casi siempre es incógnito o falta de Internet.</li>
+            <li class="fragment"><b>Push sin servidor:</b> DevTools → Application → Service Workers → campo <i>Push</i> → botón <i>Push</i>. Prueba tu manejador sin depender del servicio de push.</li>
+            <li class="fragment"><b>Sincronización:</b> DevTools → Network → <i>Offline</i>, crea una tarea (aparece «pendiente»), vuelve a <i>Online</i>. Para forzar el evento: Application → Background Sync → escribe <code>sync-tareas</code> → <i>Sync</i>.</li>
+            <li class="fragment"><b>En un teléfono:</b> aplican las mismas opciones HTTPS de la <a href="../../Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2024%20-%20APIs%20de%20dispositivo%20(1%20de%202)%20-%20camara%20y%20ubicacion/guia.html">Sesión 24, sección 9</a> (no probadas desde el entorno de esta guía). En iOS, según la documentación de Apple, el push solo funciona con la app añadida a la pantalla de inicio; no se probó.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="s8" data-section-label="Pruébalo y buen trato" data-slide-label="Cinco reglas">
+          <div class="kicker">Buen trato</div>
+          <h2 class="slide-title">Buen trato al usuario</h2>
+          <hr class="rule">
+          <ul class="clean" style="font-size:1.02em;">
+            <li class="fragment"><b>Pide el permiso cuando el usuario entienda el beneficio</b>, no en la primera visita. Una tasa baja de «Permitir» y un «Bloquear» casi irreversible son el costo de preguntar mal.</li>
+            <li class="fragment"><b>Pocos avisos, y que importen.</b> Cada notificación innecesaria enseña al usuario a revocar el permiso de todas.</li>
+            <li class="fragment"><b>No pongas datos sensibles en el cuerpo del push.</b> Viaja cifrado, pero termina en la pantalla de bloqueo, a la vista de cualquiera.</li>
+            <li class="fragment"><b>Ofrece cómo desactivarlo</b> dentro de la app (el botón «Cancelar suscripción push» hace <code>unsubscribe()</code> y avisa al servidor).</li>
+            <li class="fragment"><b>Datos personales:</b> una suscripción push identifica un dispositivo. En Colombia aplica la Ley 1581 de 2012 de protección de datos personales; esta guía solo la menciona como orientación y no es asesoría legal.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades 1 y 2">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Actividades 1 y 2</h2>
+          <hr class="rule">
+          <div class="activity-card fragment" style="margin-bottom:.6em;">
+            <div class="a-head"><div class="a-num">1</div><h4>Avisos con permiso en contexto</h4></div>
+            <div class="meta-row">INDIVIDUAL · 30 MIN</div>
+            <p>Parte del checkpoint de la Sesión 25. Agrega <code>notificaciones.js</code> y la barra de avisos. Comprueba: (1) al cargar, <b>no</b> aparece ningún diálogo de permiso; (2) tras pulsar el botón y aceptar, se ve la notificación local; (3) si bloqueas el permiso en el candado del navegador y recargas, el texto de estado lo dice y el resto de la app sigue funcionando.</p>
+            <p style="margin-top:.35em;"><b>Entregable:</b> captura de (2) y (3), y una frase: ¿por qué <code>denied</code> es casi definitivo y qué implica para el momento en que pides el permiso?</p>
+          </div>
+          <div class="activity-card fragment">
+            <div class="a-head"><div class="a-num">2</div><h4>De generateSW a InjectManifest</h4></div>
+            <div class="meta-row">INDIVIDUAL · 40 MIN</div>
+            <p>Crea <code>sw-propio.js</code> con el precaché y las dos rutas (iconos y API), copia las bibliotecas con <code>copyLibraries</code>, cambia <code>workbox-config.js</code> y genera <code>sw.js</code>. Comprueba con DevTools (Application → Cache Storage) que el precaché tiene las mismas entradas que antes y que la app sigue funcionando sin conexión.</p>
+            <p style="margin-top:.35em;"><b>Para pensar:</b> provoca a propósito los dos errores de la sección 3 (escribe el marcador dos veces; lee <code>workbox.strategies</code> dentro de un evento). Anota el mensaje que sale en cada caso.</p>
+            <p style="margin-top:.35em;"><b>Entregable:</b> el <code>sw.js</code> generado, el listado de Cache Storage y los dos mensajes de error.</p>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Actividades 3 y 4">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Actividades 3 y 4</h2>
+          <hr class="rule">
+          <div class="activity-card fragment" style="margin-bottom:.6em;">
+            <div class="a-head"><div class="a-num">3</div><h4>La bandeja de salida, de punta a punta</h4></div>
+            <div class="meta-row">INDIVIDUAL · 60 MIN</div>
+            <p>Sube la base a la versión 2 con la migración por tramos, agrega <code>sync.js</code>, el manejador <code>sync</code> y el servidor de ejemplo. Verifica: (1) crear una tarea sin conexión muestra «pendiente»; (2) al volver la conexión y disparar <i>Sync</i> desde DevTools, llega al servidor (míralo en <code>http://localhost:3000/api/tareas</code>); (3) detén el servidor, crea otra tarea, dispara <i>Sync</i> y comprueba que sigue pendiente; reinicia el servidor y dispara de nuevo.</p>
+            <p style="margin-top:.35em;"><b>Entregable:</b> las tres comprobaciones con captura, más la respuesta a: ¿qué pasaría sin el <code>idCambio</code> si la respuesta del servidor se pierde justo después de guardar?</p>
+          </div>
+          <div class="activity-card fragment">
+            <div class="a-head"><div class="a-num">4</div><h4>Tu propia prueba de push real</h4></div>
+            <div class="meta-row">INDIVIDUAL · 30 MIN</div>
+            <p>En Chrome o Edge normal y con Internet, suscríbete a push y envía el push de prueba. Si funciona, repítelo con la pestaña cerrada (deja el navegador abierto). Si no funciona, usa el mensaje de <code>describirErrorPush</code> y la consola para encontrar por qué.</p>
+            <p style="margin-top:.35em;"><b>Entregable:</b> qué ocurrió y, si falló, la causa. Este es el único eslabón que esta guía no pudo verificar: tu resultado completa la cadena.</p>
+          </div>
+        </section>
+
+        <section class="slide" data-section="actividades" data-section-label="Actividades" data-slide-label="Cierre: actualiza tu repositorio">
+          <div class="kicker">Actividades</div>
+          <h2 class="slide-title">Cierre: actualiza tu repositorio</h2>
+          <hr class="rule">
+          <div class="code-block mid">
+            <div class="code-file"><span class="dots"><span></span><span></span><span></span></span>Terminal</div>
+            <pre><code>echo "servidor/claves-vapid.json" &gt;&gt; .gitignore
+echo "servidor/datos.json" &gt;&gt; .gitignore
+git add .
+git commit -m "Avisos, push y Background Sync con bandeja de salida (InjectManifest)"
+git push</code></pre>
+          </div>
+          <div class="warn-box fragment" style="margin-top:.9em; font-size:.92em;"><b>Antes del <code>git push</code>:</b> comprueba que <code>claves-vapid.json</code> no quedó dentro del commit. Es la clave privada de tu servidor; si se publica, cualquiera puede enviar push en tu nombre. (La carpeta <code>servidor/</code> trae su propio <code>.gitignore</code>; esta línea es una segunda red de seguridad.)</div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Resumen">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Resumen de la sesión</h2>
+          <hr class="rule">
+          <ul class="clean" style="font-size:.9em;">
+            <li class="fragment">Notification, Push y Background Sync son tres promesas distintas: mostrar, recibir del servidor y enviar diferido. Solo Notification es amplia; Push exige servidor y servicio de push; Background Sync es solo de Chromium.</li>
+            <li class="fragment">El permiso se pide dentro de un clic y con contexto; <code>denied</code> es casi definitivo; la app funciona igual sin él.</li>
+            <li class="fragment"><code>InjectManifest</code> deja el Service Worker en tus manos y a Workbox solo la lista de precaché; el marcador debe aparecer una sola vez y el comando se reejecuta tras cada cambio.</li>
+            <li class="fragment">Push: VAPID identifica al servidor, la suscripción identifica al dispositivo, el mensaje viaja cifrado, y <code>userVisibleOnly</code> obliga a mostrar siempre una notificación. Se borran las suscripciones que responden 404/410.</li>
+            <li class="fragment">La bandeja de salida (<code>outbox</code>) hace que la acción del usuario nunca dependa de la red; lanzar una excepción pide reintento; el UUID por cambio evita duplicados; y hay plan B para Safari, Firefox y permiso bloqueado.</li>
+            <li class="fragment">Verificado: notificaciones, manejador de push (con mensaje inyectado), clic, sincronización, reintento disparado a mano, migración, y el servidor por separado (VAPID y cifrado). <b>No verificado:</b> la entrega real por el servicio de push, un teléfono real, iOS, el reintento automático del navegador y la batería.</li>
+          </ul>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Cierre del Sub-bloque A">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Cierre del Sub-bloque A</h2>
+          <hr class="rule">
+          <div class="callout" style="font-size:1.05em;"><b>Esta sesión cierra el Sub-bloque A (fundamentos PWA).</b> El Gestor de Tareas queda con instalación, caché sin conexión, almacenamiento local cifrado, cámara, ubicación, sensores, avisos y sincronización en segundo plano. El Sub-bloque B aplica lo mismo al Atlas 3D: el espejo de esta sesión es la <a href="../../Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2037%20-%20Avisos%20y%20descargas%20en%20segundo%20plano%20en%20el%20proyecto/guia.html">Sesión 37</a>.</div>
+          <div class="grid-4" style="margin-top:1em;">
+            <div class="mini-card fragment"><b>Instalación</b></div>
+            <div class="mini-card fragment"><b>Caché sin conexión</b></div>
+            <div class="mini-card fragment"><b>Almacenamiento local cifrado</b></div>
+            <div class="mini-card fragment"><b>Cámara</b></div>
+            <div class="mini-card fragment"><b>Ubicación</b></div>
+            <div class="mini-card fragment"><b>Sensores</b></div>
+            <div class="mini-card fragment"><b>Avisos</b></div>
+            <div class="mini-card fragment"><b>Sincronización en segundo plano</b></div>
+          </div>
+        </section>
+
+        <section class="slide" data-section="cierre" data-section-label="Cierre" data-slide-label="Referencias">
+          <div class="kicker">Cierre</div>
+          <h2 class="slide-title">Referencias</h2>
+          <hr class="rule">
+          <div class="ref-list">
+            <div><b>[1]</b> MDN Web Docs, "Notifications API," "ServiceWorkerRegistration: showNotification()" y "Notification: permission," developer.mozilla.org.</div>
+            <div><b>[2]</b> MDN Web Docs, "Push API" y "PushManager: subscribe()," developer.mozilla.org.</div>
+            <div><b>[3]</b> MDN Web Docs, "Background Synchronization API" y "SyncManager," developer.mozilla.org.</div>
+            <div><b>[4]</b> IETF, RFC 8030 (Web Push), RFC 8291 (cifrado de mensajes Web Push) y RFC 8292 (VAPID), rfc-editor.org.</div>
+            <div><b>[5]</b> Google Chrome for Developers, "Workbox: InjectManifest" y "workbox-cli," developer.chrome.com/docs/workbox.</div>
+            <div><b>[6]</b> web-push (biblioteca para Node), github.com/web-push-libs/web-push.</div>
+          </div>
+        </section>
+
+        <div class="fragment-hint" id="fragHint">
+          <svg><use href="#ic-arrow-right"/></svg><span class="hint-txt">Clic o → para continuar</span>
+        </div>
+
+        <div class="floatnav">
+          <button class="navbtn" id="prevBtn" aria-label="Anterior"><svg><use href="#ic-arrow-left"/></svg></button>
+          <span class="count" id="slideCount">01 / 56</span>
+          <button class="navbtn" id="nextBtn" aria-label="Siguiente"><svg><use href="#ic-arrow-right"/></svg></button>
+          <button class="fsbtn" id="fsBtn" aria-label="Pantalla completa" title="Modo proyección (pantalla completa)"><svg><use href="#ic-expand"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../js/uptc-deck.js"></script>
+</body>
+</html>
