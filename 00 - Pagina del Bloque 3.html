@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloque 3 · PWA · Electiva - PWA</title>
+<link rel="stylesheet" href="css/uptc-theme.css">
+<style>
+  html,body{height:auto; overflow:auto; background:#f4f1e8;}
+  body{font-size:16px;}
+  .page{max-width:min(1500px, 96vw); margin:0 auto; background:#fff; box-shadow:0 0 60px rgba(0,0,0,.08); min-height:100vh;}
+  .block-header{background:linear-gradient(180deg, var(--ink) 0%, #000 100%); color:#fff; padding:2.2em 2.4em 1.8em; position:relative; overflow:hidden;}
+  .block-header .brand-wedge::before{background:rgba(255,246,220,.08);}
+  .block-header img{height:2.6em; margin-bottom:1em; position:relative; z-index:1;}
+  .block-header .eyebrow{font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78em; color:var(--gold); position:relative; z-index:1;}
+  .block-header h1{font-family:var(--serif); font-size:2.1em; margin:.25em 0 .2em; line-height:1.15; position:relative; z-index:1; max-width:26em;}
+  .block-header .lead{color:#d9d3b8; font-size:1em; max-width:44em; position:relative; z-index:1;}
+  .block-header .goldbar{position:absolute; left:0; bottom:0; width:100%; height:8px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); z-index:2;}
+  .block-nav{display:flex; gap:1.2em; position:relative; z-index:1; margin-bottom:1em; font-size:.8em;}
+  .block-nav a{color:#d9d3b8; text-decoration:none; font-weight:700;}
+  .block-nav a:hover{color:var(--gold);}
+
+  .section{padding:2.2em 2.4em;}
+  .sessions{display:grid; grid-template-columns:repeat(2,1fr); gap:1em;}
+  @media (min-width:1300px){ .sessions{grid-template-columns:repeat(3,1fr);} }
+  .sess-card{border:1px solid var(--line); border-radius:12px; padding:1.1em 1.3em; display:flex; gap:1em; align-items:flex-start; position:relative; transition:.15s;}
+  .sess-card.ready{border-color:var(--gold); background:#fffdf5;}
+  .sess-card.ready:hover{box-shadow:0 10px 24px -16px rgba(0,0,0,.3); transform:translateY(-1px);}
+  .sess-card.pending{opacity:.55;}
+  .sess-num{flex:0 0 auto; width:2.4em; height:2.4em; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:1.05em;}
+  .sess-card.ready .sess-num{background:var(--ink); color:var(--gold);}
+  .sess-card.pending .sess-num{background:#eee; color:#999;}
+  .sess-body h3{margin:0 0 .2em; font-family:var(--serif); font-size:1.08em; color:var(--ink);}
+  .sess-body .tag-row{display:flex; align-items:baseline; gap:.5em; flex-wrap:wrap;}
+  .sess-body .tag{font-size:.68em; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--gold-deep);}
+  .sess-card.pending .tag{color:#999;}
+  .sess-body p{margin:.3em 0 .7em; font-size:.85em; color:#444; line-height:1.4;}
+  .sess-links{display:flex; gap:.6em; flex-wrap:wrap;}
+  .sess-links a{font-size:.76em; font-weight:700; color:var(--ink); background:var(--gold-tint); border:1px solid var(--gold); border-radius:999px; padding:.4em .9em; text-decoration:none;}
+  .sess-links a:hover{background:var(--gold);}
+  .sess-links .disabled{font-size:.76em; font-weight:700; color:#999; background:#f2f2f2; border:1px solid #e2e2e2; border-radius:999px; padding:.4em .9em;}
+
+  .sub-block-title{font-family:var(--serif); font-size:1.15em; color:var(--gold-deep); margin:1.4em 0 .6em;}
+  .sub-block-note{font-size:.85em; color:#666; margin:0 0 1em; max-width:52em;}
+  .festivo-note{font-size:.8em; color:#999; font-style:italic; margin:.2em 0 1em; padding-left:.2em;}
+
+  .milestone{border:1px dashed var(--gold-deep); border-radius:12px; padding:1em 1.3em; background:#fff9ea; margin-top:1em; display:flex; gap:1em; align-items:center; flex-wrap:wrap; justify-content:space-between;}
+  .milestone b{font-family:var(--serif); font-size:1.05em; color:var(--ink);}
+  .milestone span{font-size:.85em; color:#555;}
+
+  footer.site-foot{padding:1.6em 2.4em; font-size:.82em; color:var(--gray); border-top:3px solid var(--gold); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5em;}
+
+  @media (max-width:760px){ .block-header, .section, footer.site-foot{padding-left:1.3em; padding-right:1.3em;} .sessions{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="block-header">
+    <div class="brand-wedge"><div class="gold-slab"></div></div>
+    <div class="block-nav"><a href="#">← Inicio del curso</a></div>
+    <img src="assets/uptc-blanco.svg" onerror="this.src='assets/uptc-color.svg'" alt="UPTC">
+    <div class="eyebrow">Electiva - PWA · Bloque activo</div>
+    <h1>Bloque 3 · PWA</h1>
+    <div class="lead">30 sesiones de dos horas, del 11/09 al 20/11/2026 (lunes y viernes), más sustentaciones el 23 y 27/11. Sub-bloque A: fundamentos de PWA, guiados en clase por el docente. Sub-bloque B: el proyecto — un visor de objetos 3D educativos con realidad aumentada — construido desde cero, en paralelo: cada fecha aplica al proyecto real el tema visto ese mismo día en fundamentación.</div>
+    <div class="goldbar"></div>
+  </div>
+
+  <div class="section">
+    <h3 class="sub-block-title">Sub-bloque A · Fundamentos PWA</h3>
+    <p class="sub-block-note">Sesiones orientadas en vivo por el docente — no llevan guion de clase. Cada guía trae, en su propia sección de Recursos, el código y los assets que necesita, para no perder tiempo consiguiéndolos.</p>
+    <div class="sessions">
+      <div class="sess-card ready" data-sesion="15">
+        <div class="sess-num">15</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>¿Qué es una PWA?</h3>
+          <p>PWA vs. App Nativa vs. App Híbrida, las 8 características y las 4 funcionalidades clave.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2015%20-%20Que%20es%20una%20PWA/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2015%20-%20Que%20es%20una%20PWA/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2015%20-%20Que%20es%20una%20PWA/PWA_guia_estudiantes_sesion_15.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="16">
+        <div class="sess-num">16</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>El Manifiesto de aplicación</h3>
+          <p>manifest.json a fondo: propiedades, modos de display, íconos, y los criterios de instalabilidad. Ejecute, Observe y Analice sobre el proyecto real.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2016%20-%20El%20Manifiesto%20de%20aplicacion/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2016%20-%20El%20Manifiesto%20de%20aplicacion/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2016%20-%20El%20Manifiesto%20de%20aplicacion/PWA_guia_estudiantes_sesion_16.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="17">
+        <div class="sess-num">17</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Service Workers (1/2): registro y ciclo de vida</h3>
+          <p>Requisitos, registro y el ciclo de vida completo: instalación, espera, activación, fetch, actualización.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2017%20-%20Service%20Workers%20(1%20de%202)%20-%20registro%20y%20ciclo%20de%20vida/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2017%20-%20Service%20Workers%20(1%20de%202)%20-%20registro%20y%20ciclo%20de%20vida/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2017%20-%20Service%20Workers%20(1%20de%202)%20-%20registro%20y%20ciclo%20de%20vida/PWA_guia_estudiantes_sesion_17.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="18">
+        <div class="sess-num">18</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Service Workers (2/2): cacheo de rutas</h3>
+          <p>Interceptar fetch, cachear las primeras rutas, y una estrategia básica de respuesta.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2018%20-%20Service%20Workers%20(2%20de%202)%20-%20cacheo%20de%20rutas/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2018%20-%20Service%20Workers%20(2%20de%202)%20-%20cacheo%20de%20rutas/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2018%20-%20Service%20Workers%20(2%20de%202)%20-%20cacheo%20de%20rutas/PWA_guia_estudiantes_sesion_18.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="19">
+        <div class="sess-num">19</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Almacenamiento y caché</h3>
+          <p>Cache Storage API vs. caché HTTP: las ocho operaciones principales, gestión de versiones y limpieza.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2019%20-%20Almacenamiento%20y%20cache/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2019%20-%20Almacenamiento%20y%20cache/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2019%20-%20Almacenamiento%20y%20cache/PWA_guia_estudiantes_sesion_19.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="20">
+        <div class="sess-num">20</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Las 5 estrategias de caché (1/2)</h3>
+          <p>Cache Only, Network Only y Cache First — teoría de las 5 y las 3 primeras implementadas y probadas.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2020%20-%20Las%205%20estrategias%20de%20cache%20(1%20de%202)/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2020%20-%20Las%205%20estrategias%20de%20cache%20(1%20de%202)/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2020%20-%20Las%205%20estrategias%20de%20cache%20(1%20de%202)/PWA_guia_estudiantes_sesion_20.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="21">
+        <div class="sess-num">21</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Las 5 estrategias de caché (2/2)</h3>
+          <p>Network First y Stale-While-Revalidate, y cómo combinar las 5 por ruta según el recurso.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2021%20-%20Las%205%20estrategias%20de%20cache%20(2%20de%202)/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2021%20-%20Las%205%20estrategias%20de%20cache%20(2%20de%202)/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2021%20-%20Las%205%20estrategias%20de%20cache%20(2%20de%202)/PWA_guia_estudiantes_sesion_21.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="22">
+        <div class="sess-num">22</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>IndexedDB y Web Crypto API</h3>
+          <p>Persistencia estructurada offline, y encriptación de datos.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2022%20-%20IndexedDB%20y%20Web%20Crypto%20API/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2022%20-%20IndexedDB%20y%20Web%20Crypto%20API/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2022%20-%20IndexedDB%20y%20Web%20Crypto%20API/PWA_guia_estudiantes_sesion_22.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="23">
+        <div class="sess-num">23</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Workbox y auditoría</h3>
+          <p>GenerateSW vs. InjectManifest, compatibilidad de navegadores, UX/UI, Lighthouse.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2023%20-%20Workbox%20y%20auditoria/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2023%20-%20Workbox%20y%20auditoria/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2023%20-%20Workbox%20y%20auditoria/PWA_guia_estudiantes_sesion_23.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="24">
+        <div class="sess-num">24</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>APIs de dispositivo (1/2): cámara y ubicación</h3>
+          <p>MediaDevices y getUserMedia para cámara y micrófono, Geolocation para ubicación — permisos, privacidad y HTTPS.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2024%20-%20APIs%20de%20dispositivo%20(1%20de%202)%20-%20camara%20y%20ubicacion/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2024%20-%20APIs%20de%20dispositivo%20(1%20de%202)%20-%20camara%20y%20ubicacion/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2024%20-%20APIs%20de%20dispositivo%20(1%20de%202)%20-%20camara%20y%20ubicacion/PWA_guia_estudiantes_sesion_24.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="25">
+        <div class="sess-num">25</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>APIs de dispositivo (2/2): sensores de movimiento</h3>
+          <p>DeviceOrientation y DeviceMotion: leer la orientación e inclinación del dispositivo.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2025%20-%20APIs%20de%20dispositivo%20(2%20de%202)%20-%20sensores%20de%20movimiento/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2025%20-%20APIs%20de%20dispositivo%20(2%20de%202)%20-%20sensores%20de%20movimiento/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2025%20-%20APIs%20de%20dispositivo%20(2%20de%202)%20-%20sensores%20de%20movimiento/PWA_guia_estudiantes_sesion_25.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="26">
+        <div class="sess-num">26</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Notificaciones push y sincronización en segundo plano</h3>
+          <p>Notification API, Push API y Background Sync, con un mini servidor Node para probar el push. Cierre del Sub-bloque A.</p>
+          <div class="sess-links">
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2026%20-%20Notificaciones%20push%20y%20sincronizacion%20en%20segundo%20plano/presentacion.html">Presentación</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2026%20-%20Notificaciones%20push%20y%20sincronizacion%20en%20segundo%20plano/guia.html">Guía (web)</a>
+            <a href="Sub-bloque%20A%20-%20Fundamentos%20PWA/Sesion%2026%20-%20Notificaciones%20push%20y%20sincronizacion%20en%20segundo%20plano/PWA_guia_estudiantes_sesion_26.docx">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="festivo-note">Lunes 12/10/2026 — día festivo, sin clase.</p>
+
+    <h3 class="sub-block-title">Sub-bloque B · Proyecto: Módulo AR — Objetos 3D educativos</h3>
+    <p class="sub-block-note">Un visor de objetos 3D educativos (arquitectura en capas, patrón MVC, árbol binario, ciclo de vida de un Service Worker, arquitectura cliente-caché-servidor) con realidad aumentada opcional. Se construye desde cero, en paralelo con el Sub-bloque A — cada guía cierra con los pasos para actualizar tu propio repositorio en Git.</p>
+    <div class="sessions">
+      <div class="sess-card ready" data-sesion="27">
+        <div class="sess-num">27</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Arranque del proyecto y su manifiesto</h3>
+          <p>Crear el proyecto con Vite + TypeScript desde cero, arquitectura de carpetas y primer commit — más el manifest.json del visor 3D. Espejo de la Sesión 16.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2027%20-%20Arranque%20del%20proyecto%20y%20su%20manifiesto/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2027%20-%20Arranque%20del%20proyecto%20y%20su%20manifiesto/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2027%20-%20Arranque%20del%20proyecto%20y%20su%20manifiesto/PWA_guia_estudiantes_sesion_27.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="28">
+        <div class="sess-num">28</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Service Worker del proyecto (1/2)</h3>
+          <p>Registro y ciclo de vida del Service Worker del visor 3D. Espejo de la Sesión 17.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2028%20-%20Service%20Worker%20del%20proyecto%20(1%20de%202)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2028%20-%20Service%20Worker%20del%20proyecto%20(1%20de%202)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2028%20-%20Service%20Worker%20del%20proyecto%20(1%20de%202)/PWA_guia_estudiantes_sesion_28.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="29">
+        <div class="sess-num">29</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Service Worker del proyecto (2/2)</h3>
+          <p>Primeras rutas cacheadas del visor 3D. Espejo de la Sesión 18.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2029%20-%20Service%20Worker%20del%20proyecto%20(2%20de%202)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2029%20-%20Service%20Worker%20del%20proyecto%20(2%20de%202)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2029%20-%20Service%20Worker%20del%20proyecto%20(2%20de%202)/PWA_guia_estudiantes_sesion_29.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="30">
+        <div class="sess-num">30</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Caché de modelos 3D (1/3)</h3>
+          <p>Cache Storage aplicado a los assets del visor. Espejo de la Sesión 19.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2030%20-%20Cache%20de%20modelos%203D%20(1%20de%203)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2030%20-%20Cache%20de%20modelos%203D%20(1%20de%203)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2030%20-%20Cache%20de%20modelos%203D%20(1%20de%203)/PWA_guia_estudiantes_sesion_30.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="31">
+        <div class="sess-num">31</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Caché de modelos 3D (2/3)</h3>
+          <p>Primeras 3 estrategias de caché aplicadas a los modelos 3D. Espejo de la Sesión 20.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2031%20-%20Cache%20de%20modelos%203D%20(2%20de%203)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2031%20-%20Cache%20de%20modelos%203D%20(2%20de%203)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2031%20-%20Cache%20de%20modelos%203D%20(2%20de%203)/PWA_guia_estudiantes_sesion_31.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="32">
+        <div class="sess-num">32</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Caché de modelos 3D (3/3)</h3>
+          <p>Las 5 estrategias combinadas por tipo de recurso, para que el visor funcione sin conexión. Espejo de la Sesión 21.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2032%20-%20Cache%20de%20modelos%203D%20(3%20de%203)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2032%20-%20Cache%20de%20modelos%203D%20(3%20de%203)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2032%20-%20Cache%20de%20modelos%203D%20(3%20de%203)/PWA_guia_estudiantes_sesion_32.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="33">
+        <div class="sess-num">33</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>IndexedDB en el proyecto</h3>
+          <p>Guardar el progreso y las preferencias del usuario de forma estructurada. Espejo de la Sesión 22.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2033%20-%20IndexedDB%20en%20el%20proyecto/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2033%20-%20IndexedDB%20en%20el%20proyecto/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2033%20-%20IndexedDB%20en%20el%20proyecto/PWA_guia_estudiantes_sesion_33.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="34">
+        <div class="sess-num">34</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Workbox en el proyecto</h3>
+          <p>Migrar el Service Worker manual a Workbox, con rutas y estrategias por tipo de recurso. Espejo de la Sesión 23.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2034%20-%20Workbox%20en%20el%20proyecto/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2034%20-%20Workbox%20en%20el%20proyecto/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2034%20-%20Workbox%20en%20el%20proyecto/PWA_guia_estudiantes_sesion_34.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="35">
+        <div class="sess-num">35</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>APIs de dispositivo en el proyecto (1/2)</h3>
+          <p>Sensores de orientación para rotar el visor 3D sin touch. Espejo de la Sesión 25.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2035%20-%20APIs%20de%20dispositivo%20en%20el%20proyecto%20(1%20de%202)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2035%20-%20APIs%20de%20dispositivo%20en%20el%20proyecto%20(1%20de%202)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2035%20-%20APIs%20de%20dispositivo%20en%20el%20proyecto%20(1%20de%202)/PWA_guia_estudiantes_sesion_35.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="36">
+        <div class="sess-num">36</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>APIs de dispositivo en el proyecto (2/2)</h3>
+          <p>La cámara como base para la realidad aumentada de las próximas sesiones. Espejo de la Sesión 24.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2036%20-%20APIs%20de%20dispositivo%20en%20el%20proyecto%20(2%20de%202)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2036%20-%20APIs%20de%20dispositivo%20en%20el%20proyecto%20(2%20de%202)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2036%20-%20APIs%20de%20dispositivo%20en%20el%20proyecto%20(2%20de%202)/PWA_guia_estudiantes_sesion_36.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="37">
+        <div class="sess-num">37</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Avisos y descargas en segundo plano en el proyecto</h3>
+          <p>Notificaciones locales y descarga de fichas con Background Sync en el Atlas 3D (sin servidor, no hay push). Espejo de la Sesión 26.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2037%20-%20Avisos%20y%20descargas%20en%20segundo%20plano%20en%20el%20proyecto/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2037%20-%20Avisos%20y%20descargas%20en%20segundo%20plano%20en%20el%20proyecto/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2037%20-%20Avisos%20y%20descargas%20en%20segundo%20plano%20en%20el%20proyecto/PWA_guia_estudiantes_sesion_37.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="38">
+        <div class="sess-num">38</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Realidad aumentada con WebXR (1/2)</h3>
+          <p>Detección de soporte y arranque de una sesión immersive-ar.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2038%20-%20Realidad%20aumentada%20con%20WebXR%20(1%20de%202)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2038%20-%20Realidad%20aumentada%20con%20WebXR%20(1%20de%202)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2038%20-%20Realidad%20aumentada%20con%20WebXR%20(1%20de%202)/PWA_guia_estudiantes_sesion_38.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="39">
+        <div class="sess-num">39</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Realidad aumentada con WebXR (2/2)</h3>
+          <p>Hit-test, retícula, anclas y gestos: colocar el cubo sobre una superficie real, con plan B.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2039%20-%20Realidad%20aumentada%20con%20WebXR%20(2%20de%202)/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2039%20-%20Realidad%20aumentada%20con%20WebXR%20(2%20de%202)/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2039%20-%20Realidad%20aumentada%20con%20WebXR%20(2%20de%202)/PWA_guia_estudiantes_sesion_39.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="40">
+        <div class="sess-num">40</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Modelos de arquitectura en 3D</h3>
+          <p>MVC, capas y microservicios como escenas de Three.js hechas con datos: verlos, tocar una pieza para leer qué hace y recorrerlas en AR.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2040%20-%20Modelos%20de%20arquitectura%20en%203D/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2040%20-%20Modelos%20de%20arquitectura%20en%203D/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2040%20-%20Modelos%20de%20arquitectura%20en%203D/PWA_guia_estudiantes_sesion_40.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="41">
+        <div class="sess-num">41</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>UX/UI de instalación</h3>
+          <p>El botón de instalar con beforeinstallprompt, los estados de instalación (incluido iOS), el aviso de conexión y cómo comprobar que una prueba falla cuando debe.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2041%20-%20UX-UI%20de%20instalacion/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2041%20-%20UX-UI%20de%20instalacion/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2041%20-%20UX-UI%20de%20instalacion/PWA_guia_estudiantes_sesion_41.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="42">
+        <div class="sess-num">42</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Lighthouse y cierre del proyecto</h3>
+          <p>Auditoría con Lighthouse, cuatro hallazgos corregidos con mediciones antes y después, y la lista de verificación final del Módulo AR.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2042%20-%20Lighthouse%20y%20cierre%20del%20proyecto/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2042%20-%20Lighthouse%20y%20cierre%20del%20proyecto/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2042%20-%20Lighthouse%20y%20cierre%20del%20proyecto/PWA_guia_estudiantes_sesion_42.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="43">
+        <div class="sess-num">43</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>React y PWA</h3>
+          <p>El Atlas 3D reconstruido con React (componentes, hooks y useRegisterSW): qué cambia, qué se queda fuera, y la comparación con la versión anterior con cifras reales.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2043%20-%20React%20y%20PWA/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2043%20-%20React%20y%20PWA/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2043%20-%20React%20y%20PWA/PWA_guia_estudiantes_sesion_43.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="44">
+        <div class="sess-num">44</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Angular y PWA</h3>
+          <p>El Atlas 3D reconstruido con Angular (componentes, servicios y señales): qué cambia frente a React, qué se queda fuera, y la comparación de las tres versiones con cifras reales.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2044%20-%20Angular%20y%20PWA/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2044%20-%20Angular%20y%20PWA/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2044%20-%20Angular%20y%20PWA/PWA_guia_estudiantes_sesion_44.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+      <div class="sess-card ready" data-sesion="45">
+        <div class="sess-num">45</div>
+        <div class="sess-body">
+          <div class="tag-row"><span class="tag">Disponible</span></div>
+          <h3>Comparación y cierre de Sub-bloque B</h3>
+          <p>Las tres versiones del Atlas (sin framework, React y Angular) con la misma lista de pruebas y las mismas cifras: cómo decidir con evidencia, qué no sabemos y la lista de verificación final.</p>
+          <div class="sess-links">
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2045%20-%20Comparacion%20y%20cierre%20de%20Sub-bloque%20B/presentacion.html" target="_blank" rel="noopener">Presentación</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2045%20-%20Comparacion%20y%20cierre%20de%20Sub-bloque%20B/guia.html" target="_blank" rel="noopener">Guía (web)</a>
+            <a href="https://github.com/AnthonyGonzalez1/ELECTIVA-III-PWA/blob/main/Sub-bloque%20B%20-%20Proyecto%20Modulo%20AR%20(Objetos%203D)/Sesion%2045%20-%20Comparacion%20y%20cierre%20de%20Sub-bloque%20B/PWA_guia_estudiantes_sesion_45.docx" target="_blank" rel="noopener">Guía (Word)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="festivo-note">Lunes 02/11, lunes 16/11/2026 — días festivos, sin clase.</p>
+
+    <div class="milestone">
+      <div><b>Sustentaciones de Proyectos</b><br><span>Entrega y presentación final del Módulo AR — cierre del curso completo.</span></div>
+      <span>Lunes 23/11 y viernes 27/11 de 2026</span>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <span>UPTC · Facultad de Ingeniería</span>
+    <span>Electiva - PWA · Material del curso</span>
+  </footer>
+</div>
+
+<!--
+  Desbloqueo manual, sin fechas (política vigente desde el 18 sep 2026).
+  El estado de cada tarjeta es el que diga su clase aquí mismo en el HTML:
+  class="sess-card ready"   -> "Disponible", con sus tres enlaces reales.
+  class="sess-card pending" -> "Próximamente", con <span class="disabled">.
+  Para avanzar una sesión de Sub-bloque A: cambia su tarjeta a "ready" (quita
+  los <span class="disabled"> por <a href="..."> reales) y, en Sub-bloque B,
+  pon "ready" también a la tarjeta cuya descripción diga "Espejo de la
+  Sesión <esa misma N>". Después, guarda un snapshot en bloque-3/ (ver
+  bloque-3/index_19.html como ejemplo) con el nombre index_<N>.html, y
+  actualiza bloque-3/index.html para que sea una copia de ese snapshot más
+  reciente — así queda un historial de cuándo se desbloqueó cada cosa.
+-->
+</body>
+</html>
